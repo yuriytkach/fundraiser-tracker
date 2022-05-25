@@ -257,6 +257,7 @@ public class TrackService {
       responseText = "All funds:\n" + fundService.findAllFunds(user).stream()
         .sorted(Comparator.comparing(Fund::getRaisedPercent).reversed())
         .map(fund -> format(
+          Locale.ENGLISH,
           "% 3.2f%% `%s` [%d of %d] %s - %s [%s]",
           fund.getRaisedPercent(),
           fund.getName(),
