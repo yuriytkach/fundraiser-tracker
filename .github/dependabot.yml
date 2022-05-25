@@ -1,0 +1,17 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "01:45"
+  reviewers:
+  - yuriytkach
+  assignees:
+  - yuriytkach
+  labels:
+  - "automerge_github"
+  - "dependencies"
+  commit-message:
+    prefix: "build(deps)"
+    prefix-development: "build(deps-dev)"
