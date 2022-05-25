@@ -345,7 +345,7 @@ public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
         .text(":white_check_mark: All funds:\n"
-          + " 10,00% `fundy` [100 of 1000] EUR - description [red]")
+          + " 10.00% `fundy` [100 of 1000] EUR - description [red]")
         .build()));
   }
 
