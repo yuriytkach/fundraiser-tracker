@@ -8,6 +8,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -25,5 +26,6 @@ jobs:
       run: mvn -B package --file pom.xml
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
+      if: always()
       with:
         junit_files: "target/surefire-reports/*.xml"
