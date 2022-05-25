@@ -11,9 +11,8 @@ on:
 
 jobs:
   build:
-
+    name: Build and Test
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 11
@@ -24,3 +23,7 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      with:
+        junit_files: "target/surefire-reports/*.xml"
