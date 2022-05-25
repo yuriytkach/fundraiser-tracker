@@ -1,0 +1,76 @@
+app:
+  slack-token: HELLO
+  funds-table: funds
+  default-fund-color: green
+  default-person-name: noname
+  web:
+    cache-max-age-sec: 60
+  help-text: |
+    *Create new fund:*
+
+    `/fund create car eur 5000 "Banderomobil" blue`
+    Creates new fund with short name `car` (will be used to track donations)
+    with goal of €5000, with full description `Banderomobil` and color `blue`
+    (used in UI tracker)
+
+    `/fund create dron usd 7000`
+    Creates a new fund with short name and description `dron`
+    with goal of $7000 and default color `green` on UI
+
+    *Supported currencies:*
+    <supported_currencies>
+
+    *List all funds:*
+
+    `/fund list`
+    Displays all created funds with status (how much raised)
+
+    *Track donation:*
+
+    `/fund track car eur 500 Vasya 2022-05-12 14:15`
+    `/fund track car uah 500 Vasya 14:15` - track for today's date
+    `/fund track car usd 500 Vasya` - track for today's date and time
+    `/fund track car usd 500` - track for `noname` person
+
+    This will track donation for fund with short name `car`.
+    Any supported currency is allowed. Currency conversion takes place.
+    Date and time is optional.
+    Person name is optional. If not supplied, then `noname` is used.
+
+    *Delete fund*
+    `Warning!` _This action cannot be undone! Use with caution!_
+
+    `/fund delete car`
+
+    This will delete fund `car` with all recorded donations. `Warning! - Cannot be undone!`
+
+quarkus:
+  rest-client:
+    monobank:
+      url: https://api.monobank.ua
+      connectTimeout: 1000
+      readTimeout: 1000
+  log:
+    level: INFO
+    min-level: DEBUG
+    console:
+      enable: true
+      format: '%d{HH:mm:ss.SSS} %-5p (%-10t) [%c{2.}] %s%e%n'
+      color: false
+    category:
+      "com.yuriytkach":
+        level: DEBUG
+
+"%test":
+  app:
+    slack-token: test-slack-token
+  quarkus:
+    dynamodb:
+      endpoint-override: http://localhost:8000
+      aws:
+        region: eu-central-1
+        credentials:
+          type: static
+          static-provider:
+            access-key-id: test-key
+            secret-access-key: test-secret

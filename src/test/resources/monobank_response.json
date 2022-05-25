@@ -1,0 +1,689 @@
+[
+  {
+    "currencyCodeA": 840,
+    "currencyCodeB": 980,
+    "date": 1653426607,
+    "rateBuy": 29.5,
+    "rateSell": 32.5002
+  },
+  {
+    "currencyCodeA": 978,
+    "currencyCodeB": 980,
+    "date": 1653497407,
+    "rateBuy": 31.4,
+    "rateSell": 34.75
+  },
+  {
+    "currencyCodeA": 978,
+    "currencyCodeB": 840,
+    "date": 1653497407,
+    "rateBuy": 1.057,
+    "rateSell": 1.077
+  },
+  {
+    "currencyCodeA": 826,
+    "currencyCodeB": 980,
+    "date": 1653501270,
+    "rateCross": 40.9485
+  },
+  {
+    "currencyCodeA": 392,
+    "currencyCodeB": 980,
+    "date": 1653500318,
+    "rateCross": 0.2569
+  },
+  {
+    "currencyCodeA": 756,
+    "currencyCodeB": 980,
+    "date": 1653501207,
+    "rateCross": 33.9508
+  },
+  {
+    "currencyCodeA": 156,
+    "currencyCodeB": 980,
+    "date": 1653499436,
+    "rateCross": 4.8783
+  },
+  {
+    "currencyCodeA": 784,
+    "currencyCodeB": 980,
+    "date": 1653501202,
+    "rateCross": 8.8462
+  },
+  {
+    "currencyCodeA": 971,
+    "currencyCodeB": 980,
+    "date": 1653058293,
+    "rateCross": 0.3475
+  },
+  {
+    "currencyCodeA": 8,
+    "currencyCodeB": 980,
+    "date": 1653501183,
+    "rateCross": 0.2902
+  },
+  {
+    "currencyCodeA": 51,
+    "currencyCodeB": 980,
+    "date": 1653501253,
+    "rateCross": 0.0719
+  },
+  {
+    "currencyCodeA": 973,
+    "currencyCodeB": 980,
+    "date": 1652973306,
+    "rateCross": 0.0777
+  },
+  {
+    "currencyCodeA": 32,
+    "currencyCodeB": 980,
+    "date": 1653501255,
+    "rateCross": 0.273
+  },
+  {
+    "currencyCodeA": 36,
+    "currencyCodeB": 980,
+    "date": 1653499537,
+    "rateCross": 23.1274
+  },
+  {
+    "currencyCodeA": 944,
+    "currencyCodeB": 980,
+    "date": 1653500351,
+    "rateCross": 19.1264
+  },
+  {
+    "currencyCodeA": 50,
+    "currencyCodeB": 980,
+    "date": 1653495122,
+    "rateCross": 0.3703
+  },
+  {
+    "currencyCodeA": 975,
+    "currencyCodeB": 980,
+    "date": 1653501272,
+    "rateCross": 17.8649
+  },
+  {
+    "currencyCodeA": 48,
+    "currencyCodeB": 980,
+    "date": 1653491522,
+    "rateCross": 86.1666
+  },
+  {
+    "currencyCodeA": 108,
+    "currencyCodeB": 980,
+    "date": 1538606522,
+    "rateCross": 0.0158
+  },
+  {
+    "currencyCodeA": 96,
+    "currencyCodeB": 980,
+    "date": 1648120007,
+    "rateCross": 22.118
+  },
+  {
+    "currencyCodeA": 68,
+    "currencyCodeB": 980,
+    "date": 1653484336,
+    "rateCross": 4.7362
+  },
+  {
+    "currencyCodeA": 986,
+    "currencyCodeB": 980,
+    "date": 1653500964,
+    "rateCross": 6.8087
+  },
+  {
+    "currencyCodeA": 72,
+    "currencyCodeB": 980,
+    "date": 1652882689,
+    "rateCross": 2.5967
+  },
+  {
+    "currencyCodeA": 933,
+    "currencyCodeB": 980,
+    "date": 1653500998,
+    "rateCross": 13.2012
+  },
+  {
+    "currencyCodeA": 124,
+    "currencyCodeB": 980,
+    "date": 1653501161,
+    "rateCross": 25.4633
+  },
+  {
+    "currencyCodeA": 976,
+    "currencyCodeB": 980,
+    "date": 1653426607,
+    "rateCross": 0.015
+  },
+  {
+    "currencyCodeA": 152,
+    "currencyCodeB": 980,
+    "date": 1653496450,
+    "rateCross": 0.0389
+  },
+  {
+    "currencyCodeA": 170,
+    "currencyCodeB": 980,
+    "date": 1653497167,
+    "rateCross": 0.0082
+  },
+  {
+    "currencyCodeA": 188,
+    "currencyCodeB": 980,
+    "date": 1653500785,
+    "rateCross": 0.0483
+  },
+  {
+    "currencyCodeA": 192,
+    "currencyCodeB": 980,
+    "date": 1653426607,
+    "rateCross": 1.2292
+  },
+  {
+    "currencyCodeA": 203,
+    "currencyCodeB": 980,
+    "date": 1653501272,
+    "rateCross": 1.4206
+  },
+  {
+    "currencyCodeA": 262,
+    "currencyCodeB": 980,
+    "date": 1652614749,
+    "rateCross": 0.1774
+  },
+  {
+    "currencyCodeA": 208,
+    "currencyCodeB": 980,
+    "date": 1653501240,
+    "rateCross": 4.6932
+  },
+  {
+    "currencyCodeA": 12,
+    "currencyCodeB": 980,
+    "date": 1653413927,
+    "rateCross": 0.2237
+  },
+  {
+    "currencyCodeA": 818,
+    "currencyCodeB": 980,
+    "date": 1653501239,
+    "rateCross": 1.7594
+  },
+  {
+    "currencyCodeA": 230,
+    "currencyCodeB": 980,
+    "date": 1653333686,
+    "rateCross": 0.6212
+  },
+  {
+    "currencyCodeA": 981,
+    "currencyCodeB": 980,
+    "date": 1653501271,
+    "rateCross": 11.4463
+  },
+  {
+    "currencyCodeA": 936,
+    "currencyCodeB": 980,
+    "date": 1653485575,
+    "rateCross": 4.2765
+  },
+  {
+    "currencyCodeA": 270,
+    "currencyCodeB": 980,
+    "date": 1652049856,
+    "rateCross": 0.6459
+  },
+  {
+    "currencyCodeA": 324,
+    "currencyCodeB": 980,
+    "date": 1652351970,
+    "rateCross": 0.0036
+  },
+  {
+    "currencyCodeA": 344,
+    "currencyCodeB": 980,
+    "date": 1653500970,
+    "rateCross": 4.1378
+  },
+  {
+    "currencyCodeA": 191,
+    "currencyCodeB": 980,
+    "date": 1653501260,
+    "rateCross": 4.6421
+  },
+  {
+    "currencyCodeA": 348,
+    "currencyCodeB": 980,
+    "date": 1653501232,
+    "rateCross": 0.0916
+  },
+  {
+    "currencyCodeA": 360,
+    "currencyCodeB": 980,
+    "date": 1653501246,
+    "rateCross": 0.0022
+  },
+  {
+    "currencyCodeA": 376,
+    "currencyCodeB": 980,
+    "date": 1653501183,
+    "rateCross": 9.7544
+  },
+  {
+    "currencyCodeA": 356,
+    "currencyCodeB": 980,
+    "date": 1653499892,
+    "rateCross": 0.4194
+  },
+  {
+    "currencyCodeA": 368,
+    "currencyCodeB": 980,
+    "date": 1653487568,
+    "rateCross": 0.0222
+  },
+  {
+    "currencyCodeA": 364,
+    "currencyCodeB": 980,
+    "date": 1653426607,
+    "rateCross": 0.0007
+  },
+  {
+    "currencyCodeA": 352,
+    "currencyCodeB": 980,
+    "date": 1653499685,
+    "rateCross": 0.2501
+  },
+  {
+    "currencyCodeA": 400,
+    "currencyCodeB": 980,
+    "date": 1653496076,
+    "rateCross": 45.9595
+  },
+  {
+    "currencyCodeA": 404,
+    "currencyCodeB": 980,
+    "date": 1653495378,
+    "rateCross": 0.279
+  },
+  {
+    "currencyCodeA": 417,
+    "currencyCodeB": 980,
+    "date": 1653494162,
+    "rateCross": 0.4089
+  },
+  {
+    "currencyCodeA": 116,
+    "currencyCodeB": 980,
+    "date": 1650283939,
+    "rateCross": 0.0074
+  },
+  {
+    "currencyCodeA": 408,
+    "currencyCodeB": 980,
+    "date": 1653426607,
+    "rateCross": 13.4091
+  },
+  {
+    "currencyCodeA": 410,
+    "currencyCodeB": 980,
+    "date": 1653489117,
+    "rateCross": 0.0258
+  },
+  {
+    "currencyCodeA": 414,
+    "currencyCodeB": 980,
+    "date": 1653500174,
+    "rateCross": 106.3867
+  },
+  {
+    "currencyCodeA": 398,
+    "currencyCodeB": 980,
+    "date": 1653501167,
+    "rateCross": 0.078
+  },
+  {
+    "currencyCodeA": 418,
+    "currencyCodeB": 980,
+    "date": 1648120275,
+    "rateCross": 0.0025
+  },
+  {
+    "currencyCodeA": 422,
+    "currencyCodeB": 980,
+    "date": 1653305160,
+    "rateCross": 0.0013
+  },
+  {
+    "currencyCodeA": 144,
+    "currencyCodeB": 980,
+    "date": 1653500446,
+    "rateCross": 0.0916
+  },
+  {
+    "currencyCodeA": 434,
+    "currencyCodeB": 980,
+    "date": 1648958626,
+    "rateCross": 6.4735
+  },
+  {
+    "currencyCodeA": 504,
+    "currencyCodeB": 980,
+    "date": 1653501249,
+    "rateCross": 3.2644
+  },
+  {
+    "currencyCodeA": 498,
+    "currencyCodeB": 980,
+    "date": 1653501267,
+    "rateCross": 1.7071
+  },
+  {
+    "currencyCodeA": 969,
+    "currencyCodeB": 980,
+    "date": 1651749476,
+    "rateCross": 0.0076
+  },
+  {
+    "currencyCodeA": 807,
+    "currencyCodeB": 980,
+    "date": 1653500444,
+    "rateCross": 0.5613
+  },
+  {
+    "currencyCodeA": 496,
+    "currencyCodeB": 980,
+    "date": 1653122365,
+    "rateCross": 0.0101
+  },
+  {
+    "currencyCodeA": 478,
+    "currencyCodeB": 980,
+    "date": 1653426607,
+    "rateCross": 0.0812
+  },
+  {
+    "currencyCodeA": 480,
+    "currencyCodeB": 980,
+    "date": 1653500033,
+    "rateCross": 0.7512
+  },
+  {
+    "currencyCodeA": 454,
+    "currencyCodeB": 980,
+    "date": 1633949773,
+    "rateCross": 0.0325
+  },
+  {
+    "currencyCodeA": 484,
+    "currencyCodeB": 980,
+    "date": 1653500970,
+    "rateCross": 1.6422
+  },
+  {
+    "currencyCodeA": 458,
+    "currencyCodeB": 980,
+    "date": 1653498819,
+    "rateCross": 7.4123
+  },
+  {
+    "currencyCodeA": 943,
+    "currencyCodeB": 980,
+    "date": 1653496170,
+    "rateCross": 0.5141
+  },
+  {
+    "currencyCodeA": 516,
+    "currencyCodeB": 980,
+    "date": 1653470393,
+    "rateCross": 2.0823
+  },
+  {
+    "currencyCodeA": 566,
+    "currencyCodeB": 980,
+    "date": 1653497382,
+    "rateCross": 0.0777
+  },
+  {
+    "currencyCodeA": 558,
+    "currencyCodeB": 980,
+    "date": 1653345836,
+    "rateCross": 0.8939
+  },
+  {
+    "currencyCodeA": 578,
+    "currencyCodeB": 980,
+    "date": 1653501197,
+    "rateCross": 3.3999
+  },
+  {
+    "currencyCodeA": 524,
+    "currencyCodeB": 980,
+    "date": 1653497840,
+    "rateCross": 0.2622
+  },
+  {
+    "currencyCodeA": 554,
+    "currencyCodeB": 980,
+    "date": 1653485688,
+    "rateCross": 21.0882
+  },
+  {
+    "currencyCodeA": 512,
+    "currencyCodeB": 980,
+    "date": 1653501129,
+    "rateCross": 84.4817
+  },
+  {
+    "currencyCodeA": 604,
+    "currencyCodeB": 980,
+    "date": 1653500202,
+    "rateCross": 8.7645
+  },
+  {
+    "currencyCodeA": 608,
+    "currencyCodeB": 980,
+    "date": 1653491301,
+    "rateCross": 0.6227
+  },
+  {
+    "currencyCodeA": 586,
+    "currencyCodeB": 980,
+    "date": 1653500765,
+    "rateCross": 0.162
+  },
+  {
+    "currencyCodeA": 985,
+    "currencyCodeB": 980,
+    "date": 1653501275,
+    "rateCross": 7.6059
+  },
+  {
+    "currencyCodeA": 600,
+    "currencyCodeB": 980,
+    "date": 1653495983,
+    "rateCross": 0.0047
+  },
+  {
+    "currencyCodeA": 634,
+    "currencyCodeB": 980,
+    "date": 1653501019,
+    "rateCross": 8.9288
+  },
+  {
+    "currencyCodeA": 946,
+    "currencyCodeB": 980,
+    "date": 1653501258,
+    "rateCross": 7.0729
+  },
+  {
+    "currencyCodeA": 941,
+    "currencyCodeB": 980,
+    "date": 1653501149,
+    "rateCross": 0.2972
+  },
+  {
+    "currencyCodeA": 682,
+    "currencyCodeB": 980,
+    "date": 1653500783,
+    "rateCross": 8.6748
+  },
+  {
+    "currencyCodeA": 690,
+    "currencyCodeB": 980,
+    "date": 1653195034,
+    "rateCross": 2.2963
+  },
+  {
+    "currencyCodeA": 938,
+    "currencyCodeB": 980,
+    "date": 1653426607,
+    "rateCross": 0.0663
+  },
+  {
+    "currencyCodeA": 752,
+    "currencyCodeB": 980,
+    "date": 1653501271,
+    "rateCross": 3.3341
+  },
+  {
+    "currencyCodeA": 702,
+    "currencyCodeB": 980,
+    "date": 1653481323,
+    "rateCross": 23.7058
+  },
+  {
+    "currencyCodeA": 694,
+    "currencyCodeB": 980,
+    "date": 1651749123,
+    "rateCross": 0.0024
+  },
+  {
+    "currencyCodeA": 706,
+    "currencyCodeB": 980,
+    "date": 1653426607,
+    "rateCross": 0.0513
+  },
+  {
+    "currencyCodeA": 968,
+    "currencyCodeB": 980,
+    "date": 1653431648,
+    "rateCross": 1.5503
+  },
+  {
+    "currencyCodeA": 760,
+    "currencyCodeB": 980,
+    "date": 1653426607,
+    "rateCross": 0.0105
+  },
+  {
+    "currencyCodeA": 748,
+    "currencyCodeB": 980,
+    "date": 1651595783,
+    "rateCross": 1.9012
+  },
+  {
+    "currencyCodeA": 764,
+    "currencyCodeB": 980,
+    "date": 1653501135,
+    "rateCross": 0.9555
+  },
+  {
+    "currencyCodeA": 972,
+    "currencyCodeB": 980,
+    "date": 1653463930,
+    "rateCross": 2.8509
+  },
+  {
+    "currencyCodeA": 795,
+    "currencyCodeB": 980,
+    "date": 1653426607,
+    "rateCross": 0.0017
+  },
+  {
+    "currencyCodeA": 788,
+    "currencyCodeB": 980,
+    "date": 1653426324,
+    "rateCross": 11.0665
+  },
+  {
+    "currencyCodeA": 949,
+    "currencyCodeB": 980,
+    "date": 1653501269,
+    "rateCross": 2.0473
+  },
+  {
+    "currencyCodeA": 901,
+    "currencyCodeB": 980,
+    "date": 1653492276,
+    "rateCross": 1.0985
+  },
+  {
+    "currencyCodeA": 834,
+    "currencyCodeB": 980,
+    "date": 1653497257,
+    "rateCross": 0.0139
+  },
+  {
+    "currencyCodeA": 800,
+    "currencyCodeB": 980,
+    "date": 1653384912,
+    "rateCross": 0.0088
+  },
+  {
+    "currencyCodeA": 858,
+    "currencyCodeB": 980,
+    "date": 1653498210,
+    "rateCross": 0.8141
+  },
+  {
+    "currencyCodeA": 860,
+    "currencyCodeB": 980,
+    "date": 1653500325,
+    "rateCross": 0.0029
+  },
+  {
+    "currencyCodeA": 937,
+    "currencyCodeB": 980,
+    "date": 1653426607,
+    "rateCross": 5.9643
+  },
+  {
+    "currencyCodeA": 704,
+    "currencyCodeB": 980,
+    "date": 1653495990,
+    "rateCross": 0.0014
+  },
+  {
+    "currencyCodeA": 950,
+    "currencyCodeB": 980,
+    "date": 1653486578,
+    "rateCross": 0.0532
+  },
+  {
+    "currencyCodeA": 952,
+    "currencyCodeB": 980,
+    "date": 1653495895,
+    "rateCross": 0.0531
+  },
+  {
+    "currencyCodeA": 886,
+    "currencyCodeB": 980,
+    "date": 1543715495,
+    "rateCross": 0.112
+  },
+  {
+    "currencyCodeA": 710,
+    "currencyCodeB": 980,
+    "date": 1653500118,
+    "rateCross": 2.0813
+  },
+  {
+    "currencyCodeA": 894,
+    "currencyCodeB": 980,
+    "date": 1653426607,
+    "rateCross": 0.0017
+  }
+]
