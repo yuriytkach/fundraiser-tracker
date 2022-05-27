@@ -19,11 +19,6 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'java' ]
         
     steps:
     - uses: actions/checkout@v3
@@ -36,9 +31,9 @@ jobs:
         cache: maven
     
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v1
+      uses: github/codeql-action/init@v2
       with:
-        languages: ${{ matrix.language }}
+        languages: java
     
     - name: Build with Maven
       run: mvn -B package --file pom.xml
@@ -52,7 +47,7 @@ jobs:
           target/surefire-reports/*.xml
           
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v1
+      uses: github/codeql-action/analyze@v2
     
   event_file:
     name: "Event File"
