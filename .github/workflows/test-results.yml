@@ -35,6 +35,8 @@ jobs:
              gh api $url > "$name.zip"
              unzip -d "$name" "$name.zip"
            done
+           ls -la
+           ls -la artifacts
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
@@ -42,4 +44,4 @@ jobs:
           commit: ${{ github.event.workflow_run.head_sha }}
           event_file: artifacts/Event File/event.json
           event_name: ${{ github.event.workflow_run.event }}
-          junit_files: "artifacts/**/*.xml"
+          junit_files: "artifacts/*.xml"
