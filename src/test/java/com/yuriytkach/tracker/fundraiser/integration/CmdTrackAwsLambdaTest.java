@@ -98,9 +98,9 @@ public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
   @ParameterizedTest
   @CsvSource({
     "'', carFund, green",
-    "' \"desc\"', desc, green",
+    "' /desc/', desc, green",
     "' color', carFund, color",
-    "' \"desc\" color', desc, color"
+    "' /desc/ color', desc, color"
   })
   void shouldCreateFund(final String cmdTextSuffix, final String expectedDesc, final String expectedColor) {
     final Currency fund2Currency = Currency.USD;
