@@ -8,7 +8,7 @@ app:
   help-text: |
     *Create new fund:*
 
-    `/fund create car eur 5000 "Banderomobil" blue`
+    `/fund create car eur 5000 /Banderomobil/ blue`
     Creates new fund with short name `car` (will be used to track donations)
     with goal of €5000, with full description `Banderomobil` and color `blue`
     (used in UI tracker)

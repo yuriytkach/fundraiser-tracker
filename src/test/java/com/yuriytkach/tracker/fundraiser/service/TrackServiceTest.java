@@ -26,15 +26,16 @@ class TrackServiceTest {
   @ParameterizedTest
   @CsvSource({
     "fund eur 123, true, fund, eur, 123, , ",
-    "fund eur 123 \"description\", true, fund, eur, 123, description, ",
-    "fund eur 123 \"description\" color, true, fund, eur, 123, description, color",
+    "fund eur 123 /description/, true, fund, eur, 123, description, ",
+    "fund eur 123 /description/ color, true, fund, eur, 123, description, color",
     "fund eur 123 444, true, fund, eur, 123, , 444",
     "fund eur 123 0xfff, true, fund, eur, 123, , 0xfff",
     "fund eur 123 color ffff, false, , , , , ",
     "fund-yeah eur 123, false, , , , , ",
     "eur 123, false, , , , , ",
     "fund eur, false, , , , , ",
-    "fund 123, false, , , , , "
+    "fund 123, false, , , , , ",
+    "teplik uah 400000 /Teplovizor/ green, true, teplik, uah, 400000, Teplovizor, green"
   })
   void shouldMatchCreateCommand(
     final String text,
