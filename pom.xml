@@ -15,8 +15,6 @@
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>2.9.2.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
-
-    <testcontainers.version>1.17.2</testcontainers.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -31,6 +29,13 @@
         <groupId>${quarkus.platform.group-id}</groupId>
         <artifactId>quarkus-amazon-services-bom</artifactId>
         <version>${quarkus.platform.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-bom</artifactId>
+        <version>1.17.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -131,13 +136,11 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
-      <version>${testcontainers.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>${testcontainers.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
