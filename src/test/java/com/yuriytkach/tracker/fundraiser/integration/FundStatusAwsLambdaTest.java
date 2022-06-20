@@ -8,6 +8,7 @@ import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonatio
 import static com.yuriytkach.tracker.fundraiser.util.JsonMatcher.jsonEqualTo;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -231,7 +232,7 @@ public class FundStatusAwsLambdaTest implements AwsLambdaTestCommon {
 
     final var expectedFunders = SortOrder.ASC == sortOrder ? List.of(funder1, funder2) : List.of(funder2, funder1);
 
-    given()
+    final var body = given()
       .contentType(MediaType.APPLICATION_JSON)
       .accept(MediaType.APPLICATION_JSON)
       .when()
@@ -241,7 +242,12 @@ public class FundStatusAwsLambdaTest implements AwsLambdaTestCommon {
       .then()
       .statusCode(200)
       .body("statusCode", equalTo(200))
-      .body("body", jsonEqualTo(expectedFunders));
+      .body("body", jsonEqualTo(expectedFunders))
+      .body("multiValueHeaders.x-page", hasItems("0"))
+      .body("multiValueHeaders.x-size", hasItems("2"))
+      .body("multiValueHeaders.x-total-count", hasItems("2"))
+      .extract().body().asString();
+    System.out.println(body);
 
     verify(fundService).findByName(FUND_NAME);
   }

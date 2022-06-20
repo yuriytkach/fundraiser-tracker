@@ -1,6 +1,7 @@
 package com.yuriytkach.tracker.fundraiser.service;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -9,9 +10,9 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -33,6 +35,7 @@ import com.yuriytkach.tracker.fundraiser.model.Currency;
 import com.yuriytkach.tracker.fundraiser.model.Donation;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
 import com.yuriytkach.tracker.fundraiser.model.Funder;
+import com.yuriytkach.tracker.fundraiser.model.PagedFunders;
 import com.yuriytkach.tracker.fundraiser.model.SlackResponse;
 import com.yuriytkach.tracker.fundraiser.model.SortOrder;
 import com.yuriytkach.tracker.fundraiser.model.exception.DuplicateFundException;
@@ -113,17 +116,45 @@ public class TrackService {
     }
   }
 
-  public List<Funder> getAllFunders(final String fundName, final SortOrder sortOrder) {
+  public PagedFunders getAllFunders(
+    final String fundName,
+    final SortOrder sortOrder,
+    final Integer page,
+    final Integer size
+  ) {
     final Optional<Fund> fundOpt = fundService.findByName(fundName);
     if (fundOpt.isEmpty()) {
-      return List.of();
+      return PagedFunders.empty();
     }
     log.info("Getting all funders of fund: {}", fundName);
     final Comparator<Funder> fundedAtComparator = Comparator.comparing(Funder::getFundedAt);
-    return donationStorageClient.findAll(fundOpt.get().getId()).stream()
+    final Collection<Donation> foundFunders = donationStorageClient.findAll(fundOpt.get().getId());
+    final Stream<Funder> sortedFunders = foundFunders.stream()
       .map(Funder::fromDonation)
-      .sorted(sortOrder == SortOrder.ASC ? fundedAtComparator : fundedAtComparator.reversed())
-      .collect(Collectors.toUnmodifiableList());
+      .sorted(sortOrder == SortOrder.ASC ? fundedAtComparator : fundedAtComparator.reversed());
+
+    final var builder = PagedFunders.builder();
+
+    if (size == null) {
+      log.debug("Return all funders as no page/size was specified");
+      final var funders = sortedFunders.collect(toUnmodifiableList());
+      return builder.page(0)
+        .size(funders.size())
+        .total(funders.size())
+        .funders(funders)
+        .build();
+    } else {
+      final int realPage = page == null ? 0 : page;
+      log.debug("Return all funders of page: {}, with size: {}", realPage, size);
+      final int skip = size * realPage;
+      final var funders = sortedFunders.skip(skip).limit(size).collect(toUnmodifiableList());
+      return builder
+        .page(realPage)
+        .size(funders.size())
+        .total(foundFunders.size())
+        .funders(funders)
+        .build();
+    }
   }
 
   private SlackResponse processCommand(final CommandType cmd, final String cmdParamsText, final String user) {
