@@ -81,13 +81,24 @@ public class FundraiserStatusController {
   @Produces(MediaType.APPLICATION_JSON)
   public Response funders(
     @PathParam("name") final String fundName,
-    @QueryParam("sortOrder") @DefaultValue("DESC") final SortOrder sortOrder
+    @QueryParam("sortOrder") @DefaultValue("DESC") final SortOrder sortOrder,
+    @QueryParam("page") final Integer page,
+    @QueryParam("size") final Integer size
   ) {
-    final var allFunders = trackService.getAllFunders(fundName, sortOrder);
-    log.info("Return all funders: {}", allFunders.size());
+    final var pagedFunders = trackService.getAllFunders(fundName, sortOrder, page, size);
+    log.info(
+      "Return funders: {} from page {}, size {}, total {}",
+      pagedFunders.getFunders().size(),
+      pagedFunders.getPage(),
+      pagedFunders.getSize(),
+      pagedFunders.getTotal()
+    );
     final CacheControl cacheControl = createCacheControl();
-    return addCorsHeaders(Response.ok(allFunders)
+    return addCorsHeaders(Response.ok(pagedFunders.getFunders())
       .cacheControl(cacheControl))
+      .header("x-total-count", pagedFunders.getTotal())
+      .header("x-page", pagedFunders.getPage())
+      .header("x-size", pagedFunders.getSize())
       .build();
   }
 
