@@ -2,7 +2,7 @@
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
-Hello - Yes
+Hello!
 
 So how do you do?
 
