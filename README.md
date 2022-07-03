@@ -2,7 +2,7 @@
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
-Hello
+Hello!
 
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
