@@ -254,8 +254,9 @@ public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
       .body("statusCode", equalTo(200))
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
-        .text(":white_check_mark: Tracked [" + FUND.getName() + "] 123 "
-          + FUND.getCurrency() + " by " + expectedPerson + " at 2022-02-01 15:13")
+        .text(":white_check_mark: Tracked 123 "
+          + FUND.getCurrency() + " by " + expectedPerson + " at 2022-02-01 15:13"
+          + " - `fundy` 22.30% [223 of 1000] EUR")
         .build()));
 
     final Optional<Donation> donation = getDonationDirectlyById(ITEM_ID_1);
@@ -345,7 +346,7 @@ public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
         .text(":white_check_mark: All funds:\n"
-          + " 10.00% `fundy` [100 of 1000] EUR - description [red]")
+          + "10.00% `fundy` [100 of 1000] EUR - description [red] - :open_book: 0 hour(s)")
         .build()));
   }
 
@@ -367,7 +368,7 @@ public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
       .body("statusCode", equalTo(200))
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
-        .text(":white_check_mark: [00000000-0000-0001-0000-000000000001] 2022-05-10 03:10 - EUR 987 - PP")
+        .text(":white_check_mark: 2022-05-10 03:10 - EUR   987 - PP (_00000000-0000-0001-0000-000000000001_)")
         .build()));
   }
 

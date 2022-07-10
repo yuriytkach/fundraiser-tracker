@@ -1,13 +1,13 @@
 package com.yuriytkach.tracker.fundraiser.service;
 
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.CMD_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.CREATE_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.DATE_TIME_FORMATTER;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.DATE_TIME_FORMATTER_ONLY_TIME;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.DELETE_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.HELP_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.LIST_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.TRACK_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.CMD_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.CREATE_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.DATE_TIME_FORMATTER;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.DATE_TIME_FORMATTER_ONLY_TIME;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.DELETE_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.HELP_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.LIST_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.TRACK_PATTERN;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
@@ -200,9 +200,9 @@ public class TrackService {
 
     fundService.updateFund(updatedFund);
 
-    return createSuccessResponse("Tracked [" + fund.getName() + "] "
-      + donation.getAmount() + " " + donation.getCurrency() + " by " + donation.getPerson()
-      + " at " + formatInstantForPrettyOutput(donation.getDateTime()));
+    return createSuccessResponse(
+      "Tracked " + donation.toStringShort() + " - " + updatedFund.toOutputStringShort()
+    );
   }
 
   private Fund extractFundDataFromMatchedText(final Matcher matcher, final String user) {
@@ -276,31 +276,15 @@ public class TrackService {
     if (fundName == null) {
       log.info("Listing all funds for user: {}", user);
       responseText = "All funds:\n" + fundService.findAllFunds(user).stream()
-        .sorted(Comparator.comparing(Fund::getRaisedPercent).reversed())
-        .map(fund -> format(
-          Locale.ENGLISH,
-          "% 3.2f%% `%s` [%d of %d] %s - %s [%s]",
-          fund.getRaisedPercent(),
-          fund.getName(),
-          fund.getRaised(),
-          fund.getGoal(),
-          fund.getCurrency(),
-          fund.getDescription(),
-          fund.getColor()
-        )).collect(Collectors.joining("\n"));
+        .sorted(Comparator.comparing(Fund::getUpdatedAt).reversed())
+        .map(Fund::toOutputStringLong)
+        .collect(Collectors.joining("\n"));
     } else {
       log.info("Listing all funders of fund: {}", fundName);
       final Fund fund = fundService.findByNameOrException(fundName);
       responseText = donationStorageClient.findAll(fund.getId()).stream()
         .sorted(Comparator.comparing(Donation::getDateTime))
-        .map(donation -> format(
-          "[%s] %s - %s %d - %s",
-          donation.getId(),
-          formatInstantForPrettyOutput(donation.getDateTime()),
-          donation.getCurrency(),
-          donation.getAmount(),
-          donation.getPerson()
-        ))
+        .map(Donation::toStringLong)
         .collect(Collectors.joining("\n"));
     }
     return createSuccessResponse(responseText);
@@ -312,10 +296,6 @@ public class TrackService {
       .map(Currency::name)
       .joining(", ");
     return createSuccessResponse(config.helpText().replace("<supported_currencies>", supportedCurrencies));
-  }
-
-  private String formatInstantForPrettyOutput(final Instant dateTime) {
-    return DATE_TIME_FORMATTER.format(dateTime.atOffset(ZoneOffset.ofHours(3)).toLocalDateTime());
   }
 
   private SlackResponse createErrorResponse(final String msg) {
