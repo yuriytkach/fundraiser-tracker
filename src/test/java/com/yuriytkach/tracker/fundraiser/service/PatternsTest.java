@@ -1,5 +1,12 @@
 package com.yuriytkach.tracker.fundraiser.service;
 
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.CMD_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.CREATE_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.DATE_TIME_FORMATTER;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.DATE_TIME_FORMATTER_ONLY_TIME;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.DELETE_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.LIST_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.TRACK_PATTERN;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
@@ -9,7 +16,7 @@ import java.util.regex.Matcher;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-class TrackServicePatternsTest {
+class PatternsTest {
 
   @ParameterizedTest
   @CsvSource({
@@ -19,7 +26,7 @@ class TrackServicePatternsTest {
     "'', false"
   })
   void shouldMatchCommand(final String text, final boolean expected) {
-    final Matcher matcher = TrackService.CMD_PATTERN.matcher(text);
+    final Matcher matcher = CMD_PATTERN.matcher(text);
     assertThat(matcher.matches()).isEqualTo(expected);
   }
 
@@ -46,7 +53,7 @@ class TrackServicePatternsTest {
     final String expectedDesc,
     final String expectedColor
   ) {
-    final Matcher matcher = TrackService.CREATE_PATTERN.matcher(text);
+    final Matcher matcher = CREATE_PATTERN.matcher(text);
     assertThat(matcher.matches()).isEqualTo(expected);
 
     if (expected) {
@@ -65,7 +72,7 @@ class TrackServicePatternsTest {
     "'  ', false"
   })
   void shouldMatchListCommand(final String text, final boolean expected) {
-    final Matcher matcher = TrackService.LIST_PATTERN.matcher(text);
+    final Matcher matcher = LIST_PATTERN.matcher(text);
     assertThat(matcher.matches()).isEqualTo(expected);
   }
 
@@ -76,7 +83,7 @@ class TrackServicePatternsTest {
     "'  ', false"
   })
   void shouldMatchDeleteCommand(final String text, final boolean expected) {
-    final Matcher matcher = TrackService.DELETE_PATTERN.matcher(text);
+    final Matcher matcher = DELETE_PATTERN.matcher(text);
     assertThat(matcher.matches()).isEqualTo(expected);
   }
 
@@ -95,7 +102,7 @@ class TrackServicePatternsTest {
     "fund usd123, false"
   })
   void shouldMatchTrackCommand(final String text, final boolean expected) {
-    final Matcher matcher = TrackService.TRACK_PATTERN.matcher(text);
+    final Matcher matcher = TRACK_PATTERN.matcher(text);
     assertThat(matcher.matches()).isEqualTo(expected);
   }
 
@@ -105,7 +112,7 @@ class TrackServicePatternsTest {
     "2022-02-01 15:13, 2022-02-01T15:13:00"
   })
   void shouldParseDateAndTime(final String text, final LocalDateTime expected) {
-    final var parsed = TrackService.DATE_TIME_FORMATTER.parse(text);
+    final var parsed = DATE_TIME_FORMATTER.parse(text);
     final var dateTime = LocalDateTime.from(parsed);
 
     assertThat(dateTime).isEqualTo(expected);
@@ -117,7 +124,7 @@ class TrackServicePatternsTest {
     "15:13, 15:13:00"
   })
   void shouldParseTimeOnly(final String text, final LocalTime expected) {
-    final var parsed = TrackService.DATE_TIME_FORMATTER_ONLY_TIME.parse(text);
+    final var parsed = DATE_TIME_FORMATTER_ONLY_TIME.parse(text);
     final var time = LocalTime.from(parsed);
 
     assertThat(time).isEqualTo(expected);

@@ -1,5 +1,13 @@
 package com.yuriytkach.tracker.fundraiser.service;
 
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.CMD_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.CREATE_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.DATE_TIME_FORMATTER;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.DATE_TIME_FORMATTER_ONLY_TIME;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.DELETE_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.HELP_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.LIST_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.Patterns.TRACK_PATTERN;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
@@ -8,7 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.Comparator;
@@ -50,23 +57,6 @@ import one.util.streamex.StreamEx;
 @Slf4j
 @Singleton
 public class TrackService {
-
-  static final Pattern CMD_PATTERN = Pattern.compile("(?<cmd>\\w+)(\\s+(?<params>.*))?");
-
-  static final Pattern TRACK_PATTERN = Pattern
-    .compile("(?<name>\\w+)\\s(?<curr>[A-Za-z]{3})\\s(?<amt>\\d+)(\\s(?<pp>\\w+))?(\\s(?<dt>(\\d{4}-\\d{2}-\\d{2}\\s)?\\d{2}:\\d{2}))?");
-
-  static final Pattern CREATE_PATTERN = Pattern
-    .compile("(?<name>\\w+)\\s(?<curr>[A-Za-z]{3})\\s(?<goal>\\d+)(\\s/(?<desc>.*)/)?(\\s(?<color>\\w+))?");
-
-  static final Pattern LIST_PATTERN = Pattern.compile("(?<name>\\w+)?");
-
-  static final Pattern DELETE_PATTERN = Pattern.compile("(?<name>\\w+)");
-
-  static final Pattern HELP_PATTERN = Pattern.compile(".*");
-
-  static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-  static final DateTimeFormatter DATE_TIME_FORMATTER_ONLY_TIME = DateTimeFormatter.ofPattern("HH:mm");
   
   private final Map<CommandType, Map.Entry<Pattern, BiFunction<Matcher, String, SlackResponse>>> cmdProcessors =
     new EnumMap<>(CommandType.class);
