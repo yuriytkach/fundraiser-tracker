@@ -1,13 +1,13 @@
 package com.yuriytkach.tracker.fundraiser.service;
 
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.CMD_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.CREATE_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.DATE_TIME_FORMATTER;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.DATE_TIME_FORMATTER_ONLY_TIME;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.DELETE_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.HELP_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.LIST_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.TRACK_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.CMD_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.CREATE_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.DATE_TIME_FORMATTER;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.DATE_TIME_FORMATTER_ONLY_TIME;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.DELETE_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.HELP_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.LIST_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.TRACK_PATTERN;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toUnmodifiableList;
 

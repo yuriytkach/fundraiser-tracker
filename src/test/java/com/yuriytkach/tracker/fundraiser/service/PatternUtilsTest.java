@@ -1,12 +1,12 @@
 package com.yuriytkach.tracker.fundraiser.service;
 
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.CMD_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.CREATE_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.DATE_TIME_FORMATTER;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.DATE_TIME_FORMATTER_ONLY_TIME;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.DELETE_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.LIST_PATTERN;
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.TRACK_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.CMD_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.CREATE_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.DATE_TIME_FORMATTER;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.DATE_TIME_FORMATTER_ONLY_TIME;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.DELETE_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.LIST_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.TRACK_PATTERN;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-class PatternsTest {
+class PatternUtilsTest {
 
   @ParameterizedTest
   @CsvSource({

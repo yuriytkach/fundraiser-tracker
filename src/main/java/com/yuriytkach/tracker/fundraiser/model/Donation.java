@@ -1,6 +1,6 @@
 package com.yuriytkach.tracker.fundraiser.model;
 
-import static com.yuriytkach.tracker.fundraiser.service.Patterns.DATE_TIME_FORMATTER;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.DATE_TIME_FORMATTER;
 
 import java.time.Instant;
 import java.time.ZoneOffset;

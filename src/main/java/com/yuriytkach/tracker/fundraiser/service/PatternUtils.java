@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class Patterns {
+public class PatternUtils {
 
   public static final Pattern CMD_PATTERN = Pattern.compile("(?<cmd>\\w+)(\\s+(?<params>.*))?");
 
