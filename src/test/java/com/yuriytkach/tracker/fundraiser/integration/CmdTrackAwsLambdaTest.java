@@ -368,7 +368,7 @@ public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
       .body("statusCode", equalTo(200))
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
-        .text(":white_check_mark: [00000000-0000-0001-0000-000000000001] 2022-05-10 03:10 - EUR 987 - PP")
+        .text(":white_check_mark: 2022-05-10 03:10 - EUR   987 - PP (_00000000-0000-0001-0000-000000000001_)")
         .build()));
   }
 
