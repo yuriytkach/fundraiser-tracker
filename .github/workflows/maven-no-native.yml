@@ -45,6 +45,12 @@ jobs:
         name: test_results
         path: |
           target/surefire-reports/*.xml
+    
+    - name: Run codacy-coverage-reporter
+      uses: codacy/codacy-coverage-reporter-action@v1
+      with:
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        coverage-reports: target/site/jacoco/jacoco.xml
           
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
