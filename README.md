@@ -38,9 +38,9 @@ Displays all created funds with status (how much raised)
 /fund track car usd 500                         - track for noname person
 ```
 This will track donation for fund with short name `car`. 
-  - Any supported currency is allowed. Currency conversion takes place.
-  - Date and time is optional.
-  - Person name is optional. If not supplied, then `noname` is used.
+-  Any supported currency is allowed. Currency conversion takes place.
+-  Date and time is optional.
+-  Person name is optional. If not supplied, then `noname` is used.
 
 **Delete fund:**
 `Warning! This action cannot be undone! Use with caution!`
