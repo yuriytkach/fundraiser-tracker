@@ -2,6 +2,8 @@
 
 An AWS Lambda application written in Quarkus uses DynamoDB as storage, exposes REST interface to get data and Slack command REST interface to manipulate data. Applications supports currency conversion with rates obtained from Monobank API.
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/224eb30e7e5c4f38934ee9601e15237e)](https://www.codacy.com/gh/yuriytkach/fundraiser-tracker/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yuriytkach/fundraiser-tracker&amp;utm_campaign=Badge_Grade)
+
 ## Supported Slack commands
 
 If you add a [slash command](https://api.slack.com/interactivity/slash-commands) to Slack (for example `/fund`) then the following commands are supported by the application.
@@ -34,9 +36,9 @@ Displays all created funds with status (how much raised)
 /fund track car usd 500                         - track for noname person
 ```
 This will track donation for fund with short name `car`. 
-- Any supported currency is allowed. Currency conversion takes place.
-- Date and time is optional.
-- Person name is optional. If not supplied, then `noname` is used.
+  - Any supported currency is allowed. Currency conversion takes place.
+  - Date and time is optional.
+  - Person name is optional. If not supplied, then `noname` is used.
 
 **Delete fund:**
 `Warning! This action cannot be undone! Use with caution!`
