@@ -8,6 +8,7 @@ import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.DELETE_PATT
 import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.HELP_PATTERN;
 import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.LIST_PATTERN;
 import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.TRACK_PATTERN;
+import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.UPDATE_PATTERN;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
@@ -79,6 +80,7 @@ public class TrackService {
   @PostConstruct
   void initCommandProcessors() {
     cmdProcessors.put(CommandType.CREATE, Map.entry(CREATE_PATTERN, this::processCreateFundCommand));
+    cmdProcessors.put(CommandType.UPDATE, Map.entry(UPDATE_PATTERN, this::processUpdateFundCommand));
     cmdProcessors.put(CommandType.DELETE, Map.entry(DELETE_PATTERN, this::processDeleteCommand));
     cmdProcessors.put(CommandType.TRACK, Map.entry(TRACK_PATTERN, this::processTrackCommand));
     cmdProcessors.put(CommandType.LIST, Map.entry(LIST_PATTERN, this::processListCommand));
@@ -180,6 +182,22 @@ public class TrackService {
     }
   }
 
+  private SlackResponse processUpdateFundCommand(final Matcher matcher, final String user) {
+    var fundName = matcher.group("name");
+    var fund = fundService.findByNameOrException(fundName);
+    var updatedFund = extractFundDataFromMatchedTextAndUpdate(fund, matcher);
+
+    try {
+      fundService.updateFund(updatedFund);
+      log.info("The Fund with name: `{}` has been updated", fundName);
+      return createSuccessResponse(String.format("The Fund with name: `%s` has been updated successfully!", fundName));
+
+    } catch (DuplicateFundException e) {
+      log.info("Can't update fund with name `{}`: {}", fundName, e.getMessage());
+      return createErrorResponse(e.getMessage());
+    }
+  }
+
   private SlackResponse processTrackCommand(final Matcher matcher, final String user) {
     final Donation donation = extractDonationFromMatchedText(matcher);
     final Fund fund = fundService.findByNameOrException(matcher.group("name"));
@@ -203,6 +221,41 @@ public class TrackService {
     return createSuccessResponse(
       "Tracked " + donation.toStringShort() + " - " + updatedFund.toOutputStringShort()
     );
+  }
+
+  private Fund extractFundDataFromMatchedTextAndUpdate(final Fund fund, final Matcher matcher) {
+    Fund.FundBuilder fundBuilder = fund.toBuilder();
+
+    var currArg = matcher.group("curr");
+    if (currArg != null) {
+      var currName = currArg.split(":")[1];
+      var curr = Currency.fromString(currName).orElseThrow(UnknownCurrencyException::new);
+      if (fund.getCurrency() != curr) {
+        var convertedAmount = forexService.convertCurrency(fund.getRaised(), fund.getCurrency(), curr);
+        fundBuilder.raised(convertedAmount);
+      }
+      fundBuilder.currency(curr);
+    }
+
+    var goalArg = matcher.group("goal");
+    if (goalArg != null) {
+      var goal = goalArg.split(":")[1];
+      fundBuilder.goal(Integer.parseInt(goal));
+    }
+
+    var descArg = matcher.group("desc");
+    if (descArg != null) {
+      var desc = descArg.split(":")[1];
+      fundBuilder.description(desc);
+    }
+
+    var colorArg = matcher.group("color");
+    if (colorArg != null) {
+      var color = colorArg.split(":")[1];
+      fundBuilder.color(color);
+    }
+
+    return fundBuilder.build();
   }
 
   private Fund extractFundDataFromMatchedText(final Matcher matcher, final String user) {

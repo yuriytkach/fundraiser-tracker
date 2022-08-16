@@ -1,32 +1,38 @@
 package com.yuriytkach.tracker.fundraiser.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
 import com.yuriytkach.tracker.fundraiser.forex.ForexService;
+import com.yuriytkach.tracker.fundraiser.model.CommandFormParams;
 import com.yuriytkach.tracker.fundraiser.model.Currency;
 import com.yuriytkach.tracker.fundraiser.model.Donation;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
 import com.yuriytkach.tracker.fundraiser.model.Funder;
 import com.yuriytkach.tracker.fundraiser.model.PagedFunders;
+import com.yuriytkach.tracker.fundraiser.model.SlackResponse;
 import com.yuriytkach.tracker.fundraiser.model.SortOrder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TrackServiceTest {
@@ -48,6 +54,18 @@ class TrackServiceTest {
     .person("person2")
     .build();
 
+  private static final Fund FUND_1 = Fund.builder()
+          .id("1")
+          .name("car")
+          .currency(Currency.EUR)
+          .goal(3000)
+          .raised(1728)
+          .owner("somePerson")
+          .createdAt(Instant.now())
+          .description("someDesc")
+          .color("cyan")
+          .build();
+
   @Mock
   DonationStorageClient donationStorageClient;
 
@@ -66,6 +84,11 @@ class TrackServiceTest {
   @InjectMocks
   TrackService tested;
 
+  @BeforeEach
+  public void setup() {
+    tested.initCommandProcessors();
+  }
+
   @Test
   void shouldReturnEmptyFundersIfFundNotFound() {
     when(fundService.findByName(any())).thenReturn(Optional.empty());
@@ -76,6 +99,26 @@ class TrackServiceTest {
 
     verify(fundService).findByName(FUND_NAME);
     verifyNoInteractions(donationStorageClient);
+  }
+
+  @Test
+  void processUpdateFundCommand() {
+    CommandFormParams commandFormParams = new CommandFormParams();
+    commandFormParams.text = "update car curr:usd goal:4250 desc:/Banderomobil/ color:blue";
+    commandFormParams.userId = "userId";
+
+    when(fundService.findByNameOrException("car")).thenReturn(FUND_1);
+    when(forexService.convertCurrency(anyInt(), eq(Currency.EUR), eq(Currency.USD)))
+            .thenReturn((int)(FUND_1.getRaised() * 1.1));
+    var capture = ArgumentCaptor.forClass(Fund.class);
+    doNothing().when(fundService).updateFund(capture.capture());
+
+    SlackResponse response = tested.process(commandFormParams);
+
+    assertThat(response.getResponseType()).isEqualTo(SlackResponse.RESPONSE_PRIVATE);
+    assertThat(capture.getValue().getCurrency()).isEqualTo(Currency.USD);
+    assertThat(capture.getValue().getRaised()).isEqualTo((int)(FUND_1.getRaised() * 1.1));
+    assertThat(response.getText()).isEqualTo(":white_check_mark: " + "The Fund with name: `car` has been updated successfully!");
   }
 
   @ParameterizedTest
