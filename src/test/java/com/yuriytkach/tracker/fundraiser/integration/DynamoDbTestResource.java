@@ -78,6 +78,11 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     );
   }
 
+  @Override
+  public void stop() {
+    CONTAINER.stop();
+  }
+
   private void createFundItem(final AmazonDynamoDB dynamoDB) {
     final PutItemRequest putRequest = new PutItemRequest();
     putRequest.setTableName(FUNDS_TABLE);
@@ -118,11 +123,6 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     final CreateTableResult table = dynamoDB.createTable(request);
 
     log.info("Created table: {}", table.getTableDescription());
-  }
-
-  @Override
-  public void stop() {
-    CONTAINER.stop();
   }
 
 }

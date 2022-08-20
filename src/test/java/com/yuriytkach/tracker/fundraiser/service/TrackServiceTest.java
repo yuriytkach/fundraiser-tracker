@@ -64,6 +64,7 @@ class TrackServiceTest {
   FundTrackerConfig config;
 
   @InjectMocks
+  @SuppressWarnings("VisibilityModifier")
   TrackService tested;
 
   @Test

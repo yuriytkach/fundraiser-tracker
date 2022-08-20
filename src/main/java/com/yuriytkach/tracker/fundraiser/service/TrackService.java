@@ -86,9 +86,9 @@ public class TrackService {
   }
 
   public SlackResponse process(final CommandFormParams slackParams) {
-    final String text = slackParams.text.strip();
-    final String user = slackParams.userId;
-    log.debug("Processing from {} [{}]: {}", slackParams.userName, slackParams.userId, text);
+    final String text = slackParams.getText().strip();
+    final String user = slackParams.getUserId();
+    log.debug("Processing from {} [{}]: {}", slackParams.getUserName(), slackParams.getUserId(), text);
 
     final Matcher matcher = CMD_PATTERN.matcher(text);
     if (matcher.matches()) {

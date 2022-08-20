@@ -64,7 +64,7 @@ import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
 @Slf4j
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
+class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
 
   private static final UUID ITEM_ID_1 = new UUID(1, 1);
   private static final UUID ITEM_ID_2 = new UUID(2, 2);
@@ -84,6 +84,7 @@ public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
   ForexService forexService;
 
   @InjectMock
+  @SuppressWarnings("VisibilityModifier")
   IdGenerator idGenerator;
 
   @AfterEach

@@ -26,12 +26,12 @@ import lombok.SneakyThrows;
 
 @QuarkusTest
 @QuarkusTestResource(MockServerTestResource.class)
-public class ForexServiceIntegrationTest {
+class ForexServiceIntegrationTest {
 
   @Inject
   ForexService tested;
 
-  MockServerClient mockServerClient;
+  private MockServerClient mockServerClient;
 
   @BeforeEach
   @SneakyThrows

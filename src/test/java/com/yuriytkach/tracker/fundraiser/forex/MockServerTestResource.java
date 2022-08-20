@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MockServerTestResource implements QuarkusTestResourceLifecycleManager {
 
-  public static MockServerContainer CONTAINER = new MockServerContainer(
+  static final MockServerContainer CONTAINER = new MockServerContainer(
     DockerImageName.parse("jamesdbloom/mockserver:mockserver-5.13.2")
   );
 

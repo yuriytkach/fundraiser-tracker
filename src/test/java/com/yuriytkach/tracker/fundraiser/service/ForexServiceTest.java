@@ -36,6 +36,7 @@ public class ForexServiceTest {
   MonobankApi monobankApi;
 
   @InjectMocks
+  @SuppressWarnings("VisibilityModifier")
   ForexService tested;
 
   @BeforeEach

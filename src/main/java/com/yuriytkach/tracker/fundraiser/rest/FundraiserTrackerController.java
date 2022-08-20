@@ -32,8 +32,8 @@ public class FundraiserTrackerController {
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Produces(MediaType.APPLICATION_JSON)
   public Response trackDonation(@Form final CommandFormParams params) {
-    if (!config.slackToken().equals(params.token)) {
-      log.debug("Invalid token: {}", params.token);
+    if (!config.slackToken().equals(params.getToken())) {
+      log.debug("Invalid token: {}", params.getToken());
       return Response.status(Response.Status.FORBIDDEN).entity(new ErrorResponse("Forbidden")).build();
     }
 
