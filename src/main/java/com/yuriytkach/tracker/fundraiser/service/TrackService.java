@@ -290,7 +290,8 @@ public class TrackService {
     return createSuccessResponse(responseText);
   }
 
-  private SlackResponse processHelpCommand(final Matcher matcher, final String user) {
+  @SuppressWarnings("PMD.UnusedFormalParameter")
+  private SlackResponse processHelpCommand(final Matcher ignored, final String user) {
     log.info("Returning help :)");
     final String supportedCurrencies = StreamEx.of(Currency.values())
       .map(Currency::name)
