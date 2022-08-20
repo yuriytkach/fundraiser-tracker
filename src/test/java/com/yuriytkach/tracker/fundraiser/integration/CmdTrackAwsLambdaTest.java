@@ -72,23 +72,18 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
   private static final String FUND_2_NAME = "carFund";
 
   @Inject
-  @SuppressWarnings("VisibilityModifier")
   FundTrackerConfig appConfig;
 
   @Inject
-  @SuppressWarnings("VisibilityModifier")
   DynamoDbClient dynamoDB;
 
   @Inject
-  @SuppressWarnings("VisibilityModifier")
   DynamoDbFundStorageClient fundStorageClient;
 
   @Inject
-  @SuppressWarnings("VisibilityModifier")
   ForexService forexService;
 
   @InjectMock
-  @SuppressWarnings("VisibilityModifier")
   IdGenerator idGenerator;
 
   @AfterEach

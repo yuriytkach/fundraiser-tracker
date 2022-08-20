@@ -29,7 +29,6 @@ import lombok.SneakyThrows;
 class ForexServiceIntegrationTest {
 
   @Inject
-  @SuppressWarnings("VisibilityModifier")
   ForexService tested;
 
   private MockServerClient mockServerClient;

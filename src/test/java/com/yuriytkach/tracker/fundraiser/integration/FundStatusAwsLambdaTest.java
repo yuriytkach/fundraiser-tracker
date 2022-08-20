@@ -64,11 +64,9 @@ class FundStatusAwsLambdaTest implements AwsLambdaTestCommon {
   private static final String FUND_COLOR = "fund color";
 
   @Inject
-  @SuppressWarnings("VisibilityModifier")
   DynamoDbClient dynamoDB;
 
   @InjectMock
-  @SuppressWarnings("VisibilityModifier")
   FundService fundService;
 
   @BeforeEach

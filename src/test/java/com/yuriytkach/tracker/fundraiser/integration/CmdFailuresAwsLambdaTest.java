@@ -26,7 +26,6 @@ import one.util.streamex.StreamEx;
 class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
 
   @Inject
-  @SuppressWarnings("VisibilityModifier")
   FundTrackerConfig appConfig;
 
   @Test
