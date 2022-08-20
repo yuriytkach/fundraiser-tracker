@@ -9,8 +9,6 @@ import com.yuriytkach.tracker.fundraiser.model.Funder;
 import com.yuriytkach.tracker.fundraiser.model.PagedFunders;
 import com.yuriytkach.tracker.fundraiser.model.SlackResponse;
 import com.yuriytkach.tracker.fundraiser.model.SortOrder;
-import com.yuriytkach.tracker.fundraiser.model.exception.FundNotOwnedException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,7 +72,7 @@ class TrackServiceTest {
   private FundService fundService;
 
   @Mock
-  ForexService forexService;
+  private ForexService forexService;
 
   @InjectMocks
   private TrackService tested;
@@ -97,15 +95,15 @@ class TrackServiceTest {
   }
 
   @Test
-  void processUpdateFundCommand_Ok() {
-    CommandFormParams commandFormParams = new CommandFormParams();
+  void processUpdateFundCommandOk() {
+    final CommandFormParams commandFormParams = new CommandFormParams();
     commandFormParams.setText("update car curr:usd goal:4250 desc:/Banderomobil/ color:blue");
     commandFormParams.setUserId("somePerson");
 
     when(fundService.findByNameOrException("car")).thenReturn(FUND_1);
     when(forexService.convertCurrency(anyInt(), eq(Currency.EUR), eq(Currency.USD)))
-            .thenReturn((int)(FUND_1.getRaised() * 1.1));
-    var capture = ArgumentCaptor.forClass(Fund.class);
+            .thenReturn((int) (FUND_1.getRaised() * 1.1));
+    final var capture = ArgumentCaptor.forClass(Fund.class);
     doNothing().when(fundService).updateFund(capture.capture());
 
     SlackResponse response = tested.process(commandFormParams);
@@ -114,17 +112,17 @@ class TrackServiceTest {
 
     assertThat(response.getResponseType()).isEqualTo(SlackResponse.RESPONSE_PRIVATE);
     assertThat(capture.getValue().getCurrency()).isEqualTo(Currency.USD);
-    assertThat(capture.getValue().getRaised()).isEqualTo((int)(FUND_1.getRaised() * 1.1));
+    assertThat(capture.getValue().getRaised()).isEqualTo((int) (FUND_1.getRaised() * 1.1));
     assertThat(response.getText()).isEqualTo(":white_check_mark: " + "The Fund with name: `car` has been updated successfully!");
   }
 
   @Test
-  void processUpdateFundCommand_WrongUser() {
-    CommandFormParams commandFormParams = new CommandFormParams();
+  void processUpdateFundCommandWrongUser() {
+    final CommandFormParams commandFormParams = new CommandFormParams();
     commandFormParams.setText("update car curr:usd goal:4250 desc:/Banderomobil/ color:blue");
     commandFormParams.setUserId("anotherPerson");
 
-    String expectedExceptionMessage = ":x: Fund `car` owned by `somePerson`: Can't update fund";
+    final String expectedExceptionMessage = ":x: Fund `car` owned by `somePerson`: Can't update fund";
     when(fundService.findByNameOrException("car")).thenReturn(FUND_1);
 
     SlackResponse response = tested.process(commandFormParams);

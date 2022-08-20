@@ -179,7 +179,7 @@ public class TrackService {
   }
 
   private SlackResponse processUpdateFundCommand(final Matcher matcher, final String user) {
-    var fundName = matcher.group("name");
+    final var fundName = matcher.group("name");
     var fund = fundService.findByNameOrException(fundName);
 
     if (!fund.getOwner().equals(user)) {
@@ -190,11 +190,11 @@ public class TrackService {
     try {
       fundService.updateFund(updatedFund);
       log.info("The Fund with name: `{}` has been updated", fundName);
-      return createSuccessResponse(String.format("The Fund with name: `%s` has been updated successfully!", fundName));
+      return createSuccessResponse(format("The Fund with name: `%s` has been updated successfully!", fundName));
 
-    } catch (DuplicateFundException e) {
-      log.info("Can't update fund with name `{}`: {}", fundName, e.getMessage());
-      return createErrorResponse(e.getMessage());
+    } catch (DuplicateFundException ex) {
+      log.info("Can't update fund with name `{}`: {}", fundName, ex.getMessage());
+      return createErrorResponse(ex.getMessage());
     }
   }
 
@@ -224,34 +224,34 @@ public class TrackService {
   }
 
   private Fund extractFundDataFromMatchedTextAndUpdate(final Fund fund, final Matcher matcher) {
-    Fund.FundBuilder fundBuilder = fund.toBuilder();
+    final var fundBuilder = fund.toBuilder();
 
-    var currArg = matcher.group("curr");
+    final var currArg = matcher.group("curr");
     if (currArg != null) {
-      var currName = currArg.split(":")[1];
-      var curr = Currency.fromString(currName).orElseThrow(UnknownCurrencyException::new);
+      final var currName = currArg.split(":")[1];
+      final var curr = Currency.fromString(currName).orElseThrow(UnknownCurrencyException::new);
       if (fund.getCurrency() != curr) {
-        var convertedAmount = forexService.convertCurrency(fund.getRaised(), fund.getCurrency(), curr);
+        final var convertedAmount = forexService.convertCurrency(fund.getRaised(), fund.getCurrency(), curr);
         fundBuilder.raised(convertedAmount);
       }
       fundBuilder.currency(curr);
     }
 
-    var goalArg = matcher.group("goal");
+    final var goalArg = matcher.group("goal");
     if (goalArg != null) {
-      var goal = goalArg.split(":")[1];
+      final var goal = goalArg.split(":")[1];
       fundBuilder.goal(Integer.parseInt(goal));
     }
 
-    var descArg = matcher.group("desc");
+    final var descArg = matcher.group("desc");
     if (descArg != null) {
-      var desc = descArg.split(":")[1];
+      final var desc = descArg.split(":")[1];
       fundBuilder.description(desc);
     }
 
-    var colorArg = matcher.group("color");
+    final var colorArg = matcher.group("color");
     if (colorArg != null) {
-      var color = colorArg.split(":")[1];
+      final var color = colorArg.split(":")[1];
       fundBuilder.color(color);
     }
 
