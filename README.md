@@ -11,12 +11,12 @@ An AWS Lambda application written in Quarkus uses DynamoDB as storage, exposes R
 If you add a [slash command](https://api.slack.com/interactivity/slash-commands) to Slack (for example `/fund`) then the following commands are supported by the application.
 
 **Create new fund:**
-```
+```text
 /fund create car eur 5000 /Banderomobil/ blue
 ```
 Creates new fund with short name `car` (will be used to track donations) with goal of €5000, with full description `Banderomobil` and color `blue` (used in UI tracker)
 
-```
+```text
 /fund create dron usd 7000
 ```
 Creates a new fund with short name and description `dron` with goal of $7000 and default color `green` on UI
@@ -33,26 +33,26 @@ Updates the attributes of fund with name `car` by specifying their names, colon 
 **Updatable attributes:** currency(`curr`), goal(`goal`), description(`desc`) and color(`color`)
 
 **List all funds:**
-```
+```text
 /fund list
 ```
 Displays all created funds with status (how much raised)
 
 **Track donation:**
-```
+```text
 /fund track car eur 500 Vasya 2022-05-12 14:15
 /fund track car uah 500 Vasya 14:15             - track for today's date
 /fund track car usd 500 Vasya                   - track for today's date and time
 /fund track car usd 500                         - track for noname person
 ```
 This will track donation for fund with short name `car`. 
--  Any supported currency is allowed. Currency conversion takes place.
--  Date and time is optional.
--  Person name is optional. If not supplied, then `noname` is used.
+- Any supported currency is allowed. Currency conversion takes place.
+- Date and time is optional.
+- Person name is optional. If not supplied, then `noname` is used.
 
 **Delete fund:**
 `Warning! This action cannot be undone! Use with caution!`
-```
+```text
 /fund delete car
 ```
 This will delete fund `car` with all recorded donations. _**Warning! - Cannot be undone!**_

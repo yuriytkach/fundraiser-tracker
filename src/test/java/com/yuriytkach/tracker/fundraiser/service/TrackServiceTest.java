@@ -1,6 +1,5 @@
 package com.yuriytkach.tracker.fundraiser.service;
 
-import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
 import com.yuriytkach.tracker.fundraiser.forex.ForexService;
 import com.yuriytkach.tracker.fundraiser.model.CommandFormParams;
 import com.yuriytkach.tracker.fundraiser.model.Currency;
@@ -67,22 +66,16 @@ class TrackServiceTest {
           .build();
 
   @Mock
-  DonationStorageClient donationStorageClient;
+  private DonationStorageClient donationStorageClient;
 
   @Mock
-  FundService fundService;
-
-  @Mock
-  IdGenerator idGenerator;
+  private FundService fundService;
 
   @Mock
   ForexService forexService;
 
-  @Mock
-  FundTrackerConfig config;
-
   @InjectMocks
-  TrackService tested;
+  private TrackService tested;
 
   @BeforeEach
   public void setup() {
@@ -104,8 +97,8 @@ class TrackServiceTest {
   @Test
   void processUpdateFundCommand() {
     CommandFormParams commandFormParams = new CommandFormParams();
-    commandFormParams.text = "update car curr:usd goal:4250 desc:/Banderomobil/ color:blue";
-    commandFormParams.userId = "userId";
+    commandFormParams.setText("update car curr:usd goal:4250 desc:/Banderomobil/ color:blue");
+    commandFormParams.setUserId("userId");
 
     when(fundService.findByNameOrException("car")).thenReturn(FUND_1);
     when(forexService.convertCurrency(anyInt(), eq(Currency.EUR), eq(Currency.USD)))

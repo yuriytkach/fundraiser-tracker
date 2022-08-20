@@ -2,7 +2,7 @@ package com.yuriytkach.tracker.fundraiser.model.exception;
 
 import com.yuriytkach.tracker.fundraiser.model.Fund;
 
-public class FundNotOwnedException extends RuntimeException {
+public final class FundNotOwnedException extends RuntimeException {
 
   private FundNotOwnedException(final String message) {
     super(message);

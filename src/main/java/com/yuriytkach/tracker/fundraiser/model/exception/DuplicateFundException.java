@@ -2,7 +2,7 @@ package com.yuriytkach.tracker.fundraiser.model.exception;
 
 import com.yuriytkach.tracker.fundraiser.model.Fund;
 
-public class DuplicateFundException extends RuntimeException {
+public final class DuplicateFundException extends RuntimeException {
 
   private DuplicateFundException(final String message) {
     super(message);

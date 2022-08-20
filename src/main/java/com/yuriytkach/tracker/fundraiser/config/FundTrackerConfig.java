@@ -5,20 +5,21 @@ import io.smallrye.config.ConfigMapping;
 @ConfigMapping(prefix = "app")
 public interface FundTrackerConfig {
 
-    String slackToken();
+  String slackToken();
 
-    String fundsTable();
+  String fundsTable();
 
-    String defaultFundColor();
+  String defaultFundColor();
 
-    String defaultPersonName();
+  String defaultPersonName();
 
-    String helpText();
+  String helpText();
 
-    WebConfig web();
+  WebConfig web();
 
-    interface WebConfig {
-        int cacheMaxAgeSec();
-    }
+  interface WebConfig {
+
+    int cacheMaxAgeSec();
+  }
 
 }

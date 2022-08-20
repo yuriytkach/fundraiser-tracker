@@ -64,7 +64,7 @@ import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
 @Slf4j
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
+class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
 
   private static final UUID ITEM_ID_1 = new UUID(1, 1);
   private static final UUID ITEM_ID_2 = new UUID(2, 2);
@@ -89,8 +89,8 @@ public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
   @AfterEach
   void cleanUp() {
     log.info("----- CLEANUP ------");
-    deleteItemByIdDirectly(DynamoDbTestResource.FUND_1_TABLE, COL_ID, ITEM_ID_1, ITEM_ID_2);
-    deleteItemByIdDirectly(DynamoDbTestResource.FUNDS_TABLE, DynamoDbFundStorageClient.COL_NAME, FUND_2_NAME);
+    deleteItemByIdDirectly(FUND_1_TABLE, COL_ID, ITEM_ID_1, ITEM_ID_2);
+    deleteItemByIdDirectly(FUNDS_TABLE, DynamoDbFundStorageClient.COL_NAME, FUND_2_NAME);
     deleteTableIfExists(FundService.FUND_TABLE_PREFIX + FUND_2_NAME);
     fundStorageClient.save(FUND);
   }
@@ -300,7 +300,7 @@ public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
 
     final Optional<Fund> fund = getFundDirectlyByName(FUND.getName());
     assertThat(fund).hasValue(FUND.toBuilder()
-      .raised(FUND.getRaised() + (int)(100 / monoCurrency.getRateSell()))
+      .raised(FUND.getRaised() + (int) (100 / monoCurrency.getRateSell()))
       .updatedAt(Instant.parse("2022-02-01T12:13:00Z"))
       .build());
   }
@@ -412,7 +412,7 @@ public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
     item.put(COL_TIME, AttributeValue.builder().s(dateTime.toString()).build());
 
     final var putRequest = PutItemRequest.builder()
-      .tableName(DynamoDbTestResource.FUND_1_TABLE)
+      .tableName(FUND_1_TABLE)
       .item(item)
       .build();
     dynamoDB.putItem(putRequest);
@@ -420,7 +420,7 @@ public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
 
   private Optional<Donation> getDonationDirectlyById(final UUID id) {
     final GetItemRequest dbGetItemRequest = GetItemRequest.builder()
-      .tableName(DynamoDbTestResource.FUND_1_TABLE)
+      .tableName(FUND_1_TABLE)
       .key(Map.of(COL_ID, AttributeValue.builder().s(id.toString()).build()))
       .attributesToGet(ALL_ATTRIBUTES)
       .build();
@@ -431,7 +431,7 @@ public class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
 
   private Optional<Fund> getFundDirectlyByName(final String name) {
     final GetItemRequest dbGetItemRequest = GetItemRequest.builder()
-      .tableName(DynamoDbTestResource.FUNDS_TABLE)
+      .tableName(FUNDS_TABLE)
       .key(Map.of(DynamoDbFundStorageClient.COL_NAME, AttributeValue.builder().s(name).build()))
       .attributesToGet(DynamoDbFundStorageClient.ALL_ATTRIBUTES)
       .build();

@@ -1,6 +1,6 @@
 package com.yuriytkach.tracker.fundraiser.model.exception;
 
-public class FundNotFoundException extends RuntimeException {
+public final class FundNotFoundException extends RuntimeException {
 
   private FundNotFoundException(final String message) {
     super(message);

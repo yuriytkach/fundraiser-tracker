@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
@@ -52,30 +51,27 @@ import com.yuriytkach.tracker.fundraiser.model.exception.FundNotOwnedException;
 import com.yuriytkach.tracker.fundraiser.model.exception.UnknownCurrencyException;
 import com.yuriytkach.tracker.fundraiser.model.exception.UnknownForexException;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.StreamEx;
 
 @Slf4j
 @Singleton
+@RequiredArgsConstructor
 public class TrackService {
   
   private final Map<CommandType, Map.Entry<Pattern, BiFunction<Matcher, String, SlackResponse>>> cmdProcessors =
     new EnumMap<>(CommandType.class);
 
-  @Inject
-  DonationStorageClient donationStorageClient;
+  private final DonationStorageClient donationStorageClient;
 
-  @Inject
-  FundService fundService;
+  private final FundService fundService;
 
-  @Inject
-  IdGenerator idGenerator;
+  private final IdGenerator idGenerator;
 
-  @Inject
-  ForexService forexService;
+  private final ForexService forexService;
 
-  @Inject
-  FundTrackerConfig config;
+  private final FundTrackerConfig config;
   
   @PostConstruct
   void initCommandProcessors() {
@@ -88,9 +84,9 @@ public class TrackService {
   }
 
   public SlackResponse process(final CommandFormParams slackParams) {
-    final String text = slackParams.text.strip();
-    final String user = slackParams.userId;
-    log.debug("Processing from {} [{}]: {}", slackParams.userName, slackParams.userId, text);
+    final String text = slackParams.getText().strip();
+    final String user = slackParams.getUserId();
+    log.debug("Processing from {} [{}]: {}", slackParams.getUserName(), slackParams.getUserId(), text);
 
     final Matcher matcher = CMD_PATTERN.matcher(text);
     if (matcher.matches()) {
@@ -343,7 +339,8 @@ public class TrackService {
     return createSuccessResponse(responseText);
   }
 
-  private SlackResponse processHelpCommand(final Matcher matcher, final String user) {
+  @SuppressWarnings("PMD.UnusedFormalParameter")
+  private SlackResponse processHelpCommand(final Matcher ignored, final String user) {
     log.info("Returning help :)");
     final String supportedCurrencies = StreamEx.of(Currency.values())
       .map(Currency::name)

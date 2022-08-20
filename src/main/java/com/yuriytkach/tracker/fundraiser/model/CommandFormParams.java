@@ -3,55 +3,59 @@ package com.yuriytkach.tracker.fundraiser.model;
 import javax.ws.rs.FormParam;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.ToString;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@ToString
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @RegisterForReflection
 public class CommandFormParams {
 
   @FormParam("token")
-  public String token;
+  private String token;
 
   @FormParam("team_id")
-  public String teamId;
+  private String teamId;
 
   @FormParam("team_domain")
-  public String teamDomain;
+  private String teamDomain;
 
   @FormParam("enterprise_id")
-  public String enterpriseId;
+  private String enterpriseId;
 
   @FormParam("enterprise_name")
-  public String enterpriseName;
+  private String enterpriseName;
 
   @FormParam("channel_id")
-  public String channelId;
+  private String channelId;
 
   @FormParam("channel_name")
-  public String channelName;
+  private String channelName;
 
   @FormParam("user_id")
-  public String userId;
+  private String userId;
 
   @FormParam("user_name")
-  public String userName;
+  private String userName;
 
   @FormParam("command")
-  public String command;
+  private String command;
 
   @FormParam("text")
-  public String text;
+  private String text;
 
   @FormParam("response_url")
-  public String responseUrl;
+  private String responseUrl;
 
   @FormParam("trigger_id")
-  public String triggerId;
+  private String triggerId;
 
   @FormParam("api_app_id")
-  public String apiAppId;
+  private String apiAppId;
 
   @FormParam("ssl_check")
-  public String sslCheck;
+  private String sslCheck;
 
 }

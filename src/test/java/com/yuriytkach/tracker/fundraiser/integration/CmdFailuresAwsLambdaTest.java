@@ -23,7 +23,7 @@ import one.util.streamex.StreamEx;
 
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-public class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
+class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
 
   @Inject
   FundTrackerConfig appConfig;

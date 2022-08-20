@@ -30,21 +30,20 @@ import com.yuriytkach.tracker.fundraiser.model.exception.UnknownForexException;
 import lombok.SneakyThrows;
 
 @ExtendWith(MockitoExtension.class)
-public class ForexServiceTest {
+class ForexServiceTest {
 
   @Mock
-  MonobankApi monobankApi;
+  private MonobankApi monobankApi;
 
   @InjectMocks
-  ForexService tested;
+  private ForexService tested;
 
   @BeforeEach
   @SneakyThrows
-  @SuppressWarnings("unchecked")
   void initRestClientResponse() {
     final List<MonoCurrencyRate> currencies;
 
-    try(var is = this.getClass().getClassLoader().getResourceAsStream("monobank_response.json")) {
+    try (var is = this.getClass().getClassLoader().getResourceAsStream("monobank_response.json")) {
       currencies = new ObjectMapper().readerForListOf(MonoCurrencyRate.class).readValue(is);
     }
 

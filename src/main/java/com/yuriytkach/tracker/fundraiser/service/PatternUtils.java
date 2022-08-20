@@ -10,11 +10,11 @@ public class PatternUtils {
 
   public static final Pattern CMD_PATTERN = Pattern.compile("(?<cmd>\\w+)(\\s+(?<params>.*))?");
 
-  public static final Pattern TRACK_PATTERN = Pattern
-    .compile("(?<name>\\w+)\\s(?<curr>[A-Za-z]{3})\\s(?<amt>\\d+)(\\s(?<pp>\\w+))?(\\s(?<dt>(\\d{4}-\\d{2}-\\d{2}\\s)?\\d{2}:\\d{2}))?");
+  public static final Pattern TRACK_PATTERN = Pattern.compile("(?<name>\\w+)\\s(?<curr>[A-Za-z]{3})\\s"
+    + "(?<amt>\\d+)(\\s(?<pp>\\w+))?(\\s(?<dt>(\\d{4}-\\d{2}-\\d{2}\\s)?\\d{2}:\\d{2}))?");
 
-  public static final Pattern CREATE_PATTERN = Pattern
-    .compile("(?<name>\\w+)\\s(?<curr>[A-Za-z]{3})\\s(?<goal>\\d+)(\\s/(?<desc>.*)/)?(\\s(?<color>\\w+))?");
+  public static final Pattern CREATE_PATTERN = Pattern.compile("(?<name>\\w+)\\s(?<curr>[A-Za-z]{3})\\s"
+    + "(?<goal>\\d+)(\\s/(?<desc>.*)/)?(\\s(?<color>\\w+))?");
 
   public static final Pattern UPDATE_PATTERN = Pattern
           .compile("(?<name>\\w+)(\\s(?<curr>curr:[A-Za-z]{3}))?(\\s(?<goal>goal:\\d+))?(\\s(?<desc>desc:/.*/))?(\\s(?<color>color:\\w+))?");
