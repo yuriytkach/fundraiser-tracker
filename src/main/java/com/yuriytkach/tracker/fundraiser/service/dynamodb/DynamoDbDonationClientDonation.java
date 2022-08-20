@@ -8,13 +8,13 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.yuriytkach.tracker.fundraiser.model.Currency;
 import com.yuriytkach.tracker.fundraiser.model.Donation;
 import com.yuriytkach.tracker.fundraiser.service.DonationStorageClient;
 
+import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
@@ -23,6 +23,7 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 
 @Singleton
+@RequiredArgsConstructor
 public class DynamoDbDonationClientDonation implements DonationStorageClient {
 
   public static final String COL_CURR = "curr";
@@ -31,10 +32,15 @@ public class DynamoDbDonationClientDonation implements DonationStorageClient {
   public static final String COL_PERSON = "person";
   public static final String COL_ID = "id";
 
-  public static final String[] ALL_ATTRIBUTES = new String[] { COL_ID, COL_CURR, COL_AMOUNT, COL_TIME, COL_PERSON };
+  public static final String[] ALL_ATTRIBUTES = new String[] {
+    COL_ID,
+    COL_CURR,
+    COL_AMOUNT,
+    COL_TIME,
+    COL_PERSON,
+  };
 
-  @Inject
-  DynamoDbClient dynamoDB;
+  private final DynamoDbClient dynamoDB;
 
   public static Optional<Donation> parseDonation(final Map<String, AttributeValue> item) {
     if (item == null || item.isEmpty()) {

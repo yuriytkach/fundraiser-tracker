@@ -30,7 +30,7 @@ import com.yuriytkach.tracker.fundraiser.model.exception.UnknownForexException;
 import lombok.SneakyThrows;
 
 @ExtendWith(MockitoExtension.class)
-public class ForexServiceTest {
+class ForexServiceTest {
 
   @Mock
   private MonobankApi monobankApi;

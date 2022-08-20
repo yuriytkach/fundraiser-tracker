@@ -20,11 +20,11 @@ public class ForexService {
 
   @Inject
   @RestClient
-  @SuppressWarnings("VisibilityModifier")
+  @SuppressWarnings("checkstyle:VisibilityModifier")
   MonobankApi monobankApi;
 
   @Getter
-  private List<MonoCurrencyRate> currencies = null;
+  private List<MonoCurrencyRate> currencies;
 
   public int convertCurrency(final int amount, final Currency fromCurr, final Currency toCurr)
     throws UnknownForexException {
@@ -62,8 +62,12 @@ public class ForexService {
     }
   }
 
-  private boolean isNeededMonoCurrency(final Currency fromCurr, final Currency toCurr, final MonoCurrencyRate monoCurr) {
-    return (monoCurr.getCurrencyCodeA() == fromCurr.getIsoCode() && monoCurr.getCurrencyCodeB() == toCurr.getIsoCode())
-      || (monoCurr.getCurrencyCodeA() == toCurr.getIsoCode() && monoCurr.getCurrencyCodeB() == fromCurr.getIsoCode());
+  private boolean isNeededMonoCurrency(
+    final Currency fromCurr,
+    final Currency toCurr,
+    final MonoCurrencyRate monoCurr
+  ) {
+    return monoCurr.getCurrencyCodeA() == fromCurr.getIsoCode() && monoCurr.getCurrencyCodeB() == toCurr.getIsoCode()
+      || monoCurr.getCurrencyCodeA() == toCurr.getIsoCode() && monoCurr.getCurrencyCodeB() == fromCurr.getIsoCode();
   }
 }

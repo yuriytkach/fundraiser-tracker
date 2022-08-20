@@ -19,8 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
-import com.yuriytkach.tracker.fundraiser.forex.ForexService;
 import com.yuriytkach.tracker.fundraiser.model.Currency;
 import com.yuriytkach.tracker.fundraiser.model.Donation;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
@@ -53,15 +51,6 @@ class TrackServiceTest {
 
   @Mock
   private FundService fundService;
-
-  @Mock
-  private IdGenerator idGenerator;
-
-  @Mock
-  private ForexService forexService;
-
-  @Mock
-  private FundTrackerConfig config;
 
   @InjectMocks
   private TrackService tested;

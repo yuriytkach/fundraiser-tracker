@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
@@ -14,6 +13,7 @@ import com.yuriytkach.tracker.fundraiser.model.Currency;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
 import com.yuriytkach.tracker.fundraiser.service.FundStorageClient;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
@@ -33,6 +33,7 @@ import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 
 @Slf4j
 @Singleton
+@RequiredArgsConstructor
 public class DynamoDbFundStorageClient implements FundStorageClient {
 
   public static final String COL_ID = "id";
@@ -47,14 +48,21 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
   public static final String COL_UPDATED_AT = "updatedAt";
 
   public static final String[] ALL_ATTRIBUTES = new String[] {
-    COL_ID, COL_NAME, COL_DESC, COL_COLOR, COL_OWNER, COL_CURR, COL_GOAL, COL_RAISED, COL_CREATED_AT, COL_UPDATED_AT
+    COL_ID,
+    COL_NAME,
+    COL_DESC,
+    COL_COLOR,
+    COL_OWNER,
+    COL_CURR,
+    COL_GOAL,
+    COL_RAISED,
+    COL_CREATED_AT,
+    COL_UPDATED_AT,
   };
 
-  @Inject
-  DynamoDbClient dynamoDB;
+  private final DynamoDbClient dynamoDB;
 
-  @Inject
-  FundTrackerConfig config;
+  private final FundTrackerConfig config;
 
   public static Optional<Fund> parseFund(final Map<String, AttributeValue> item) {
     if (item == null || item.isEmpty()) {

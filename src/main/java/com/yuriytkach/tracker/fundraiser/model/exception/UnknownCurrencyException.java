@@ -1,5 +1,5 @@
 package com.yuriytkach.tracker.fundraiser.model.exception;
 
-public class UnknownCurrencyException extends RuntimeException {
+public final class UnknownCurrencyException extends RuntimeException {
 
 }
