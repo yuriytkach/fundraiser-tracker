@@ -181,8 +181,12 @@ public class TrackService {
   private SlackResponse processUpdateFundCommand(final Matcher matcher, final String user) {
     var fundName = matcher.group("name");
     var fund = fundService.findByNameOrException(fundName);
-    var updatedFund = extractFundDataFromMatchedTextAndUpdate(fund, matcher);
 
+    if (!fund.getOwner().equals(user)) {
+      throw FundNotOwnedException.withFundAndMessage(fund, "Can't update fund");
+    }
+
+    var updatedFund = extractFundDataFromMatchedTextAndUpdate(fund, matcher);
     try {
       fundService.updateFund(updatedFund);
       log.info("The Fund with name: `{}` has been updated", fundName);
