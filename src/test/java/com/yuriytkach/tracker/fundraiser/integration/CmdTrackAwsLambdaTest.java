@@ -72,15 +72,19 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
   private static final String FUND_2_NAME = "carFund";
 
   @Inject
+  @SuppressWarnings("VisibilityModifier")
   FundTrackerConfig appConfig;
 
   @Inject
+  @SuppressWarnings("VisibilityModifier")
   DynamoDbClient dynamoDB;
 
   @Inject
+  @SuppressWarnings("VisibilityModifier")
   DynamoDbFundStorageClient fundStorageClient;
 
   @Inject
+  @SuppressWarnings("VisibilityModifier")
   ForexService forexService;
 
   @InjectMock
@@ -301,7 +305,7 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
 
     final Optional<Fund> fund = getFundDirectlyByName(FUND.getName());
     assertThat(fund).hasValue(FUND.toBuilder()
-      .raised(FUND.getRaised() + (int)(100 / monoCurrency.getRateSell()))
+      .raised(FUND.getRaised() + (int) (100 / monoCurrency.getRateSell()))
       .updatedAt(Instant.parse("2022-02-01T12:13:00Z"))
       .build());
   }

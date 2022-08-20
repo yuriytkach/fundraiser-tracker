@@ -3,7 +3,6 @@ package com.yuriytkach.tracker.fundraiser.rest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -21,20 +20,19 @@ import com.yuriytkach.tracker.fundraiser.model.SortOrder;
 import com.yuriytkach.tracker.fundraiser.service.FundService;
 import com.yuriytkach.tracker.fundraiser.service.TrackService;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Path("/funds")
+@RequiredArgsConstructor
 public class FundraiserStatusController {
 
-  @Inject
-  TrackService trackService;
+  private final TrackService trackService;
 
-  @Inject
-  FundService fundService;
+  private final FundService fundService;
 
-  @Inject
-  FundTrackerConfig config;
+  private final FundTrackerConfig config;
 
   @GET
   @Path("/")

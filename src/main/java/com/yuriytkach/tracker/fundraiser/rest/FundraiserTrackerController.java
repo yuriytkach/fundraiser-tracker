@@ -1,6 +1,5 @@
 package com.yuriytkach.tracker.fundraiser.rest;
 
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -16,17 +15,17 @@ import com.yuriytkach.tracker.fundraiser.model.ErrorResponse;
 import com.yuriytkach.tracker.fundraiser.model.SlackResponse;
 import com.yuriytkach.tracker.fundraiser.service.TrackService;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Path("/slack/cmd")
+@RequiredArgsConstructor
 public class FundraiserTrackerController {
 
-  @Inject
-  TrackService trackService;
+  private final TrackService trackService;
 
-  @Inject
-  FundTrackerConfig config;
+  private final FundTrackerConfig config;
 
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)

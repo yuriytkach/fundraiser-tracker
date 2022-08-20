@@ -5,22 +5,22 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import com.yuriytkach.tracker.fundraiser.model.Fund;
 import com.yuriytkach.tracker.fundraiser.model.exception.DuplicateFundException;
 import com.yuriytkach.tracker.fundraiser.model.exception.FundNotFoundException;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ApplicationScoped
+@RequiredArgsConstructor
 public class FundService {
 
   public static final String FUND_TABLE_PREFIX = "fund-";
 
-  @Inject
-  FundStorageClient fundStorageClient;
+  private final FundStorageClient fundStorageClient;
 
   public void createFund(final Fund fund) {
     if (fundStorageClient.getByName(fund.getName()).isPresent()) {

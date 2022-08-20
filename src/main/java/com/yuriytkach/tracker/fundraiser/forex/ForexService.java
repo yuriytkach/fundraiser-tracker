@@ -20,6 +20,7 @@ public class ForexService {
 
   @Inject
   @RestClient
+  @SuppressWarnings("VisibilityModifier")
   MonobankApi monobankApi;
 
   @Getter

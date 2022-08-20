@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
@@ -51,30 +50,27 @@ import com.yuriytkach.tracker.fundraiser.model.exception.FundNotOwnedException;
 import com.yuriytkach.tracker.fundraiser.model.exception.UnknownCurrencyException;
 import com.yuriytkach.tracker.fundraiser.model.exception.UnknownForexException;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.StreamEx;
 
 @Slf4j
 @Singleton
+@RequiredArgsConstructor
 public class TrackService {
   
   private final Map<CommandType, Map.Entry<Pattern, BiFunction<Matcher, String, SlackResponse>>> cmdProcessors =
     new EnumMap<>(CommandType.class);
 
-  @Inject
-  DonationStorageClient donationStorageClient;
+  private final DonationStorageClient donationStorageClient;
 
-  @Inject
-  FundService fundService;
+  private final FundService fundService;
 
-  @Inject
-  IdGenerator idGenerator;
+  private final IdGenerator idGenerator;
 
-  @Inject
-  ForexService forexService;
+  private final ForexService forexService;
 
-  @Inject
-  FundTrackerConfig config;
+  private final FundTrackerConfig config;
   
   @PostConstruct
   void initCommandProcessors() {

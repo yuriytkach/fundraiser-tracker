@@ -32,16 +32,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager {
 
-  private static final GenericContainer<?> CONTAINER = new GenericContainer<>("amazon/dynamodb-local:1.11.477")
-    .withExposedPorts(8000);
+  static final String FUNDS_TABLE = "all-funds-table";
+  static final String FUND_1_TABLE = "donations-table";
+  static final String FUND_OWNER = "owner";
+  static final String FUND_RED = "red";
+  static final String FUND_DESC = "description";
 
-  public static final String FUNDS_TABLE = "all-funds-table";
-  public static final String FUND_1_TABLE = "donations-table";
-  public static final String FUND_OWNER = "owner";
-  public static final String FUND_RED = "red";
-  public static final String FUND_DESC = "description";
-
-  public static final Fund FUND = Fund.builder()
+  static final Fund FUND = Fund.builder()
     .id(FUND_1_TABLE)
     .name("fundy")
     .goal(1000)
@@ -53,6 +50,9 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     .color(FUND_RED)
     .owner(FUND_OWNER)
     .build();
+
+  private static final GenericContainer<?> CONTAINER = new GenericContainer<>("amazon/dynamodb-local:1.11.477")
+    .withExposedPorts(8000);
 
   @Override
   @SneakyThrows

@@ -49,23 +49,22 @@ class TrackServiceTest {
     .build();
 
   @Mock
-  DonationStorageClient donationStorageClient;
+  private DonationStorageClient donationStorageClient;
 
   @Mock
-  FundService fundService;
+  private FundService fundService;
 
   @Mock
-  IdGenerator idGenerator;
+  private IdGenerator idGenerator;
 
   @Mock
-  ForexService forexService;
+  private ForexService forexService;
 
   @Mock
-  FundTrackerConfig config;
+  private FundTrackerConfig config;
 
   @InjectMocks
-  @SuppressWarnings("VisibilityModifier")
-  TrackService tested;
+  private TrackService tested;
 
   @Test
   void shouldReturnEmptyFundersIfFundNotFound() {
