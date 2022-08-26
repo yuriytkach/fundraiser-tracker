@@ -25,7 +25,7 @@ Creates a new fund with short name and description `dron` with goal of $7000 and
 `UAH, USD, EUR, PLN, GBP, CHF`
 
 **Update fund:**
-```
+```text
 /fund update car curr:eur goal:5000 desc:/Banderomobil/ color:blue
 ```
 Updates the attributes of fund with name `car` by specifying their names, colon and new values (see example above). All attributes are optional so that you can update only needed.

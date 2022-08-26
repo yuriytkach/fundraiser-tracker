@@ -106,14 +106,15 @@ class TrackServiceTest {
     final var capture = ArgumentCaptor.forClass(Fund.class);
     doNothing().when(fundService).updateFund(capture.capture());
 
-    SlackResponse response = tested.process(commandFormParams);
+    final SlackResponse response = tested.process(commandFormParams);
 
     verify(fundService).updateFund(capture.capture());
 
     assertThat(response.getResponseType()).isEqualTo(SlackResponse.RESPONSE_PRIVATE);
     assertThat(capture.getValue().getCurrency()).isEqualTo(Currency.USD);
     assertThat(capture.getValue().getRaised()).isEqualTo((int) (FUND_1.getRaised() * 1.1));
-    assertThat(response.getText()).isEqualTo(":white_check_mark: " + "The Fund with name: `car` has been updated successfully!");
+    assertThat(response.getText())
+            .isEqualTo(":white_check_mark: " + "The Fund with name: `car` has been updated successfully!");
   }
 
   @Test
@@ -125,7 +126,7 @@ class TrackServiceTest {
     final String expectedExceptionMessage = ":x: Fund `car` owned by `somePerson`: Can't update fund";
     when(fundService.findByNameOrException("car")).thenReturn(FUND_1);
 
-    SlackResponse response = tested.process(commandFormParams);
+    final SlackResponse response = tested.process(commandFormParams);
 
     assertThat(response.getResponseType()).isEqualTo(SlackResponse.RESPONSE_PRIVATE);
     assertThat(response.getText()).isEqualTo(expectedExceptionMessage);
