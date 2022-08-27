@@ -1,4 +1,4 @@
-name: Test Results
+name: Process Artifacts
 
 on:
   workflow_run:
@@ -8,8 +8,8 @@ on:
 permissions: {}
 
 jobs:
-  test-results:
-    name: Test Results
+  process-artifacts:
+    name: Process Artifacts
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -36,8 +36,7 @@ jobs:
              unzip -d "$name" "$name.zip"
            done
            ls -la
-           ls -la test_results
-           ls -la event_file
+           ls -la coverage_reports
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
@@ -46,3 +45,9 @@ jobs:
           event_file: artifacts/event_file/event.json
           event_name: ${{ github.event.workflow_run.event }}
           files: "artifacts/test_results/*.xml"
+
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: artifacts/coverage_reports/jacoco.xml
