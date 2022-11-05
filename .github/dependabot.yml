@@ -15,3 +15,8 @@ updates:
   commit-message:
     prefix: "build(deps)"
     prefix-development: "build(deps-dev)"
+  ignore:
+    - dependency-name: com.amazonaws:aws-java-sdk-dynamodb
+      versions:
+        - "> 1.12.333"
+        - "< 1.13"
