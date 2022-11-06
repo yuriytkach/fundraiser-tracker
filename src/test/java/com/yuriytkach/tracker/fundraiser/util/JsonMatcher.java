@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AccessLevel;
@@ -16,11 +17,14 @@ import lombok.SneakyThrows;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonMatcher extends BaseMatcher<String> {
 
+  private static final ObjectMapper OBJECT_MAPPER =
+    new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
   private final String expectedJson;
 
   @SneakyThrows
   public static Matcher<String> jsonEqualTo(final Object obj) {
-    return new JsonMatcher(new ObjectMapper().writeValueAsString(obj));
+    return new JsonMatcher(OBJECT_MAPPER.writeValueAsString(obj));
   }
 
   @Override

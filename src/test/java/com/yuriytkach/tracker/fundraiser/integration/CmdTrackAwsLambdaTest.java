@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,6 +40,8 @@ import com.yuriytkach.tracker.fundraiser.model.Currency;
 import com.yuriytkach.tracker.fundraiser.model.Donation;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
 import com.yuriytkach.tracker.fundraiser.model.SlackResponse;
+import com.yuriytkach.tracker.fundraiser.model.slack.SlackBlock;
+import com.yuriytkach.tracker.fundraiser.model.slack.SlackText;
 import com.yuriytkach.tracker.fundraiser.service.FundService;
 import com.yuriytkach.tracker.fundraiser.service.IdGenerator;
 import com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation;
@@ -345,7 +348,7 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
       .body("statusCode", equalTo(200))
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
-        .text(":white_check_mark: All funds:\n"
+        .text(":white_check_mark: All Funds\n"
           + "10.00% `fundy` [100 of 1000] EUR - description [red] - :open_book: 0 hour(s)")
         .build()));
   }
@@ -368,7 +371,17 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
       .body("statusCode", equalTo(200))
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
-        .text(":white_check_mark: 2022-05-10 03:10 - EUR   987 - PP (_00000000-0000-0001-0000-000000000001_)")
+        .text("Funders of `fundy`")
+        .blocks(List.of(
+          SlackBlock.builder()
+            .header(SlackText.builder().plainText(":white_check_mark: Funders of `fundy`").build())
+            .build(),
+          SlackBlock.builder()
+            .context(List.of(SlackText.builder().markdownText(
+              "2022-05-10 03:10 - EUR   987 - PP (_00000000-0000-0001-0000-000000000001_)"
+            ).build()))
+            .build()
+        ))
         .build()));
   }
 
@@ -393,7 +406,15 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
       .body("statusCode", equalTo(200))
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
-        .text(":white_check_mark: " + expectedText)
+        .text("Fund command help")
+        .blocks(List.of(
+          SlackBlock.builder()
+            .header(SlackText.builder().plainText(":white_check_mark: Fund command help").build())
+            .build(),
+          SlackBlock.builder()
+            .context(List.of(SlackText.builder().markdownText(expectedText).build()))
+            .build()
+        ))
         .build()));
   }
 

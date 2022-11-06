@@ -21,6 +21,7 @@ import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -28,9 +29,9 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
@@ -50,6 +51,9 @@ import com.yuriytkach.tracker.fundraiser.model.exception.FundNotFoundException;
 import com.yuriytkach.tracker.fundraiser.model.exception.FundNotOwnedException;
 import com.yuriytkach.tracker.fundraiser.model.exception.UnknownCurrencyException;
 import com.yuriytkach.tracker.fundraiser.model.exception.UnknownForexException;
+import com.yuriytkach.tracker.fundraiser.model.slack.Block;
+import com.yuriytkach.tracker.fundraiser.model.slack.SlackBlock;
+import com.yuriytkach.tracker.fundraiser.model.slack.SlackText;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -171,7 +175,7 @@ public class TrackService {
     final Fund fund = extractFundDataFromMatchedText(matcher, user);
     try {
       fundService.createFund(fund);
-      return createSuccessResponse("Created fund `" + fund.getName() + "`");
+      return createSuccessResponse(null, List.of("Created fund `" + fund.getName() + "`"));
     } catch (final DuplicateFundException ex) {
       log.info("Can't create fund: {}", ex.getMessage());
       return createErrorResponse(ex.getMessage());
@@ -190,7 +194,10 @@ public class TrackService {
     try {
       fundService.updateFund(updatedFund);
       log.info("The Fund with name: `{}` has been updated", fundName);
-      return createSuccessResponse(format("The Fund with name: `%s` has been updated successfully!", fundName));
+      return createSuccessResponse(
+        null,
+        List.of(format("The fund with name: `%s` has been updated successfully!", fundName))
+      );
 
     } catch (DuplicateFundException ex) {
       log.info("Can't update fund with name `{}`: {}", fundName, ex.getMessage());
@@ -219,7 +226,8 @@ public class TrackService {
     fundService.updateFund(updatedFund);
 
     return createSuccessResponse(
-      "Tracked " + donation.toStringShort() + " - " + updatedFund.toOutputStringShort()
+      null,
+      List.of("Tracked " + donation.toStringShort() + " - " + updatedFund.toOutputStringShort())
     );
   }
 
@@ -320,27 +328,34 @@ public class TrackService {
     }
 
     fundService.deleteFund(fund);
-    return createSuccessResponse(format("Deleted fund `%s`", fund.getName()));
+    return createSuccessResponse(
+      null,
+      List.of(format("Deleted fund `%s`", fund.getName()))
+    );
   }
 
   private SlackResponse processListCommand(final Matcher matcher, final String user) {
-    final String responseText;
+    final List<String> responseTextLines;
+    final String title;
     final String fundName = matcher.group("name");
     if (fundName == null) {
       log.info("Listing all funds for user: {}", user);
-      responseText = "All funds:\n" + fundService.findAllFunds(user).stream()
+      title = null;
+      responseTextLines = StreamEx.of(fundService.findAllFunds(user))
         .sorted(Comparator.comparing(Fund::getUpdatedAt).reversed())
         .map(Fund::toOutputStringLong)
-        .collect(Collectors.joining("\n"));
+        .prepend("All Funds")
+        .toImmutableList();
     } else {
       log.info("Listing all funders of fund: {}", fundName);
       final Fund fund = fundService.findByNameOrException(fundName);
-      responseText = donationStorageClient.findAll(fund.getId()).stream()
+      title = "Funders of `" + fund.getName() + "`";
+      responseTextLines = donationStorageClient.findAll(fund.getId()).stream()
         .sorted(Comparator.comparing(Donation::getDateTime))
         .map(Donation::toStringLong)
-        .collect(Collectors.joining("\n"));
+        .collect(toUnmodifiableList());
     }
-    return createSuccessResponse(responseText);
+    return createSuccessResponse(title, responseTextLines);
   }
 
   @SuppressWarnings("PMD.UnusedFormalParameter")
@@ -349,7 +364,10 @@ public class TrackService {
     final String supportedCurrencies = StreamEx.of(Currency.values())
       .map(Currency::name)
       .joining(", ");
-    return createSuccessResponse(config.helpText().replace("<supported_currencies>", supportedCurrencies));
+    return createSuccessResponse(
+      "Fund command help",
+      List.of(config.helpText().replace("<supported_currencies>", supportedCurrencies))
+    );
   }
 
   private SlackResponse createErrorResponse(final String msg) {
@@ -360,10 +378,28 @@ public class TrackService {
       .build();
   }
 
-  private SlackResponse createSuccessResponse(final String msg) {
-    return SlackResponse.builder()
-      .responseType(SlackResponse.RESPONSE_PRIVATE)
-      .text(":white_check_mark: " + msg)
-      .build();
+  private SlackResponse createSuccessResponse(@Nullable final String title, final List<String> lines) {
+    if (title == null) {
+      final String txt = ":white_check_mark: " + String.join("\n", lines);
+      return SlackResponse.builder()
+        .responseType(SlackResponse.RESPONSE_PRIVATE)
+        .text(txt)
+        .build();
+    } else {
+      final List<Block> blocks = StreamEx.ofSubLists(lines, 50)
+        .map(list -> String.join("\n", list))
+        .map(str -> SlackText.builder().markdownText(str).build())
+        .<Block>map(txt -> SlackBlock.builder().context(List.of(txt)).build())
+        .prepend(SlackBlock.builder().header(
+          SlackText.builder().plainText(":white_check_mark: " + title).build()
+        ).build())
+        .toImmutableList();
+
+      return SlackResponse.builder()
+        .responseType(SlackResponse.RESPONSE_PRIVATE)
+        .text(title)
+        .blocks(blocks)
+        .build();
+    }
   }
 }

@@ -1,14 +1,18 @@
 package com.yuriytkach.tracker.fundraiser.service;
 
-import com.yuriytkach.tracker.fundraiser.forex.ForexService;
-import com.yuriytkach.tracker.fundraiser.model.CommandFormParams;
-import com.yuriytkach.tracker.fundraiser.model.Currency;
-import com.yuriytkach.tracker.fundraiser.model.Donation;
-import com.yuriytkach.tracker.fundraiser.model.Fund;
-import com.yuriytkach.tracker.fundraiser.model.Funder;
-import com.yuriytkach.tracker.fundraiser.model.PagedFunders;
-import com.yuriytkach.tracker.fundraiser.model.SlackResponse;
-import com.yuriytkach.tracker.fundraiser.model.SortOrder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,18 +24,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import com.yuriytkach.tracker.fundraiser.forex.ForexService;
+import com.yuriytkach.tracker.fundraiser.model.CommandFormParams;
+import com.yuriytkach.tracker.fundraiser.model.Currency;
+import com.yuriytkach.tracker.fundraiser.model.Donation;
+import com.yuriytkach.tracker.fundraiser.model.Fund;
+import com.yuriytkach.tracker.fundraiser.model.Funder;
+import com.yuriytkach.tracker.fundraiser.model.PagedFunders;
+import com.yuriytkach.tracker.fundraiser.model.SlackResponse;
+import com.yuriytkach.tracker.fundraiser.model.SortOrder;
 
 @ExtendWith(MockitoExtension.class)
 class TrackServiceTest {
@@ -114,7 +115,7 @@ class TrackServiceTest {
     assertThat(capture.getValue().getCurrency()).isEqualTo(Currency.USD);
     assertThat(capture.getValue().getRaised()).isEqualTo((int) (FUND_1.getRaised() * 1.1));
     assertThat(response.getText())
-            .isEqualTo(":white_check_mark: " + "The Fund with name: `car` has been updated successfully!");
+            .isEqualTo(":white_check_mark: " + "The fund with name: `car` has been updated successfully!");
   }
 
   @Test
