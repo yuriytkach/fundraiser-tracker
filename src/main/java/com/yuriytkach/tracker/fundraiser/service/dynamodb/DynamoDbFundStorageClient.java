@@ -15,6 +15,7 @@ import com.yuriytkach.tracker.fundraiser.service.FundStorageClient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import one.util.streamex.EntryStream;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -44,6 +45,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
   public static final String COL_CURR = "curr";
   public static final String COL_GOAL = "goal";
   public static final String COL_RAISED = "raised";
+  public static final String COL_MONO = "mono";
   public static final String COL_CREATED_AT = "createdAt";
   public static final String COL_UPDATED_AT = "updatedAt";
 
@@ -56,6 +58,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
     COL_CURR,
     COL_GOAL,
     COL_RAISED,
+    COL_MONO,
     COL_CREATED_AT,
     COL_UPDATED_AT,
   };
@@ -77,6 +80,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
         .goal(Integer.parseInt(item.get(COL_GOAL).n()))
         .raised(Integer.parseInt(item.get(COL_RAISED).n()))
         .currency(Currency.fromString(item.get(COL_CURR).s()).orElseThrow())
+        .monobankAccount(item.get(COL_MONO) == null ? null : item.get(COL_MONO).s())
         .createdAt(Instant.parse(item.get(COL_CREATED_AT).s()))
         .updatedAt(Instant.parse(item.get(COL_UPDATED_AT).s()))
         .build());
@@ -113,20 +117,25 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
   public void save(final Fund item) {
     log.debug("Saving: {}", item);
 
+    final var attributes = EntryStream.of(
+      COL_ID, AttributeValue.builder().s(item.getId()).build(),
+      COL_NAME, AttributeValue.builder().s(item.getName()).build(),
+      COL_OWNER, AttributeValue.builder().s(item.getOwner()).build(),
+      COL_DESC, AttributeValue.builder().s(item.getDescription()).build(),
+      COL_COLOR, AttributeValue.builder().s(item.getColor()).build(),
+      COL_CURR, AttributeValue.builder().s(item.getCurrency().name()).build(),
+      COL_GOAL, AttributeValue.builder().n(String.valueOf(item.getGoal())).build(),
+      COL_RAISED, AttributeValue.builder().n(String.valueOf(item.getRaised())).build(),
+      COL_CREATED_AT, AttributeValue.builder().s(item.getCreatedAt().toString()).build(),
+      COL_UPDATED_AT, AttributeValue.builder().s(item.getUpdatedAt().toString()).build()
+    ).append(item.getMonobankAccount()
+      .map(acc -> Map.entry(COL_MONO, AttributeValue.builder().s(acc).build()))
+      .stream()
+    ).toImmutableMap();
+
     final PutItemRequest putRequest = PutItemRequest.builder()
       .tableName(config.fundsTable())
-      .item(Map.of(
-        COL_ID, AttributeValue.builder().s(item.getId()).build(),
-        COL_NAME, AttributeValue.builder().s(item.getName()).build(),
-        COL_OWNER, AttributeValue.builder().s(item.getOwner()).build(),
-        COL_DESC, AttributeValue.builder().s(item.getDescription()).build(),
-        COL_COLOR, AttributeValue.builder().s(item.getColor()).build(),
-        COL_CURR, AttributeValue.builder().s(item.getCurrency().name()).build(),
-        COL_GOAL, AttributeValue.builder().n(String.valueOf(item.getGoal())).build(),
-        COL_RAISED, AttributeValue.builder().n(String.valueOf(item.getRaised())).build(),
-        COL_CREATED_AT, AttributeValue.builder().s(item.getCreatedAt().toString()).build(),
-        COL_UPDATED_AT, AttributeValue.builder().s(item.getUpdatedAt().toString()).build()
-      ))
+      .item(attributes)
       .build();
 
     dynamoDB.putItem(putRequest);

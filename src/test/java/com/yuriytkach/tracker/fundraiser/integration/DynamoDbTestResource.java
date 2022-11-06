@@ -38,9 +38,11 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
   static final String FUND_RED = "red";
   static final String FUND_DESC = "description";
 
+  static final String FUND_1_NAME = "fundy";
+
   static final Fund FUND = Fund.builder()
     .id(FUND_1_TABLE)
-    .name("fundy")
+    .name(FUND_1_NAME)
     .goal(1000)
     .raised(100)
     .currency(Currency.EUR)

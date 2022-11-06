@@ -17,7 +17,7 @@ public class PatternUtils {
     + "(?<goal>\\d+)(\\s/(?<desc>.*)/)?(\\s(?<color>\\w+))?");
 
   public static final Pattern UPDATE_PATTERN = Pattern.compile("(?<name>\\w+)(\\s(?<curr>curr:[A-Za-z]{3}))?"
-    + "(\\s(?<goal>goal:\\d+))?(\\s(?<desc>desc:/.*/))?(\\s(?<color>color:\\w+))?");
+    + "(\\s(?<goal>goal:\\d+))?(\\s(?<desc>desc:/.*/))?(\\s(?<color>color:\\w+))?(\\s(?<mono>mono:\\S+))?");
 
   public static final Pattern LIST_PATTERN = Pattern.compile("(?<name>\\w+)?");
 

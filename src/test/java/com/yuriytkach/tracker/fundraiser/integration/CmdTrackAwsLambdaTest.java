@@ -29,13 +29,14 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
 import com.yuriytkach.tracker.fundraiser.forex.ForexService;
+import com.yuriytkach.tracker.fundraiser.forex.MonoCurrencyRate;
 import com.yuriytkach.tracker.fundraiser.model.Currency;
 import com.yuriytkach.tracker.fundraiser.model.Donation;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
@@ -88,6 +89,20 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
 
   @InjectMock
   IdGenerator idGenerator;
+
+  @BeforeEach
+  void setupCurrencies() {
+    forexService.setCurrencies(List.of(
+      new MonoCurrencyRate(
+        Currency.EUR.getIsoCode(),
+        Currency.USD.getIsoCode(),
+        11111L,
+        1.1,
+        0.9,
+        null
+      )
+    ));
+  }
 
   @AfterEach
   void cleanUp() {
@@ -148,27 +163,6 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
   }
 
   @Test
-  void shouldReturnFailureIfDeleteNotOwnedFund() {
-    final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=unknown_user"
-      + "&text=delete " + FUND.getName());
-
-    given()
-      .contentType(MediaType.APPLICATION_JSON)
-      .accept(MediaType.APPLICATION_JSON)
-      .body(request)
-      .when()
-      .post(LAMBDA_URL_PATH)
-      .then()
-      .statusCode(200)
-      .body("statusCode", equalTo(200))
-      .body("body", jsonEqualTo(SlackResponse.builder()
-        .responseType(SlackResponse.RESPONSE_PRIVATE)
-        .text(":x: Fund `" + FUND.getName() + "` owned by `" + FUND.getOwner() + "`: Can't delete fund")
-        .build()));
-  }
-
-  @Test
   void shouldDeleteFund() {
     final AwsProxyRequest request = createAwsProxyRequest();
     request.setBody("token=" + appConfig.slackToken() + "&user_id=user2"
@@ -211,27 +205,6 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
     assertThat(allTablesResponse.tableNames()).containsExactlyInAnyOrder(
       FUNDS_TABLE, FUND_1_TABLE
     );
-  }
-
-  @Test
-  void shouldReturnFailureIfTrackForNotOwnedFund() {
-    final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=unknown_user"
-      + "&text=track " + FUND.getName() + " " + FUND.getCurrency() + " 123 person 2022-02-01 15:13");
-
-    given()
-      .contentType(MediaType.APPLICATION_JSON)
-      .accept(MediaType.APPLICATION_JSON)
-      .body(request)
-      .when()
-      .post(LAMBDA_URL_PATH)
-      .then()
-      .statusCode(200)
-      .body("statusCode", equalTo(200))
-      .body("body", jsonEqualTo(SlackResponse.builder()
-        .responseType(SlackResponse.RESPONSE_PRIVATE)
-        .text(":x: Fund `" + FUND.getName() + "` owned by `" + FUND.getOwner() + "`: Can't track donations")
-        .build()));
   }
 
   @ParameterizedTest
@@ -308,14 +281,13 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
       .build());
   }
 
-  @ParameterizedTest
-  @ValueSource(strings = {
-    "list unknown",
-    "track unknown eur 123 PP"
-  })
-  void shouldReturnErrorForUnknownFund(final String cmd) {
+  @Test
+  void shouldUpdateFund() {
+    when(idGenerator.generateId()).thenReturn(ITEM_ID_1);
+
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&text=" + cmd);
+    request.setBody("token=" + appConfig.slackToken() + "&user_id=" + FUND_OWNER
+      + "&text=update " + FUND.getName() + " goal:4242 mono:account-id");
 
     given()
       .contentType(MediaType.APPLICATION_JSON)
@@ -328,8 +300,14 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
       .body("statusCode", equalTo(200))
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
-        .text(":x: Fund not found by name: unknown")
+        .text(":white_check_mark: The fund with name: `" + FUND.getName() + "` has been updated successfully!")
         .build()));
+
+    final Optional<Fund> fund = getFundDirectlyByName(FUND.getName());
+    assertThat(fund).hasValue(FUND.toBuilder()
+      .goal(4242)
+      .monobankAccount("account-id")
+      .build());
   }
 
   @Test

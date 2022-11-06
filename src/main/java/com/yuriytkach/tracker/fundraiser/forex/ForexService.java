@@ -11,6 +11,7 @@ import com.yuriytkach.tracker.fundraiser.model.Currency;
 import com.yuriytkach.tracker.fundraiser.model.exception.UnknownForexException;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.StreamEx;
 
@@ -23,6 +24,7 @@ public class ForexService {
   MonobankApi monobankApi;
 
   @Getter
+  @Setter // visible for testing
   private List<MonoCurrencyRate> currencies;
 
   public int convertCurrency(final int amount, final Currency fromCurr, final Currency toCurr)

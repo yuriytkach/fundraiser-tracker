@@ -32,10 +32,26 @@ class FundTest {
   }
 
   @Test
+  void shouldReturnOutputStringLongWithMono() {
+    final Fund fund = createFund(now()).toBuilder().monobankAccount("acc").build();
+    assertThat(fund.toOutputStringLong()).isEqualTo(
+      "30.00% `name` [30 of 100] UAH - desc [color] - :open_book: 0 hour(s) - :cat:"
+    );
+  }
+
+  @Test
   void shouldReturnOutputStringShort() {
     final Fund fund = createFund(now());
     assertThat(fund.toOutputStringShort()).isEqualTo(
       "`name` 30.00% [30 of 100] UAH"
+    );
+  }
+
+  @Test
+  void shouldReturnOutputStringShortWithMono() {
+    final Fund fund = createFund(now()).toBuilder().monobankAccount("account").build();
+    assertThat(fund.toOutputStringShort()).isEqualTo(
+      "`name` 30.00% [30 of 100] UAH Mono"
     );
   }
 
