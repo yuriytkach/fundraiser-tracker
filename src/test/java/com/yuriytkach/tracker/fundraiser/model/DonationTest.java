@@ -29,7 +29,7 @@ class DonationTest {
 
   private Donation createDonation() {
     return Donation.builder()
-      .id(new UUID(1, 1))
+      .id(new UUID(1, 1).toString())
       .person("person")
       .amount(300)
       .currency(Currency.UAH)

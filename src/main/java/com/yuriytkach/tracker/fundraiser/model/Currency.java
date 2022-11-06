@@ -23,4 +23,10 @@ public enum Currency {
       .filter(value -> value.name().equalsIgnoreCase(text))
       .findFirst();
   }
+
+  public static Optional<Currency> fromIsoCode(final int isoCode) {
+    return Stream.of(Currency.values())
+      .filter(value -> value.getIsoCode() == isoCode)
+      .findFirst();
+  }
 }
