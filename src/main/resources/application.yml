@@ -22,8 +22,8 @@ app:
     
     *Update fund:*
     
-    `/fund update car curr:UAH goal:1000 desc:/New description/ color:red`
-    Update fund `car` by setting currency to `UAH`, goal to `1000`, description to `New description` and color to `red`.
+    `/fund update car curr:UAH goal:1000 desc:/New description/ color:red mono:account`
+    Update fund `car` by setting currency to `UAH`, goal to `1000`, description to `New description`, color to `red`, and monobank account id to `account`.
     You can skip any of the fields, but keep the order of fields.
     
     So to update only the goal, just do:  

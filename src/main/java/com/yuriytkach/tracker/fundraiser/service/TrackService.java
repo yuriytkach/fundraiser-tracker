@@ -190,6 +190,7 @@ public class TrackService {
       throw FundNotOwnedException.withFundAndMessage(fund, "Can't update fund");
     }
 
+    log.info("Updating data for fund: {}", fundName);
     final var updatedFund = extractFundDataFromMatchedTextAndUpdate(fund, matcher);
     try {
       fundService.updateFund(updatedFund);
@@ -237,10 +238,13 @@ public class TrackService {
     final var currArg = matcher.group("curr");
     if (currArg != null) {
       final var currName = currArg.split(":")[1];
+      log.debug("Update fund's currency {} to: {}", fund.getCurrency(), currName);
+
       final var curr = Currency.fromString(currName).orElseThrow(UnknownCurrencyException::new);
       if (fund.getCurrency() != curr) {
         final var convertedAmount = forexService.convertCurrency(fund.getRaised(), fund.getCurrency(), curr);
         fundBuilder.raised(convertedAmount);
+        log.debug("Update raised amount from {} to: {}", fund.getRaised(), convertedAmount);
       }
       fundBuilder.currency(curr);
     }
@@ -248,19 +252,29 @@ public class TrackService {
     final var goalArg = matcher.group("goal");
     if (goalArg != null) {
       final var goal = goalArg.split(":")[1];
+      log.debug("Update fund goal from {} to: {}", fund.getGoal(), goal);
       fundBuilder.goal(Integer.parseInt(goal));
     }
 
     final var descArg = matcher.group("desc");
     if (descArg != null) {
       final var desc = descArg.split(":")[1];
+      log.debug("Update fund desc from '{}' to: {}", fund.getDescription(), desc);
       fundBuilder.description(desc);
     }
 
     final var colorArg = matcher.group("color");
     if (colorArg != null) {
       final var color = colorArg.split(":")[1];
+      log.debug("Update fund color from '{}' to: {}", fund.getColor(), color);
       fundBuilder.color(color);
+    }
+
+    final var monoArg = matcher.group("mono");
+    if (monoArg != null) {
+      final var mono = monoArg.split(":")[1];
+      log.debug("Update fund monobank account from '{}' to: {}", fund.getMonobankAccount().orElse(null), mono);
+      fundBuilder.monobankAccount(mono);
     }
 
     return fundBuilder.build();

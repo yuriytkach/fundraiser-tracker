@@ -14,7 +14,9 @@ public enum CommandType {
 
   TRACK,
 
-  LIST;
+  LIST,
+
+  MONO;
 
   public static Optional<CommandType> fromString(final String text) {
     return Stream.of(CommandType.values())

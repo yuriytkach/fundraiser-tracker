@@ -1,5 +1,8 @@
 package com.yuriytkach.tracker.fundraiser.integration;
 
+import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND;
+import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND_1_NAME;
+import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND_OWNER;
 import static com.yuriytkach.tracker.fundraiser.util.JsonMatcher.jsonEqualTo;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -68,10 +71,36 @@ class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
 
   @ParameterizedTest
   @ValueSource(strings = {
-    "track fund xyz 123 person",
-    "create fund xyz 123"
+    "track " + FUND_1_NAME + " xyz 123 person",
+    "create hohoho xyz 123",
+    "update " + FUND_1_NAME + " curr:xyz",
   })
   void shouldReturnFailureIfUnknownCurrency(final String cmd) {
+    final AwsProxyRequest request = createAwsProxyRequest();
+    request.setBody("token=" + appConfig.slackToken() + "&user_id=" + FUND_OWNER + "&text=" + cmd);
+
+    given()
+      .contentType(MediaType.APPLICATION_JSON)
+      .accept(MediaType.APPLICATION_JSON)
+      .body(request)
+      .when()
+      .post(LAMBDA_URL_PATH)
+      .then()
+      .statusCode(200)
+      .body("statusCode", equalTo(200))
+      .body("body", jsonEqualTo(SlackResponse.builder()
+        .responseType(SlackResponse.RESPONSE_PRIVATE)
+        .text(":x: Unknown currency in text: " + cmd)
+        .build()));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+    "list unknown",
+    "track unknown eur 123 PP",
+    "update unknown curr:eur",
+  })
+  void shouldReturnErrorForUnknownFund(final String cmd) {
     final AwsProxyRequest request = createAwsProxyRequest();
     request.setBody("token=" + appConfig.slackToken() + "&text=" + cmd);
 
@@ -86,7 +115,70 @@ class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
       .body("statusCode", equalTo(200))
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
-        .text(":x: Unknown currency in text: " + cmd)
+        .text(":x: Fund not found by name: unknown")
+        .build()));
+  }
+
+  @Test
+  void shouldReturnFailureIfTrackForNotOwnedFund() {
+    final AwsProxyRequest request = createAwsProxyRequest();
+    request.setBody("token=" + appConfig.slackToken() + "&user_id=unknown_user"
+      + "&text=track " + FUND.getName() + " " + FUND.getCurrency() + " 123 person 2022-02-01 15:13");
+
+    given()
+      .contentType(MediaType.APPLICATION_JSON)
+      .accept(MediaType.APPLICATION_JSON)
+      .body(request)
+      .when()
+      .post(LAMBDA_URL_PATH)
+      .then()
+      .statusCode(200)
+      .body("statusCode", equalTo(200))
+      .body("body", jsonEqualTo(SlackResponse.builder()
+        .responseType(SlackResponse.RESPONSE_PRIVATE)
+        .text(":x: Fund `" + FUND.getName() + "` owned by `" + FUND.getOwner() + "`: Can't track donations")
+        .build()));
+  }
+
+  @Test
+  void shouldReturnFailureIfDeleteNotOwnedFund() {
+    final AwsProxyRequest request = createAwsProxyRequest();
+    request.setBody("token=" + appConfig.slackToken() + "&user_id=unknown_user"
+      + "&text=delete " + FUND.getName());
+
+    given()
+      .contentType(MediaType.APPLICATION_JSON)
+      .accept(MediaType.APPLICATION_JSON)
+      .body(request)
+      .when()
+      .post(LAMBDA_URL_PATH)
+      .then()
+      .statusCode(200)
+      .body("statusCode", equalTo(200))
+      .body("body", jsonEqualTo(SlackResponse.builder()
+        .responseType(SlackResponse.RESPONSE_PRIVATE)
+        .text(":x: Fund `" + FUND.getName() + "` owned by `" + FUND.getOwner() + "`: Can't delete fund")
+        .build()));
+  }
+
+  @Test
+  void shouldReturnFailureIfUpdateNotOwnedFund() {
+    final AwsProxyRequest request = createAwsProxyRequest();
+    request.setBody("token=" + appConfig.slackToken() + "&user_id=unknown_user"
+      + "&text=update " + FUND.getName() + " curr:EUR");
+
+    given()
+      .contentType(MediaType.APPLICATION_JSON)
+      .accept(MediaType.APPLICATION_JSON)
+      .body(request)
+      .when()
+      .post(LAMBDA_URL_PATH)
+      .then()
+      .statusCode(200)
+      .body("statusCode", equalTo(200))
+      .body("body", jsonEqualTo(SlackResponse.builder()
+        .responseType(SlackResponse.RESPONSE_PRIVATE)
+        .text(":x: Fund `" + FUND.getName() + "` owned by `" + FUND.getOwner() + "`: Can't update fund")
         .build()));
   }
 
