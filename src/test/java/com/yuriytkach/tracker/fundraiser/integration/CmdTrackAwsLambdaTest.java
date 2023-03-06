@@ -237,7 +237,7 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
 
     final Optional<Donation> donation = getDonationDirectlyById(ITEM_ID_1);
     assertThat(donation).hasValue(Donation.builder()
-      .id(ITEM_ID_1)
+      .id(ITEM_ID_1.toString())
       .currency(FUND.getCurrency())
       .amount(123)
       .dateTime(Instant.parse("2022-02-01T12:13:00Z"))

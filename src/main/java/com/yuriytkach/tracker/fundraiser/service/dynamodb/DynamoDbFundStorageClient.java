@@ -19,6 +19,8 @@ import one.util.streamex.EntryStream;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ComparisonOperator;
+import software.amazon.awssdk.services.dynamodb.model.Condition;
 import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.CreateTableResponse;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
@@ -29,6 +31,8 @@ import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
 import software.amazon.awssdk.services.dynamodb.model.KeyType;
 import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughput;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
+import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 
@@ -173,6 +177,22 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
   }
 
   @Override
+  public Optional<Fund> getByMonoAccount(final String accountId) {
+    final QueryRequest queryRequest = QueryRequest.builder()
+      .tableName(config.fundsTable())
+      .indexName(config.fundsMonoIndex())
+      .keyConditions(Map.of(COL_MONO, equalCondition(accountId)))
+      .attributesToGet(ALL_ATTRIBUTES)
+      .build();
+
+    return Optional.ofNullable(dynamoDB.query(queryRequest))
+      .filter(QueryResponse::hasItems)
+      .map(QueryResponse::items)
+      .flatMap(items -> items.stream().findFirst())
+      .flatMap(DynamoDbFundStorageClient::parseFund);
+  }
+
+  @Override
   public void remove(final Fund fund) {
     final DeleteItemRequest itemDeleteRequest = DeleteItemRequest.builder()
       .tableName(config.fundsTable())
@@ -188,5 +208,12 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
     dynamoDB.deleteTable(deleteTableRequest);
 
     log.info("Deleted fund table: {}", fund.getId());
+  }
+
+  private Condition equalCondition(final String value) {
+    return Condition.builder()
+      .attributeValueList(AttributeValue.fromS(value))
+      .comparisonOperator(ComparisonOperator.EQ)
+      .build();
   }
 }

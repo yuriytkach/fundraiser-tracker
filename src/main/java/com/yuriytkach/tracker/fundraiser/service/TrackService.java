@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,6 +75,8 @@ public class TrackService {
   private final ForexService forexService;
 
   private final FundTrackerConfig config;
+
+  private final DonationTracker donationTracker;
   
   @PostConstruct
   void initCommandProcessors() {
@@ -213,18 +214,7 @@ public class TrackService {
       throw FundNotOwnedException.withFundAndMessage(fund, "Can't track donations");
     }
 
-    final var donationAmountInFund = forexService.convertCurrency(
-      donation.getAmount(), donation.getCurrency(), fund.getCurrency()
-    );
-    final var updatedFund = fund.toBuilder()
-      .raised(fund.getRaised() + donationAmountInFund)
-      .updatedAt(donation.getDateTime())
-      .build();
-
-    log.info("Track in fund {}: {}", fund.getName(), donation);
-    donationStorageClient.add(fund.getId(), donation);
-
-    fundService.updateFund(updatedFund);
+    final Fund updatedFund = donationTracker.trackDonation(fund, donation);
 
     return createSuccessResponse(
       null,
@@ -325,9 +315,8 @@ public class TrackService {
     }
     final String person = matcher.group("pp");
 
-    final UUID id = idGenerator.generateId();
     return Donation.builder()
-      .id(id)
+      .id(idGenerator.generateId().toString())
       .currency(curr)
       .amount(amount)
       .dateTime(instant)

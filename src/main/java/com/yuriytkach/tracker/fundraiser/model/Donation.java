@@ -4,7 +4,6 @@ import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.DATE_TIME_F
 
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.UUID;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Builder;
@@ -15,7 +14,7 @@ import lombok.Data;
 @RegisterForReflection
 public class Donation {
 
-  private final UUID id;
+  private final String id;
   private final Currency currency;
   private final int amount;
   private final Instant dateTime;

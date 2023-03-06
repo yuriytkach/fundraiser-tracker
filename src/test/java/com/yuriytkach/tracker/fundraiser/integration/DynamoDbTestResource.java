@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.testcontainers.containers.GenericContainer;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -15,8 +17,11 @@ import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.CreateTableResult;
+import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
+import com.amazonaws.services.dynamodbv2.model.Projection;
+import com.amazonaws.services.dynamodbv2.model.ProjectionType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
@@ -33,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager {
 
   static final String FUNDS_TABLE = "all-funds-table";
+  static final String MONO_INDEX = "test-mono-index";
   static final String FUND_1_TABLE = "donations-table";
   static final String FUND_OWNER = "owner";
   static final String FUND_RED = "red";
@@ -69,15 +75,32 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
       .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(url, "eu-central-1"))
       .build();
 
-    createTable(dynamoDB, FUNDS_TABLE, DynamoDbFundStorageClient.COL_NAME);
-    createTable(dynamoDB, FUND_1_TABLE, DynamoDbDonationClientDonation.COL_ID);
+    createTable(
+      dynamoDB,
+      FUNDS_TABLE,
+      DynamoDbFundStorageClient.COL_NAME,
+      buildSecondaryIndex(MONO_INDEX, DynamoDbFundStorageClient.COL_MONO)
+    );
+    createTable(dynamoDB, FUND_1_TABLE, DynamoDbDonationClientDonation.COL_ID, null);
 
     createFundItem(dynamoDB);
 
     return Map.of(
       "app.funds-table", FUNDS_TABLE,
+      "app.funds-mono-index", MONO_INDEX,
       "quarkus.dynamodb.endpoint-override", url
     );
+  }
+
+  private GlobalSecondaryIndex buildSecondaryIndex(
+    final String indexName,
+    final String keyColumn
+  ) {
+    return new GlobalSecondaryIndex()
+      .withIndexName(indexName)
+      .withKeySchema(new KeySchemaElement(keyColumn, KeyType.HASH))
+      .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
+      .withProvisionedThroughput(new ProvisionedThroughput().withWriteCapacityUnits(1L).withReadCapacityUnits(1L));
   }
 
   @Override
@@ -112,7 +135,12 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     dynamoDB.putItem(putRequest);
   }
 
-  private void createTable(final AmazonDynamoDB dynamoDB, final String tableName, final String keyColumn) {
+  private void createTable(
+    final AmazonDynamoDB dynamoDB,
+    final String tableName,
+    final String keyColumn,
+    @Nullable final GlobalSecondaryIndex index
+  ) {
     final CreateTableRequest request = new CreateTableRequest();
     request.setTableName(tableName);
     request.setKeySchema(List.of(
@@ -122,6 +150,13 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
       new AttributeDefinition(keyColumn, ScalarAttributeType.S)
     ));
     request.setProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
+
+    if (index != null) {
+      request.withGlobalSecondaryIndexes(List.of(index));
+      request.withAttributeDefinitions(new AttributeDefinition(
+        index.getKeySchema().get(0).getAttributeName(), ScalarAttributeType.S));
+    }
+
     final CreateTableResult table = dynamoDB.createTable(request);
 
     log.info("Created table: {}", table.getTableDescription());

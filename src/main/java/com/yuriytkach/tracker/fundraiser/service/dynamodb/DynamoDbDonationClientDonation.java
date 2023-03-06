@@ -47,7 +47,7 @@ public class DynamoDbDonationClientDonation implements DonationStorageClient {
       return Optional.empty();
     } else {
       return Optional.of(Donation.builder()
-        .id(UUID.fromString(item.get(COL_ID).s()))
+        .id(item.get(COL_ID).s())
         .currency(Currency.fromString(item.get(COL_CURR).s()).orElseThrow())
         .amount(Integer.parseInt(item.get(COL_AMOUNT).n()))
         .dateTime(Instant.parse(item.get(COL_TIME).s()))
@@ -93,7 +93,7 @@ public class DynamoDbDonationClientDonation implements DonationStorageClient {
 
   private PutItemRequest createPutRequest(final String tableName, final Donation donation) {
     final Map<String, AttributeValue> item = new HashMap<>();
-    item.put(COL_ID, AttributeValue.builder().s(donation.getId().toString()).build());
+    item.put(COL_ID, AttributeValue.builder().s(donation.getId()).build());
     item.put(COL_CURR, AttributeValue.builder().s(donation.getCurrency().name()).build());
     item.put(COL_AMOUNT, AttributeValue.builder().n(String.valueOf(donation.getAmount())).build());
     item.put(COL_TIME, AttributeValue.builder().s(donation.getDateTime().toString()).build());
