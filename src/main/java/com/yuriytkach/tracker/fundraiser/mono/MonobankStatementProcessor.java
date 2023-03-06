@@ -38,7 +38,10 @@ public class MonobankStatementProcessor {
     log.debug("Received mono statement: {}", statement);
 
     fundService.findByMonoAccount(statement.getData().getAccount())
-      .ifPresent(fund -> trackStatementForFund(fund, statement.getData().getStatementItem()));
+      .ifPresentOrElse(
+        fund -> trackStatementForFund(fund, statement.getData().getStatementItem()),
+        () -> log.warn("Fund is not found by bank account id: {}", statement.getData().getAccount())
+      );
   }
 
   private void trackStatementForFund(final Fund fund, final MonobankStatement.MonobankStatementItem statementItem) {
