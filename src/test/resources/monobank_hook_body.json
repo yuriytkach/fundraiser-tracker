@@ -1,0 +1,21 @@
+{
+  "type": "StatementItem",
+  "data": {
+    "account": "monoAccountId",
+    "statementItem": {
+      "id": "monoStatementId",
+      "time": 1667731529,
+      "description": "Від: Юрій Ткач",
+      "comment": "M",
+      "mcc": 4829,
+      "originalMcc": 4829,
+      "amount": 1000,
+      "operationAmount": 40000,
+      "currencyCode": 978,
+      "commissionRate": 0,
+      "cashbackAmount": 0,
+      "balance": 10000,
+      "hold": false
+    }
+  }
+}

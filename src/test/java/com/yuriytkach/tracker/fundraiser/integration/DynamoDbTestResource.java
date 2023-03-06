@@ -43,6 +43,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
   static final String FUND_OWNER = "owner";
   static final String FUND_RED = "red";
   static final String FUND_DESC = "description";
+  static final String FUND_MONO_ACCOUNT_ID = "monoAccountId";
 
   static final String FUND_1_NAME = "fundy";
 
@@ -57,6 +58,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     .description(FUND_DESC)
     .color(FUND_RED)
     .owner(FUND_OWNER)
+    .monobankAccount(FUND_MONO_ACCOUNT_ID)
     .build();
 
   private static final GenericContainer<?> CONTAINER = new GenericContainer<>("amazon/dynamodb-local:1.11.477")
@@ -131,6 +133,8 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
       DynamoDbFundStorageClient.COL_CREATED_AT, new AttributeValue().withS(FUND.getCreatedAt().toString()));
     putRequest.addItemEntry(
       DynamoDbFundStorageClient.COL_UPDATED_AT, new AttributeValue().withS(FUND.getUpdatedAt().toString()));
+    putRequest.addItemEntry(
+      DynamoDbFundStorageClient.COL_MONO, new AttributeValue().withS(FUND.getMonobankAccount().orElseThrow()));
 
     dynamoDB.putItem(putRequest);
   }

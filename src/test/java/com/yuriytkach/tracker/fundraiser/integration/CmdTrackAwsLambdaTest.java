@@ -4,7 +4,6 @@ import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource
 import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUNDS_TABLE;
 import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND_1_TABLE;
 import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND_OWNER;
-import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.ALL_ATTRIBUTES;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_AMOUNT;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_CURR;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_ID;
@@ -28,7 +27,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -45,8 +43,6 @@ import com.yuriytkach.tracker.fundraiser.model.slack.SlackBlock;
 import com.yuriytkach.tracker.fundraiser.model.slack.SlackText;
 import com.yuriytkach.tracker.fundraiser.service.FundService;
 import com.yuriytkach.tracker.fundraiser.service.IdGenerator;
-import com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation;
-import com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbFundStorageClient;
 
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -56,33 +52,19 @@ import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.StreamEx;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.BatchWriteItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.DeleteRequest;
-import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.ListTablesResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
 
 @Slf4j
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
-
-  private static final UUID ITEM_ID_1 = new UUID(1, 1);
-  private static final UUID ITEM_ID_2 = new UUID(2, 2);
-
-  private static final String FUND_2_NAME = "carFund";
+class CmdTrackAwsLambdaTest extends FundCleanupTestCommon implements AwsLambdaTestCommon {
 
   @Inject
   FundTrackerConfig appConfig;
 
   @Inject
   DynamoDbClient dynamoDB;
-
-  @Inject
-  DynamoDbFundStorageClient fundStorageClient;
 
   @Inject
   ForexService forexService;
@@ -102,15 +84,6 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
         null
       )
     ));
-  }
-
-  @AfterEach
-  void cleanUp() {
-    log.info("----- CLEANUP ------");
-    deleteItemByIdDirectly(FUND_1_TABLE, COL_ID, ITEM_ID_1, ITEM_ID_2);
-    deleteItemByIdDirectly(FUNDS_TABLE, DynamoDbFundStorageClient.COL_NAME, FUND_2_NAME);
-    deleteTableIfExists(FundService.FUND_TABLE_PREFIX + FUND_2_NAME);
-    fundStorageClient.save(FUND);
   }
 
   @ParameterizedTest
@@ -232,10 +205,10 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
         .responseType(SlackResponse.RESPONSE_PRIVATE)
         .text(":white_check_mark: Tracked 123 "
           + FUND.getCurrency() + " by " + expectedPerson + " at 2022-02-01 15:13"
-          + " - `fundy` 22.30% [223 of 1000] EUR")
+          + " - `fundy` 22.30% [223 of 1000] EUR Mono")
         .build()));
 
-    final Optional<Donation> donation = getDonationDirectlyById(ITEM_ID_1);
+    final Optional<Donation> donation = getDonationDirectlyById(ITEM_ID_1.toString());
     assertThat(donation).hasValue(Donation.builder()
       .id(ITEM_ID_1.toString())
       .currency(FUND.getCurrency())
@@ -327,7 +300,7 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
         .text(":white_check_mark: All Funds\n"
-          + "10.00% `fundy` [100 of 1000] EUR - description [red] - :open_book: 0 hour(s)")
+          + "10.00% `fundy` [100 of 1000] EUR - description [red] - :open_book: 0 hour(s) - :cat:")
         .build()));
   }
 
@@ -415,48 +388,6 @@ class CmdTrackAwsLambdaTest implements AwsLambdaTestCommon {
       .item(item)
       .build();
     dynamoDB.putItem(putRequest);
-  }
-
-  private Optional<Donation> getDonationDirectlyById(final UUID id) {
-    final GetItemRequest dbGetItemRequest = GetItemRequest.builder()
-      .tableName(FUND_1_TABLE)
-      .key(Map.of(COL_ID, AttributeValue.builder().s(id.toString()).build()))
-      .attributesToGet(ALL_ATTRIBUTES)
-      .build();
-    final GetItemResponse response = dynamoDB.getItem(dbGetItemRequest);
-    assertThat(response.item()).isNotEmpty();
-    return DynamoDbDonationClientDonation.parseDonation(response.item());
-  }
-
-  private Optional<Fund> getFundDirectlyByName(final String name) {
-    final GetItemRequest dbGetItemRequest = GetItemRequest.builder()
-      .tableName(FUNDS_TABLE)
-      .key(Map.of(DynamoDbFundStorageClient.COL_NAME, AttributeValue.builder().s(name).build()))
-      .attributesToGet(DynamoDbFundStorageClient.ALL_ATTRIBUTES)
-      .build();
-    final GetItemResponse response = dynamoDB.getItem(dbGetItemRequest);
-    assertThat(response.item()).isNotEmpty();
-    return DynamoDbFundStorageClient.parseFund(response.item());
-  }
-
-  private void deleteItemByIdDirectly(final String fundTable, final String keyColumn, final Object... ids) {
-    final var requests = StreamEx.of(ids)
-      .map(id -> AttributeValue.builder().s(id.toString()).build())
-      .map(attrValue -> Map.of(keyColumn, attrValue))
-      .map(key -> DeleteRequest.builder().key(key).build())
-      .map(delReq -> WriteRequest.builder().deleteRequest(delReq).build())
-      .toList();
-
-    dynamoDB.batchWriteItem(BatchWriteItemRequest.builder()
-      .requestItems(Map.of(fundTable, requests))
-      .build());
-  }
-
-  private void deleteTableIfExists(final String tableName) {
-    final var rez = dynamoDB.listTables();
-    if (rez.tableNames().stream().anyMatch(name -> name.equals(tableName))) {
-      dynamoDB.deleteTable(DeleteTableRequest.builder().tableName(tableName).build());
-    }
   }
 
 }
