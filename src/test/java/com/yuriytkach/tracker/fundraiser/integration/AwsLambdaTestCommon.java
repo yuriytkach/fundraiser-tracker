@@ -1,5 +1,7 @@
 package com.yuriytkach.tracker.fundraiser.integration;
 
+import java.util.Map;
+
 import javax.ws.rs.core.MediaType;
 
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
@@ -10,13 +12,31 @@ public interface AwsLambdaTestCommon {
   String LAMBDA_URL_PATH = "/_lambda_";
 
   default AwsProxyRequest createAwsProxyRequest() {
+    return createAwsProxyRequest(
+      "/slack/cmd",
+      "POST",
+      Map.of(
+        "Content-Type", MediaType.APPLICATION_FORM_URLENCODED,
+        "Accept", MediaType.APPLICATION_JSON
+      )
+    );
+  }
+
+  default AwsProxyRequest createAwsProxyRequest(
+    final String path,
+    final String httpMethod,
+    final Map<String, String> headers
+  ) {
     final AwsProxyRequest request = new AwsProxyRequest();
-    request.setPath("/slack/cmd");
-    request.setHttpMethod("POST");
-    final Headers headers = new Headers();
-    headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED);
-    headers.add("Accept", MediaType.APPLICATION_JSON);
-    request.setMultiValueHeaders(headers);
+    request.setPath(path);
+    request.setHttpMethod(httpMethod);
+
+    if (!headers.isEmpty()) {
+      final Headers requestHeaders = new Headers();
+      headers.forEach(requestHeaders::add);
+      request.setMultiValueHeaders(requestHeaders);
+    }
+
     return request;
   }
 
