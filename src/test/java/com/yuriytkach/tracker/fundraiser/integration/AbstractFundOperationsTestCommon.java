@@ -33,7 +33,7 @@ import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
 
 @Slf4j
-abstract class FundCleanupTestCommon {
+abstract class AbstractFundOperationsTestCommon {
 
   static final UUID ITEM_ID_1 = new UUID(1, 1);
   static final UUID ITEM_ID_2 = new UUID(2, 2);

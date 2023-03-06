@@ -58,7 +58,7 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 @Slf4j
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-class CmdTrackAwsLambdaTest extends FundCleanupTestCommon implements AwsLambdaTestCommon {
+class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements AwsLambdaTestCommon {
 
   @Inject
   FundTrackerConfig appConfig;
