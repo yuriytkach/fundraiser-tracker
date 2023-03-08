@@ -3,6 +3,7 @@ package com.yuriytkach.tracker.fundraiser.integration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -38,12 +39,12 @@ import lombok.extern.slf4j.Slf4j;
 public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager {
 
   static final String FUNDS_TABLE = "all-funds-table";
-  static final String MONO_INDEX = "test-mono-index";
+  static final String ENABLED_INDEX = "test-mono-index";
   static final String FUND_1_TABLE = "donations-table";
   static final String FUND_OWNER = "owner";
   static final String FUND_RED = "red";
   static final String FUND_DESC = "description";
-  static final String FUND_MONO_ACCOUNT_ID = "monoAccountId";
+  static final String FUND_BANK_ACCOUNT_ID = "bankAccountId";
 
   static final String FUND_1_NAME = "fundy";
 
@@ -59,7 +60,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     .description(FUND_DESC)
     .color(FUND_RED)
     .owner(FUND_OWNER)
-    .monobankAccount(FUND_MONO_ACCOUNT_ID)
+    .bankAccounts(Set.of(FUND_BANK_ACCOUNT_ID))
     .build();
 
   private static final GenericContainer<?> CONTAINER = new GenericContainer<>("amazon/dynamodb-local:1.11.477")
@@ -82,7 +83,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
       dynamoDB,
       FUNDS_TABLE,
       DynamoDbFundStorageClient.COL_NAME,
-      buildSecondaryIndex(MONO_INDEX, DynamoDbFundStorageClient.COL_MONO)
+      buildSecondaryIndex(ENABLED_INDEX, DynamoDbFundStorageClient.COL_ENABLED)
     );
     createTable(dynamoDB, FUND_1_TABLE, DynamoDbDonationClientDonation.COL_ID, null);
 
@@ -90,7 +91,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
 
     return Map.of(
       "app.funds-table", FUNDS_TABLE,
-      "app.funds-mono-index", MONO_INDEX,
+      "app.funds-enabled-index", ENABLED_INDEX,
       "quarkus.dynamodb.endpoint-override", url
     );
   }
@@ -117,7 +118,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     putRequest.addItemEntry(
       DynamoDbFundStorageClient.COL_ID, new AttributeValue().withS(FUND.getId()));
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_ENABLED, new AttributeValue().withBOOL(FUND.isEnabled()));
+      DynamoDbFundStorageClient.COL_ENABLED, new AttributeValue().withN(FUND.getEnabledNkey()));
     putRequest.addItemEntry(
       DynamoDbFundStorageClient.COL_NAME, new AttributeValue().withS(FUND.getName()));
     putRequest.addItemEntry(
@@ -137,7 +138,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     putRequest.addItemEntry(
       DynamoDbFundStorageClient.COL_UPDATED_AT, new AttributeValue().withS(FUND.getUpdatedAt().toString()));
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_MONO, new AttributeValue().withS(FUND.getMonobankAccount().orElseThrow()));
+      DynamoDbFundStorageClient.COL_BANK, new AttributeValue().withSS(FUND.getBankAccounts()));
 
     dynamoDB.putItem(putRequest);
   }
@@ -161,7 +162,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     if (index != null) {
       request.withGlobalSecondaryIndexes(List.of(index));
       request.withAttributeDefinitions(new AttributeDefinition(
-        index.getKeySchema().get(0).getAttributeName(), ScalarAttributeType.S));
+        index.getKeySchema().get(0).getAttributeName(), ScalarAttributeType.N));
     }
 
     final CreateTableResult table = dynamoDB.createTable(request);

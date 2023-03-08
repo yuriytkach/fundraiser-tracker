@@ -5,6 +5,7 @@ import static java.time.temporal.ChronoUnit.HOURS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
+import java.util.Set;
 
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
@@ -37,10 +38,10 @@ class FundTest {
   }
 
   @Test
-  void shouldReturnOutputStringLongWithMono() {
-    final Fund fund = createFund(now()).toBuilder().monobankAccount("acc").build();
+  void shouldReturnOutputStringLongWithBankAccounts() {
+    final Fund fund = createFund(now()).toBuilder().bankAccounts(Set.of("acc", "acc2")).build();
     assertThat(fund.toOutputStringLong()).isEqualTo(
-      ":open_book: 30.00% `name` [30 of 100] UAH - desc [color] - 0 h - :cat:"
+      ":open_book: 30.00% `name` [30 of 100] UAH - desc [color] - 0 h - :bank:-2"
     );
   }
 
@@ -53,10 +54,10 @@ class FundTest {
   }
 
   @Test
-  void shouldReturnOutputStringShortWithMono() {
-    final Fund fund = createFund(now()).toBuilder().monobankAccount("account").build();
+  void shouldReturnOutputStringShortWithBankAccounts() {
+    final Fund fund = createFund(now()).toBuilder().bankAccounts(Set.of("account")).build();
     assertThat(fund.toOutputStringShort()).isEqualTo(
-      ":open_book: `name` 30.00% [30 of 100] UAH Mono"
+      ":open_book: `name` 30.00% [30 of 100] UAH - :bank:-1"
     );
   }
 

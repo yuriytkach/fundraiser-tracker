@@ -20,7 +20,7 @@ public class PatternUtils {
     + "(\\s(?<open>open))?(\\s(?<close>close))?"
     + "(\\s(?<curr>curr:[A-Za-z]{3}))?"
     + "(\\s(?<goal>goal:\\d+))?(\\s(?<desc>desc:/.*/))?(\\s(?<color>color:\\w+))?"
-    + "(\\s(?<mono>mono:\\S+))?");
+    + "(\\s(?<bank>bank:\\S+))?");
 
   public static final Pattern LIST_PATTERN = Pattern.compile("(?<name>\\w+)?");
 

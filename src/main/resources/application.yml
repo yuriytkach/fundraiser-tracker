@@ -1,7 +1,7 @@
 app:
   slack-token: HELLO
   funds-table: funds
-  funds-mono-index: mono-index
+  funds-enabled-index: enabled-index
   default-fund-color: green
   default-person-name: noname
   web:
