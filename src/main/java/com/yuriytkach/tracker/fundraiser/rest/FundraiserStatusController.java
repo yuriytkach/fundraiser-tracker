@@ -28,6 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class FundraiserStatusController {
 
+  private static final boolean SHORT_AGE = true;
+
   private final TrackService trackService;
 
   private final FundService fundService;
@@ -46,7 +48,7 @@ public class FundraiserStatusController {
 
     log.info("Found funds for user {}: {}", userId, allFunds.size());
 
-    final CacheControl cacheControl = createCacheControl();
+    final CacheControl cacheControl = createCacheControl(SHORT_AGE);
     final Response.ResponseBuilder responseBuilder = Response.ok(allFunds).cacheControl(cacheControl);
     return addCorsHeaders(responseBuilder).build();
   }
@@ -61,7 +63,7 @@ public class FundraiserStatusController {
     final var statusOpt = fundService.findByName(fundName)
       .map(this::mapFundToFundStatus);
 
-    final CacheControl cacheControl = createCacheControl();
+    final CacheControl cacheControl = createCacheControl(statusOpt.map(FundStatus::isEnabled).orElse(SHORT_AGE));
 
     if (statusOpt.isEmpty()) {
       log.info("Fund not found: {}", fundName);
@@ -91,7 +93,7 @@ public class FundraiserStatusController {
       pagedFunders.getSize(),
       pagedFunders.getTotal()
     );
-    final CacheControl cacheControl = createCacheControl();
+    final CacheControl cacheControl = createCacheControl(pagedFunders.isEnabledFund());
     return addCorsHeaders(Response.ok(pagedFunders.getFunders())
       .cacheControl(cacheControl))
       .header("x-total-count", pagedFunders.getTotal())
@@ -100,9 +102,9 @@ public class FundraiserStatusController {
       .build();
   }
 
-  private CacheControl createCacheControl() {
+  private CacheControl createCacheControl(final boolean shortAge) {
     final CacheControl cacheControl = new CacheControl();
-    cacheControl.setMaxAge(config.web().cacheMaxAgeSec());
+    cacheControl.setMaxAge(shortAge ? config.web().cacheMaxAgeSec() : config.web().longCacheMaxAgeSec());
     return cacheControl;
   }
 
@@ -115,6 +117,7 @@ public class FundraiserStatusController {
 
   private FundStatus mapFundToFundStatus(final Fund fund) {
     return FundStatus.builder()
+      .enabled(fund.isEnabled())
       .goal(fund.getGoal())
       .currency(fund.getCurrency())
       .raised(fund.getRaised())

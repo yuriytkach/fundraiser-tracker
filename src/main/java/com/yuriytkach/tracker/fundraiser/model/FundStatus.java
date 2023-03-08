@@ -8,6 +8,7 @@ import lombok.Data;
 @RegisterForReflection
 @Builder(toBuilder = true)
 public class FundStatus {
+  private final boolean enabled;
   private final int goal;
   private final int raised;
   private final Currency currency;

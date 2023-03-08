@@ -22,6 +22,8 @@ public interface FundTrackerConfig {
   interface WebConfig {
 
     int cacheMaxAgeSec();
+
+    int longCacheMaxAgeSec();
   }
 
 }

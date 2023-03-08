@@ -180,6 +180,7 @@ class TrackServiceTest {
     final boolean hasFundersInList
   ) {
     when(fundService.findByName(any())).thenReturn(Optional.of(Fund.builder()
+      .enabled(true)
       .id(FUND_ID)
       .name(FUND_NAME)
       .build()));
@@ -188,6 +189,7 @@ class TrackServiceTest {
 
     final var result = tested.getAllFunders(FUND_NAME, SortOrder.ASC, page, size);
 
+    assertThat(result.isEnabledFund()).isTrue();
     assertThat(result.getTotal()).isEqualTo(2);
     assertThat(result.getPage()).isEqualTo(size == null ? 0 : (page == null ? 0 : page));
     assertThat(result.getSize()).isEqualTo(expectedCnt);

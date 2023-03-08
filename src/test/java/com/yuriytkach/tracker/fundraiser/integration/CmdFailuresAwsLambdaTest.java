@@ -7,6 +7,9 @@ import static com.yuriytkach.tracker.fundraiser.util.JsonMatcher.jsonEqualTo;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
@@ -18,6 +21,7 @@ import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
 import com.yuriytkach.tracker.fundraiser.model.CommandType;
 import com.yuriytkach.tracker.fundraiser.model.ErrorResponse;
 import com.yuriytkach.tracker.fundraiser.model.SlackResponse;
+import com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbFundStorageClient;
 
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -30,6 +34,9 @@ class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
 
   @Inject
   FundTrackerConfig appConfig;
+
+  @Inject
+  DynamoDbFundStorageClient fundStorageClient;
 
   @Test
   void shouldReturnForbiddenResponseForInvalidToken() {
@@ -138,6 +145,36 @@ class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
         .responseType(SlackResponse.RESPONSE_PRIVATE)
         .text(":x: Fund `" + FUND.getName() + "` owned by `" + FUND.getOwner() + "`: Can't track donations")
         .build()));
+  }
+
+  @Test
+  void shouldReturnFailureIfTrackForDisabledFund() {
+    try {
+      fundStorageClient.save(FUND.toBuilder()
+        .enabled(false)
+        .updatedAt(Instant.now().minus(50, ChronoUnit.HOURS))
+        .build());
+
+      final AwsProxyRequest request = createAwsProxyRequest();
+      request.setBody("token=" + appConfig.slackToken() + "&user_id=" + FUND_OWNER
+        + "&text=track " + FUND.getName() + " " + FUND.getCurrency() + " 123 person 2022-02-01 15:13");
+
+      given()
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .body(request)
+        .when()
+        .post(LAMBDA_URL_PATH)
+        .then()
+        .statusCode(200)
+        .body("statusCode", equalTo(200))
+        .body("body", jsonEqualTo(SlackResponse.builder()
+          .responseType(SlackResponse.RESPONSE_PRIVATE)
+          .text(":x: Fund `" + FUND.getName() + "` closed `2 days` ago: Can't track donations")
+          .build()));
+    } finally {
+      fundStorageClient.save(FUND);
+    }
   }
 
   @Test

@@ -6,6 +6,7 @@ app:
   default-person-name: noname
   web:
     cache-max-age-sec: 60
+    long-cache-max-age-sec: 604800 # 1 week
   help-text: |
     *Create new fund:*
 

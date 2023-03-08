@@ -16,6 +16,7 @@ import lombok.Data;
 @Builder(toBuilder = true)
 public class Fund {
   private final String id;
+  private final boolean enabled;
   private final String name;
   private final String description;
   private final String owner;
@@ -35,7 +36,8 @@ public class Fund {
   public String toOutputStringLong() {
     return String.format(
       Locale.ENGLISH,
-      "%.2f%% `%s` [%d of %d] %s - %s [%s] - :open_book: %s%s",
+      "%s %.2f%% `%s` [%d of %d] %s - %s [%s] - %s%s",
+      toFundEnabledString(),
       getRaisedPercent(),
       name,
       raised,
@@ -51,7 +53,8 @@ public class Fund {
   public String toOutputStringShort() {
     return String.format(
       Locale.ENGLISH,
-      "`%s` %.2f%% [%d of %d] %s%s",
+      "%s `%s` %.2f%% [%d of %d] %s%s",
+      toFundEnabledString(),
       name,
       getRaisedPercent(),
       raised,
@@ -66,12 +69,30 @@ public class Fund {
   }
 
   String toFundDurationString() {
-    final var fundDuration = Duration.between(createdAt, Instant.now());
+    final var fundDuration = Duration.between(createdAt, enabled ? Instant.now() : updatedAt);
+    final var fromLastUpdate = Duration.between(updatedAt, Instant.now());
+
+    final String fundDurationStr;
+    if (enabled) {
+      fundDurationStr = String.format(
+        Locale.ENGLISH,
+        "%s%s",
+        fundDuration.toDaysPart() > 0 ? fundDuration.toDaysPart() + " d, " : "",
+        fundDuration.toHoursPart() + " h"
+      );
+    } else {
+      fundDurationStr = fundDuration.toDays() + " d";
+    }
+
     return String.format(
       Locale.ENGLISH,
       "%s%s",
-      fundDuration.toDaysPart() > 0 ? fundDuration.toDaysPart() + " day(s), " : "",
-      fundDuration.toHoursPart() + " hour(s)"
+      fundDurationStr,
+      enabled ? "" : " (Closed " + fromLastUpdate.toDays() + " d ago)"
     );
+  }
+
+  private String toFundEnabledString() {
+    return enabled ? ":open_book:" : ":closed_book:";
   }
 }
