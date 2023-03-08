@@ -48,7 +48,7 @@ public class FundService {
   }
 
   public Optional<Fund> findEnabledByMonoAccount(final String accountId) {
-    final Optional<Fund> byName = fundStorageClient.getByMonoAccount(accountId);
+    final Optional<Fund> byName = fundStorageClient.getActiveFundByBankAccount(accountId);
     if (byName.isEmpty()) {
       log.debug("Fund by mono account not found: {}", accountId);
       return Optional.empty();

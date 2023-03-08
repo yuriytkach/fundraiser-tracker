@@ -9,7 +9,7 @@ public interface FundTrackerConfig {
 
   String fundsTable();
 
-  String fundsMonoIndex();
+  String fundsEnabledIndex();
 
   String defaultFundColor();
 

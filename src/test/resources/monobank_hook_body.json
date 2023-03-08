@@ -1,7 +1,7 @@
 {
   "type": "StatementItem",
   "data": {
-    "account": "monoAccountId",
+    "account": "bankAccountId",
     "statementItem": {
       "id": "monoStatementId",
       "time": 1667731529,

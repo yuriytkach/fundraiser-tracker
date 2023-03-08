@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -207,7 +208,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
         .responseType(SlackResponse.RESPONSE_PRIVATE)
         .text(":white_check_mark: Tracked 123 "
           + FUND.getCurrency() + " by " + expectedPerson + " at 2022-02-01 15:13"
-          + " - :open_book: `fundy` 22.30% [223 of 1000] EUR Mono")
+          + " - :open_book: `fundy` 22.30% [223 of 1000] EUR - :bank:-1")
         .build()));
 
     final Optional<Donation> donation = getDonationDirectlyById(ITEM_ID_1.toString());
@@ -268,7 +269,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
       "token=" + appConfig.slackToken() + "&user_id=" + FUND_OWNER
         + "&text=update " + FUND.getName()
         + (enable ? " open" : " close")
-        + " goal:4242 mono:account-id"
+        + " goal:4242 bank:acc1,acc2"
     );
 
     given()
@@ -289,7 +290,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
     assertThat(fund).hasValue(FUND.toBuilder()
       .enabled(enable)
       .goal(4242)
-      .monobankAccount("account-id")
+      .bankAccounts(Set.of("acc1", "acc2"))
       .build());
   }
 
@@ -310,7 +311,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
         .text(":white_check_mark: All Funds\n"
-          + ":open_book: 10.00% `fundy` [100 of 1000] EUR - description [red] - 0 h - :cat:")
+          + ":open_book: 10.00% `fundy` [100 of 1000] EUR - description [red] - 0 h - :bank:-1")
         .build()));
   }
 

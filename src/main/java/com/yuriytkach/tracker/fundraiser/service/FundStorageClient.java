@@ -16,5 +16,5 @@ public interface FundStorageClient {
 
   void remove(Fund fund);
 
-  Optional<Fund> getByMonoAccount(String accountId);
+  Optional<Fund> getActiveFundByBankAccount(String accountId);
 }

@@ -3,9 +3,7 @@ package com.yuriytkach.tracker.fundraiser.model;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Locale;
-import java.util.Optional;
-
-import javax.annotation.Nullable;
+import java.util.Set;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Builder;
@@ -15,6 +13,10 @@ import lombok.Data;
 @RegisterForReflection
 @Builder(toBuilder = true)
 public class Fund {
+
+  public static final String ENABLED_N_KEY = "1";
+  public static final String DISABLED_N_KEY = "0";
+
   private final String id;
   private final boolean enabled;
   private final String name;
@@ -24,13 +26,13 @@ public class Fund {
   private final int goal;
   private final int raised;
   private final Currency currency;
-  @Nullable
-  private final String monobankAccount;
+  @Builder.Default
+  private final Set<String> bankAccounts = Set.of();
   private final Instant createdAt;
   private final Instant updatedAt;
 
-  public Optional<String> getMonobankAccount() {
-    return Optional.ofNullable(monobankAccount);
+  public String getEnabledNkey() {
+    return enabled ? ENABLED_N_KEY : DISABLED_N_KEY;
   }
 
   public String toOutputStringLong() {
@@ -46,7 +48,7 @@ public class Fund {
       description,
       color,
       toFundDurationString(),
-      monobankAccount == null ? "" : " - :cat:"
+      bankAccounts.isEmpty() ? "" : " - :bank:-" + bankAccounts.size()
     );
   }
 
@@ -60,7 +62,7 @@ public class Fund {
       raised,
       goal,
       currency,
-      monobankAccount == null ? "" : " Mono"
+      bankAccounts.isEmpty() ? "" : " - :bank:-" + bankAccounts.size()
     );
   }
 

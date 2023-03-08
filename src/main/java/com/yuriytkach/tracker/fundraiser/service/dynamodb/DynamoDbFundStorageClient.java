@@ -3,7 +3,9 @@ package com.yuriytkach.tracker.fundraiser.service.dynamodb;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
@@ -50,7 +52,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
   public static final String COL_CURR = "curr";
   public static final String COL_GOAL = "goal";
   public static final String COL_RAISED = "raised";
-  public static final String COL_MONO = "mono";
+  public static final String COL_BANK = "bank";
   public static final String COL_CREATED_AT = "createdAt";
   public static final String COL_UPDATED_AT = "updatedAt";
 
@@ -64,7 +66,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
     COL_CURR,
     COL_GOAL,
     COL_RAISED,
-    COL_MONO,
+    COL_BANK,
     COL_CREATED_AT,
     COL_UPDATED_AT,
   };
@@ -79,7 +81,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
     } else {
       return Optional.of(Fund.builder()
         .id(item.get(COL_ID).s())
-        .enabled(item.get(COL_ENABLED).bool())
+        .enabled(Fund.ENABLED_N_KEY.equals(item.get(COL_ENABLED).n()))
         .name(item.get(COL_NAME).s())
         .owner(item.get(COL_OWNER).s())
         .description(item.get(COL_DESC).s())
@@ -87,7 +89,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
         .goal(Integer.parseInt(item.get(COL_GOAL).n()))
         .raised(Integer.parseInt(item.get(COL_RAISED).n()))
         .currency(Currency.fromString(item.get(COL_CURR).s()).orElseThrow())
-        .monobankAccount(item.get(COL_MONO) == null ? null : item.get(COL_MONO).s())
+        .bankAccounts(item.get(COL_BANK) == null ? Set.of() : Set.copyOf(item.get(COL_BANK).ss()))
         .createdAt(Instant.parse(item.get(COL_CREATED_AT).s()))
         .updatedAt(Instant.parse(item.get(COL_UPDATED_AT).s()))
         .build());
@@ -126,7 +128,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
 
     final var attributes = EntryStream.of(
       COL_ID, AttributeValue.builder().s(item.getId()).build(),
-      COL_ENABLED, AttributeValue.builder().bool(item.isEnabled()).build(),
+      COL_ENABLED, AttributeValue.builder().n(item.getEnabledNkey()).build(),
       COL_NAME, AttributeValue.builder().s(item.getName()).build(),
       COL_OWNER, AttributeValue.builder().s(item.getOwner()).build(),
       COL_DESC, AttributeValue.builder().s(item.getDescription()).build(),
@@ -139,10 +141,10 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
         COL_CREATED_AT, AttributeValue.builder().s(item.getCreatedAt().toString()).build(),
         COL_UPDATED_AT, AttributeValue.builder().s(item.getUpdatedAt().toString()).build()
       )
-      .append(item.getMonobankAccount()
-        .map(acc -> Map.entry(COL_MONO, AttributeValue.builder().s(acc).build()))
-        .stream()
+      .append(
+        COL_BANK, item.getBankAccounts().isEmpty() ? null : AttributeValue.builder().ss(item.getBankAccounts()).build()
       )
+      .filterValues(Objects::nonNull)
       .toImmutableMap();
 
     final PutItemRequest putRequest = PutItemRequest.builder()
@@ -185,19 +187,30 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
   }
 
   @Override
-  public Optional<Fund> getByMonoAccount(final String accountId) {
+  public Optional<Fund> getActiveFundByBankAccount(final String accountId) {
     final QueryRequest queryRequest = QueryRequest.builder()
       .tableName(config.fundsTable())
-      .indexName(config.fundsMonoIndex())
-      .keyConditions(Map.of(COL_MONO, equalCondition(accountId)))
+      .indexName(config.fundsEnabledIndex())
+      .keyConditions(Map.of(COL_ENABLED, Condition.builder()
+        .attributeValueList(AttributeValue.fromN(Fund.ENABLED_N_KEY))
+        .comparisonOperator(ComparisonOperator.EQ)
+        .build()))
       .attributesToGet(ALL_ATTRIBUTES)
       .build();
 
-    return Optional.ofNullable(dynamoDB.query(queryRequest))
+    final var foundFundsOpt = Optional.ofNullable(dynamoDB.query(queryRequest))
       .filter(QueryResponse::hasItems)
-      .map(QueryResponse::items)
-      .flatMap(items -> items.stream().findFirst())
-      .flatMap(DynamoDbFundStorageClient::parseFund);
+      .map(QueryResponse::items);
+
+    foundFundsOpt.ifPresent(list -> log.debug("Found active funds: {}", list.size()));
+
+    return foundFundsOpt
+      .stream()
+      .flatMap(Collection::stream)
+      .map(DynamoDbFundStorageClient::parseFund)
+      .flatMap(Optional::stream)
+      .filter(fund -> fund.getBankAccounts().contains(accountId))
+      .findFirst();
   }
 
   @Override
@@ -218,10 +231,4 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
     log.info("Deleted fund table: {}", fund.getId());
   }
 
-  private Condition equalCondition(final String value) {
-    return Condition.builder()
-      .attributeValueList(AttributeValue.fromS(value))
-      .comparisonOperator(ComparisonOperator.EQ)
-      .build();
-  }
 }

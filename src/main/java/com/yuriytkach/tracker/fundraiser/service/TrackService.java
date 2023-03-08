@@ -11,6 +11,7 @@ import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.TRACK_PATTE
 import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.UPDATE_PATTERN;
 import static java.lang.String.format;
 import static java.util.Comparator.comparing;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.time.Instant;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.temporal.TemporalAccessor;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -29,6 +31,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -277,12 +280,17 @@ public class TrackService {
       fundBuilder.color(color);
     }
 
-    final var monoArg = matcher.group("mono");
-    if (monoArg != null) {
-      final var mono = monoArg.split(":")[1];
-      log.debug("Update fund monobank account from '{}' to: {}", fund.getMonobankAccount().orElse(null), mono);
-      fundBuilder.monobankAccount(mono);
+    final var bankArg = matcher.group("bank");
+    if (bankArg != null) {
+      final var bank = bankArg.split(":")[1];
+      final var bankAccounts = Arrays.stream(bank.split(","))
+        .map(String::strip)
+        .filter(not(String::isBlank))
+        .collect(Collectors.toUnmodifiableSet());
+      log.debug("Update fund bank accounts from '{}' to: {}", fund.getBankAccounts(), bankAccounts);
+      fundBuilder.bankAccounts(bankAccounts);
     }
+
 
     return fundBuilder.build();
   }
