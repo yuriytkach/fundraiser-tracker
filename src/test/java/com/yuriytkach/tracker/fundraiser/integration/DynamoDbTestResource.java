@@ -49,6 +49,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
 
   static final Fund FUND = Fund.builder()
     .id(FUND_1_TABLE)
+    .enabled(true)
     .name(FUND_1_NAME)
     .goal(1000)
     .raised(100)
@@ -115,6 +116,8 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     putRequest.setTableName(FUNDS_TABLE);
     putRequest.addItemEntry(
       DynamoDbFundStorageClient.COL_ID, new AttributeValue().withS(FUND.getId()));
+    putRequest.addItemEntry(
+      DynamoDbFundStorageClient.COL_ENABLED, new AttributeValue().withBOOL(FUND.isEnabled()));
     putRequest.addItemEntry(
       DynamoDbFundStorageClient.COL_NAME, new AttributeValue().withS(FUND.getName()));
     putRequest.addItemEntry(

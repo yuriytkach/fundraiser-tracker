@@ -42,6 +42,7 @@ import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 public class DynamoDbFundStorageClient implements FundStorageClient {
 
   public static final String COL_ID = "id";
+  public static final String COL_ENABLED = "enabled";
   public static final String COL_NAME = "name";
   public static final String COL_OWNER = "owner";
   public static final String COL_DESC = "description";
@@ -55,6 +56,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
 
   public static final String[] ALL_ATTRIBUTES = new String[] {
     COL_ID,
+    COL_ENABLED,
     COL_NAME,
     COL_DESC,
     COL_COLOR,
@@ -77,6 +79,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
     } else {
       return Optional.of(Fund.builder()
         .id(item.get(COL_ID).s())
+        .enabled(item.get(COL_ENABLED).bool())
         .name(item.get(COL_NAME).s())
         .owner(item.get(COL_OWNER).s())
         .description(item.get(COL_DESC).s())
@@ -123,19 +126,24 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
 
     final var attributes = EntryStream.of(
       COL_ID, AttributeValue.builder().s(item.getId()).build(),
+      COL_ENABLED, AttributeValue.builder().bool(item.isEnabled()).build(),
       COL_NAME, AttributeValue.builder().s(item.getName()).build(),
       COL_OWNER, AttributeValue.builder().s(item.getOwner()).build(),
       COL_DESC, AttributeValue.builder().s(item.getDescription()).build(),
       COL_COLOR, AttributeValue.builder().s(item.getColor()).build(),
       COL_CURR, AttributeValue.builder().s(item.getCurrency().name()).build(),
       COL_GOAL, AttributeValue.builder().n(String.valueOf(item.getGoal())).build(),
-      COL_RAISED, AttributeValue.builder().n(String.valueOf(item.getRaised())).build(),
-      COL_CREATED_AT, AttributeValue.builder().s(item.getCreatedAt().toString()).build(),
-      COL_UPDATED_AT, AttributeValue.builder().s(item.getUpdatedAt().toString()).build()
-    ).append(item.getMonobankAccount()
-      .map(acc -> Map.entry(COL_MONO, AttributeValue.builder().s(acc).build()))
-      .stream()
-    ).toImmutableMap();
+      COL_RAISED, AttributeValue.builder().n(String.valueOf(item.getRaised())).build()
+    )
+      .append(
+        COL_CREATED_AT, AttributeValue.builder().s(item.getCreatedAt().toString()).build(),
+        COL_UPDATED_AT, AttributeValue.builder().s(item.getUpdatedAt().toString()).build()
+      )
+      .append(item.getMonobankAccount()
+        .map(acc -> Map.entry(COL_MONO, AttributeValue.builder().s(acc).build()))
+        .stream()
+      )
+      .toImmutableMap();
 
     final PutItemRequest putRequest = PutItemRequest.builder()
       .tableName(config.fundsTable())

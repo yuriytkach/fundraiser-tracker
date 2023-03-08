@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 @Builder
 public class PagedFunders {
+  private final boolean enabledFund;
   private final List<Funder> funders;
   private final int page;
   private final int size;

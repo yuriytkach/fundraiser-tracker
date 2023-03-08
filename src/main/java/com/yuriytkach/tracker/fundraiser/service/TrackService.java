@@ -10,6 +10,7 @@ import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.LIST_PATTER
 import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.TRACK_PATTERN;
 import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.UPDATE_PATTERN;
 import static java.lang.String.format;
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.time.Instant;
@@ -46,6 +47,7 @@ import com.yuriytkach.tracker.fundraiser.model.PagedFunders;
 import com.yuriytkach.tracker.fundraiser.model.SlackResponse;
 import com.yuriytkach.tracker.fundraiser.model.SortOrder;
 import com.yuriytkach.tracker.fundraiser.model.exception.DuplicateFundException;
+import com.yuriytkach.tracker.fundraiser.model.exception.FundClosedException;
 import com.yuriytkach.tracker.fundraiser.model.exception.FundNotFoundException;
 import com.yuriytkach.tracker.fundraiser.model.exception.FundNotOwnedException;
 import com.yuriytkach.tracker.fundraiser.model.exception.UnknownCurrencyException;
@@ -120,7 +122,7 @@ public class TrackService {
       return PagedFunders.empty();
     }
     log.info("Getting all funders of fund: {}", fundName);
-    final Comparator<Funder> fundedAtComparator = Comparator.comparing(Funder::getFundedAt);
+    final Comparator<Funder> fundedAtComparator = comparing(Funder::getFundedAt);
     final Collection<Donation> foundFunders = donationStorageClient.findAll(fundOpt.get().getId());
     final Stream<Funder> sortedFunders = foundFunders.stream()
       .map(Funder::fromDonation)
@@ -132,6 +134,7 @@ public class TrackService {
       log.debug("Return all funders as no page/size was specified");
       final var funders = sortedFunders.collect(toUnmodifiableList());
       return builder.page(0)
+        .enabledFund(fundOpt.get().isEnabled())
         .size(funders.size())
         .total(funders.size())
         .funders(funders)
@@ -142,6 +145,7 @@ public class TrackService {
       final int skip = size * realPage;
       final var funders = sortedFunders.skip(skip).limit(size).collect(toUnmodifiableList());
       return builder
+        .enabledFund(fundOpt.get().isEnabled())
         .page(realPage)
         .size(funders.size())
         .total(foundFunders.size())
@@ -167,7 +171,7 @@ public class TrackService {
         + cmd.name().toLowerCase(Locale.getDefault()) + " " + cmdParamsText);
     } catch (final UnknownForexException ex) {
       return createErrorResponse("Unknown forex: " + ex.getMessage());
-    } catch (final FundNotFoundException | FundNotOwnedException ex) {
+    } catch (final FundNotFoundException | FundNotOwnedException | FundClosedException ex) {
       return createErrorResponse(ex.getMessage());
     }
   }
@@ -213,6 +217,9 @@ public class TrackService {
     if (!fund.getOwner().equals(user)) {
       throw FundNotOwnedException.withFundAndMessage(fund, "Can't track donations");
     }
+    if (!fund.isEnabled()) {
+      throw FundClosedException.withFundAndMessage(fund, "Can't track donations");
+    }
 
     final Fund updatedFund = donationTracker.trackDonation(fund, donation);
 
@@ -224,6 +231,16 @@ public class TrackService {
 
   private Fund extractFundDataFromMatchedTextAndUpdate(final Fund fund, final Matcher matcher) {
     final var fundBuilder = fund.toBuilder();
+
+    final var open = matcher.group("open");
+    if (open != null) {
+      fundBuilder.enabled(true);
+    }
+
+    final var close = matcher.group("close");
+    if (close != null) {
+      fundBuilder.enabled(false);
+    }
 
     final var currArg = matcher.group("curr");
     if (currArg != null) {
@@ -279,6 +296,7 @@ public class TrackService {
     final String color = matcher.group("color");
 
     return Fund.builder()
+      .enabled(true)
       .owner(user)
       .name(name)
       .goal(goal)
@@ -345,7 +363,7 @@ public class TrackService {
       log.info("Listing all funds for user: {}", user);
       title = null;
       responseTextLines = StreamEx.of(fundService.findAllFunds(user))
-        .sorted(Comparator.comparing(Fund::getUpdatedAt).reversed())
+        .sorted(comparing(Fund::isEnabled).reversed().thenComparing(comparing(Fund::getUpdatedAt).reversed()))
         .map(Fund::toOutputStringLong)
         .prepend("All Funds")
         .toImmutableList();
@@ -354,7 +372,7 @@ public class TrackService {
       final Fund fund = fundService.findByNameOrException(fundName);
       title = "Funders of `" + fund.getName() + "`";
       responseTextLines = donationStorageClient.findAll(fund.getId()).stream()
-        .sorted(Comparator.comparing(Donation::getDateTime))
+        .sorted(comparing(Donation::getDateTime))
         .map(Donation::toStringLong)
         .collect(toUnmodifiableList());
     }

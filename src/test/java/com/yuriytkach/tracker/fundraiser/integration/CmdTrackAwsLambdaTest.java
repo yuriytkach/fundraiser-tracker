@@ -31,6 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
 import com.yuriytkach.tracker.fundraiser.forex.ForexService;
@@ -119,6 +120,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
     final Fund fund2 = fundOpt.get();
     final String expectedFund2TableName = FundService.FUND_TABLE_PREFIX + FUND_2_NAME;
     assertThat(fund2.getId()).isEqualTo(expectedFund2TableName);
+    assertThat(fund2.isEnabled()).isTrue();
     assertThat(fund2.getName()).isEqualTo(FUND_2_NAME);
     assertThat(fund2.getOwner()).isEqualTo("userAbc");
     assertThat(fund2.getDescription()).isEqualTo(expectedDesc);
@@ -205,7 +207,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
         .responseType(SlackResponse.RESPONSE_PRIVATE)
         .text(":white_check_mark: Tracked 123 "
           + FUND.getCurrency() + " by " + expectedPerson + " at 2022-02-01 15:13"
-          + " - `fundy` 22.30% [223 of 1000] EUR Mono")
+          + " - :open_book: `fundy` 22.30% [223 of 1000] EUR Mono")
         .build()));
 
     final Optional<Donation> donation = getDonationDirectlyById(ITEM_ID_1.toString());
@@ -254,13 +256,20 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
       .build());
   }
 
-  @Test
-  void shouldUpdateFund() {
+  @ParameterizedTest
+  @ValueSource(booleans = { true, false })
+  void shouldUpdateFund(final boolean enable) {
     when(idGenerator.generateId()).thenReturn(ITEM_ID_1);
 
+    fundStorageClient.save(FUND.toBuilder().enabled(!enable).build());
+
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=" + FUND_OWNER
-      + "&text=update " + FUND.getName() + " goal:4242 mono:account-id");
+    request.setBody(
+      "token=" + appConfig.slackToken() + "&user_id=" + FUND_OWNER
+        + "&text=update " + FUND.getName()
+        + (enable ? " open" : " close")
+        + " goal:4242 mono:account-id"
+    );
 
     given()
       .contentType(MediaType.APPLICATION_JSON)
@@ -278,6 +287,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
 
     final Optional<Fund> fund = getFundDirectlyByName(FUND.getName());
     assertThat(fund).hasValue(FUND.toBuilder()
+      .enabled(enable)
       .goal(4242)
       .monobankAccount("account-id")
       .build());
@@ -300,7 +310,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
         .text(":white_check_mark: All Funds\n"
-          + "10.00% `fundy` [100 of 1000] EUR - description [red] - :open_book: 0 hour(s) - :cat:")
+          + ":open_book: 10.00% `fundy` [100 of 1000] EUR - description [red] - 0 h - :cat:")
         .build()));
   }
 
