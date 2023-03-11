@@ -30,6 +30,7 @@ import com.yuriytkach.tracker.fundraiser.service.PersonNameConverter;
 class PrivatbankTransactionMapperTest {
 
   private static final ZoneId ZONE_ID = ZoneId.of("Europe/Kiev");
+
   @Mock
   private PrivatbankProperties properties;
 
@@ -37,7 +38,7 @@ class PrivatbankTransactionMapperTest {
   private PersonNameConverter personNameConverter;
 
   @InjectMocks
-  PrivatbankTransactionMapper tested;
+  private PrivatbankTransactionMapper tested;
 
   @ParameterizedTest
   @CsvSource({
