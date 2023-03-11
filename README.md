@@ -1,6 +1,7 @@
 # Fundraiser Tracker
 
 An AWS Lambda application written in Quarkus uses DynamoDB as storage, exposes REST interface to get data and Slack command REST interface to manipulate data. Applications supports currency conversion with rates obtained from Monobank API.
+Additionally application supports automatic synchronization of donations using Monobank and Privatbank sync by reacting to REST calls.
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/224eb30e7e5c4f38934ee9601e15237e)](https://www.codacy.com/gh/yuriytkach/fundraiser-tracker/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yuriytkach/fundraiser-tracker&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/224eb30e7e5c4f38934ee9601e15237e)](https://www.codacy.com/gh/yuriytkach/fundraiser-tracker/dashboard?utm_source=github.com&utm_medium=referral&utm_content=yuriytkach/fundraiser-tracker&utm_campaign=Badge_Coverage)
@@ -101,6 +102,15 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 ```
 
 You can then execute your native executable with: `./target/fundraiser-tracker-1.0.0-SNAPSHOT-runner`
+
+## Running in AWS
+You can manually create Lambda function in AWS from generated `function.zip`. Add the API Gateway for function's REST API.
+
+You should also create DynamoDB `funds` table with indexes.
+
+Additionally, you should create secret for Slack token and Privatbank token in AWS Secrets Manager.
+
+If you want to sync Privatbank on a regular basis then you can create Event in the AWS EventBridge that will call Lambda.
 
 ## Related Guides
 
