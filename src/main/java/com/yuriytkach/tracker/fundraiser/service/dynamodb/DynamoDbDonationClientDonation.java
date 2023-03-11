@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
@@ -15,13 +14,17 @@ import com.yuriytkach.tracker.fundraiser.model.Donation;
 import com.yuriytkach.tracker.fundraiser.service.DonationStorageClient;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import one.util.streamex.StreamEx;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
-import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.BatchWriteItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.BatchWriteItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.PutRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
+import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
 
+@Slf4j
 @Singleton
 @RequiredArgsConstructor
 public class DynamoDbDonationClientDonation implements DonationStorageClient {
@@ -57,9 +60,18 @@ public class DynamoDbDonationClientDonation implements DonationStorageClient {
   }
 
   @Override
-  public void add(final String fundId, final Donation donation) {
-    final var request = createPutRequest(fundId, donation);
-    dynamoDB.putItem(request);
+  public void addAll(final String fundId, final Collection<Donation> donations) {
+    log.debug("Saving donations to table `{}`: {}", fundId, donations.size());
+    final var writeRequests = StreamEx.of(donations)
+      .map(this::createPutRequest)
+      .map(putRequest -> WriteRequest.builder().putRequest(putRequest).build())
+      .toImmutableSet();
+
+    final BatchWriteItemRequest request = BatchWriteItemRequest.builder()
+      .requestItems(Map.of(fundId, writeRequests))
+      .build();
+    final BatchWriteItemResponse response = dynamoDB.batchWriteItem(request);
+    log.debug("Saved donations. Consumed capacity: {}", response.consumedCapacity());
   }
 
   @Override
@@ -75,23 +87,7 @@ public class DynamoDbDonationClientDonation implements DonationStorageClient {
       .collect(Collectors.toUnmodifiableList());
   }
 
-  @Override
-  public Optional<Donation> getById(final String fundId, final UUID id) {
-    final var request = GetItemRequest.builder()
-      .tableName(fundId)
-      .attributesToGet(ALL_ATTRIBUTES)
-      .key(Map.of(COL_ID, AttributeValue.builder().s(id.toString()).build()))
-      .build();
-
-    final GetItemResponse response = dynamoDB.getItem(request);
-    if (response.hasItem()) {
-      return parseDonation(response.item());
-    } else {
-      return Optional.empty();
-    }
-  }
-
-  private PutItemRequest createPutRequest(final String tableName, final Donation donation) {
+  private PutRequest createPutRequest(final Donation donation) {
     final Map<String, AttributeValue> item = new HashMap<>();
     item.put(COL_ID, AttributeValue.builder().s(donation.getId()).build());
     item.put(COL_CURR, AttributeValue.builder().s(donation.getCurrency().name()).build());
@@ -99,8 +95,7 @@ public class DynamoDbDonationClientDonation implements DonationStorageClient {
     item.put(COL_TIME, AttributeValue.builder().s(donation.getDateTime().toString()).build());
     item.put(COL_PERSON, AttributeValue.builder().s(donation.getPerson()).build());
 
-    return PutItemRequest.builder()
-      .tableName(tableName)
+    return PutRequest.builder()
       .item(item)
       .build();
   }
