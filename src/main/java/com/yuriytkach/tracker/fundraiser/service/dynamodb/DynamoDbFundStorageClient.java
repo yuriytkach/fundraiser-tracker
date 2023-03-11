@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Singleton;
 
@@ -188,6 +189,13 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
 
   @Override
   public Optional<Fund> getActiveFundByBankAccount(final String accountId) {
+    return findAllEnabled()
+      .filter(fund -> fund.getBankAccounts().contains(accountId))
+      .findFirst();
+  }
+
+  @Override
+  public Stream<Fund> findAllEnabled() {
     final QueryRequest queryRequest = QueryRequest.builder()
       .tableName(config.fundsTable())
       .indexName(config.fundsEnabledIndex())
@@ -202,15 +210,13 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
       .filter(QueryResponse::hasItems)
       .map(QueryResponse::items);
 
-    foundFundsOpt.ifPresent(list -> log.debug("Found active funds: {}", list.size()));
+    foundFundsOpt.ifPresent(list -> log.debug("Found enabled funds: {}", list.size()));
 
     return foundFundsOpt
       .stream()
       .flatMap(Collection::stream)
       .map(DynamoDbFundStorageClient::parseFund)
-      .flatMap(Optional::stream)
-      .filter(fund -> fund.getBankAccounts().contains(accountId))
-      .findFirst();
+      .flatMap(Optional::stream);
   }
 
   @Override

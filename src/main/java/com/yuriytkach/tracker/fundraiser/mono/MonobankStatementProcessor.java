@@ -37,7 +37,7 @@ public class MonobankStatementProcessor {
 
     log.debug("Received mono statement: {}", statement);
 
-    fundService.findEnabledByMonoAccount(statement.getData().getAccount())
+    fundService.findEnabledByBankAccount(statement.getData().getAccount())
       .ifPresent(fund -> trackStatementForFund(fund, statement.getData().getStatementItem()));
   }
 
@@ -52,7 +52,7 @@ public class MonobankStatementProcessor {
       .currency(Currency.fromIsoCode(statementItem.getCurrencyCode()).orElseThrow()) // verified above
       .amount(statementItem.getAmount() / 100)
       .dateTime(Instant.ofEpochSecond(statementItem.getTime()))
-      .person(nameConverter.convertToPersonName(statementItem.getDescription()))
+      .person(nameConverter.convertFromMonoDescription(statementItem.getDescription()))
       .build();
   }
 

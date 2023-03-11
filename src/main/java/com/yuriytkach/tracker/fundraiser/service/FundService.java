@@ -47,7 +47,7 @@ public class FundService {
     return byName;
   }
 
-  public Optional<Fund> findEnabledByMonoAccount(final String accountId) {
+  public Optional<Fund> findEnabledByBankAccount(final String accountId) {
     final Optional<Fund> byName = fundStorageClient.getActiveFundByBankAccount(accountId);
     if (byName.isEmpty()) {
       log.debug("Fund by mono account not found: {}", accountId);
@@ -66,6 +66,10 @@ public class FundService {
     return fundStorageClient.findAll().stream()
       .filter(fund -> owner == null || fund.getOwner().equals(owner))
       .collect(Collectors.toUnmodifiableList());
+  }
+
+  public List<Fund> findAllEnabled() {
+    return fundStorageClient.findAllEnabled().collect(Collectors.toUnmodifiableList());
   }
 
   public Fund findByNameOrException(final String fundName) {

@@ -11,6 +11,8 @@ class PersonNameConverterTest {
 
   @ParameterizedTest
   @CsvSource({
+    ", noname",
+    "' ', noname",
     "Юрій Ткач, YuriyT",
     "Слава Україні, SlavaU",
     "Ігор, Ihor",
@@ -20,8 +22,20 @@ class PersonNameConverterTest {
     "Від: \uD83D\uDC08, \uD83D\uDC08",
     "Від: Олексій, Oleksiy",
   })
-  void shouldConvertNames(final String name, final String expected) {
-    assertThat(tested.convertToPersonName(name)).isEqualTo(expected);
+  void shouldConvertFromMonoDescription(final String name, final String expected) {
+    assertThat(tested.convertFromMonoDescription(name)).isEqualTo(expected);
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    ", noname",
+    "' ', noname",
+    "Благодійний внесок Платник: ІПН9998887777ТКАЧ ЮРІЙ БезПДВ, YuriyT",
+    "'Збір на, Червона Мар'яна Володимирівна', MaryanaCH",
+    "'Оплата за ..., White Walter Walterovych', Walter",
+  })
+  void shouldConvertFromPrivat(final String description, final String expected) {
+    assertThat(tested.convertFromPrivatDescription(description)).isEqualTo(expected);
   }
 
 }
