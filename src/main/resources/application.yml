@@ -4,6 +4,10 @@ app:
   funds-enabled-index: enabled-index
   default-fund-color: green
   default-person-name: noname
+  privatbank:
+    token-secret-name: fundraiser-privat-token
+    sync-period-days: 1
+    time-zone-id: Europe/Kiev
   web:
     cache-max-age-sec: 60
     long-cache-max-age-sec: 604800 # 1 week
@@ -59,8 +63,10 @@ quarkus:
   rest-client:
     monobank:
       url: https://api.monobank.ua
-      connectTimeout: 1000
-      readTimeout: 1000
+    privatbank:
+      url: https://acp.privatbank.ua
+      connect-timeout: 2000
+      read-timeout: 10000
   log:
     level: INFO
     min-level: DEBUG

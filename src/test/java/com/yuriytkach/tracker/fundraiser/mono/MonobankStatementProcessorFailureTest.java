@@ -66,12 +66,12 @@ class MonobankStatementProcessorFailureTest {
     when(statement.getData().getStatementItem().getCurrencyCode()).thenReturn(Currency.UAH.getIsoCode());
     when(statement.getData().getAccount()).thenReturn(ACCOUNT_ID);
 
-    when(fundService.findEnabledByMonoAccount(any())).thenReturn(Optional.empty());
+    when(fundService.findEnabledByBankAccount(any())).thenReturn(Optional.empty());
 
     tested.processStatement(statement);
 
     verifyNoInteractions(donationTracker, nameConverter);
 
-    verify(fundService).findEnabledByMonoAccount(ACCOUNT_ID);
+    verify(fundService).findEnabledByBankAccount(ACCOUNT_ID);
   }
 }

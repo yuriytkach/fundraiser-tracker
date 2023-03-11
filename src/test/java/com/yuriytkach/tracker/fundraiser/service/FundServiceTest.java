@@ -33,7 +33,7 @@ class FundServiceTest {
   void shouldReturnEmptyIfFundIsNotFoundWhenSearchedByBankAccount() {
     when(fundStorageClient.getActiveFundByBankAccount(any())).thenReturn(Optional.empty());
 
-    final Optional<Fund> result = tested.findEnabledByMonoAccount(ACCOUNT_ID);
+    final Optional<Fund> result = tested.findEnabledByBankAccount(ACCOUNT_ID);
     assertThat(result).isEmpty();
 
     verify(fundStorageClient).getActiveFundByBankAccount(ACCOUNT_ID);
@@ -47,7 +47,7 @@ class FundServiceTest {
 
     when(fundStorageClient.getActiveFundByBankAccount(any())).thenReturn(Optional.of(mockFund));
 
-    final Optional<Fund> result = tested.findEnabledByMonoAccount(ACCOUNT_ID);
+    final Optional<Fund> result = tested.findEnabledByBankAccount(ACCOUNT_ID);
     if (enabled) {
       assertThat(result).hasValue(mockFund);
     } else {
