@@ -7,7 +7,7 @@ import javax.ws.rs.core.MediaType;
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
 import io.quarkus.amazon.lambda.http.model.Headers;
 
-public interface AwsLambdaTestCommon {
+public interface AwsLambdaIntegrationTestCommon {
 
   String LAMBDA_URL_PATH = "/_lambda_";
 

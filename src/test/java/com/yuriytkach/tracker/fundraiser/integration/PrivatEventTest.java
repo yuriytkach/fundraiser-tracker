@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @QuarkusTest
-class PrivatEventTest implements AwsLambdaTestCommon {
+class PrivatEventTest implements AwsLambdaIntegrationTestCommon {
 
   @InjectMock
   PrivatbankService privatbankService;

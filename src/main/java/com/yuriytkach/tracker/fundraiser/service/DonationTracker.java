@@ -28,6 +28,11 @@ public class DonationTracker {
   }
 
   public Fund trackDonations(final Fund fund, final Collection<Donation> donations) {
+    if (donations.isEmpty()) {
+      log.debug("No donations to track. Skipping..");
+      return fund;
+    }
+
     log.info("Track donations in fund {}: {}", fund.getName(), donations.size());
     if (log.isDebugEnabled()) {
       log.debug("Tracking donations: {}", donations);

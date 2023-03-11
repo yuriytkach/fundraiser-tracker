@@ -43,8 +43,10 @@ import com.yuriytkach.tracker.fundraiser.model.Fund;
 import com.yuriytkach.tracker.fundraiser.model.SlackResponse;
 import com.yuriytkach.tracker.fundraiser.model.slack.SlackBlock;
 import com.yuriytkach.tracker.fundraiser.model.slack.SlackText;
+import com.yuriytkach.tracker.fundraiser.secret.SecretsReader;
 import com.yuriytkach.tracker.fundraiser.service.FundService;
 import com.yuriytkach.tracker.fundraiser.service.IdGenerator;
+import com.yuriytkach.tracker.fundraiser.slack.SlackProperties;
 
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -60,10 +62,18 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 @Slf4j
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements AwsLambdaTestCommon {
+class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements AwsLambdaIntegrationTestCommon {
 
+  private static final String SLACK_TOKEN = "slack-token";
+  
   @Inject
   FundTrackerConfig appConfig;
+  
+  @Inject
+  SlackProperties slackProperties;
+
+  @InjectMock
+  SecretsReader secretsReaderMock;
 
   @Inject
   DynamoDbClient dynamoDB;
@@ -88,6 +98,11 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
     ));
   }
 
+  @BeforeEach
+  void initSecretsReaderMock() {
+    when(secretsReaderMock.readSecret(slackProperties.tokenSecretName())).thenReturn(Optional.of(SLACK_TOKEN));
+  }
+
   @ParameterizedTest
   @CsvSource({
     "'', carFund, green",
@@ -99,7 +114,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
     final Currency fund2Currency = Currency.USD;
 
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=userAbc"
+    request.setBody("token=" + SLACK_TOKEN + "&user_id=userAbc"
       + "&text=create " + FUND_2_NAME + " " + fund2Currency + " 123" + cmdTextSuffix);
 
     given()
@@ -141,7 +156,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
   @Test
   void shouldDeleteFund() {
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=user2"
+    request.setBody("token=" + SLACK_TOKEN + "&user_id=user2"
       + "&text=create " + FUND_2_NAME + " usd 123");
 
     given()
@@ -160,7 +175,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
 
     assertThat(getFundDirectlyByName(FUND_2_NAME)).isPresent();
 
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=user2"
+    request.setBody("token=" + SLACK_TOKEN + "&user_id=user2"
       + "&text=delete " + FUND_2_NAME);
 
     given()
@@ -192,7 +207,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
     when(idGenerator.generateId()).thenReturn(ITEM_ID_1);
 
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=" + FUND_OWNER
+    request.setBody("token=" + SLACK_TOKEN + "&user_id=" + FUND_OWNER
       + "&text=track " + FUND.getName() + " " + FUND.getCurrency() + " 123" + person + " 2022-02-01 15:13");
 
     given()
@@ -232,7 +247,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
     when(idGenerator.generateId()).thenReturn(ITEM_ID_1);
 
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=" + FUND_OWNER
+    request.setBody("token=" + SLACK_TOKEN + "&user_id=" + FUND_OWNER
       + "&text=track " + FUND.getName() + " usd 100 person 2022-02-01 15:13");
 
     given()
@@ -266,7 +281,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
 
     final AwsProxyRequest request = createAwsProxyRequest();
     request.setBody(
-      "token=" + appConfig.slackToken() + "&user_id=" + FUND_OWNER
+      "token=" + SLACK_TOKEN + "&user_id=" + FUND_OWNER
         + "&text=update " + FUND.getName()
         + (enable ? " open" : " close")
         + " goal:4242 bank:acc1,acc2"
@@ -297,7 +312,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
   @Test
   void shouldReturnResultForListAllFundsCommand() {
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=" + FUND_OWNER + "&text=list");
+    request.setBody("token=" + SLACK_TOKEN + "&user_id=" + FUND_OWNER + "&text=list");
 
     given()
       .contentType(MediaType.APPLICATION_JSON)
@@ -320,7 +335,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
     addDonationDirectly(ITEM_ID_1, "EUR", 987, Instant.parse("2022-05-10T00:10:30.107591Z"), "PP");
 
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&text=list " + FUND.getName());
+    request.setBody("token=" + SLACK_TOKEN + "&text=list " + FUND.getName());
 
     given()
       .contentType(MediaType.APPLICATION_JSON)
@@ -350,7 +365,7 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
   @Test
   void shouldReturnResultForHelpCommand() {
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&text=help");
+    request.setBody("token=" + SLACK_TOKEN + "&text=help");
 
     final String supportedCurrencies = StreamEx.of(Currency.values())
       .map(Currency::name)

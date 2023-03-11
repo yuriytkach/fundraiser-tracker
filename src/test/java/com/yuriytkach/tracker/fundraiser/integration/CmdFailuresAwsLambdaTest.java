@@ -6,37 +6,49 @@ import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource
 import static com.yuriytkach.tracker.fundraiser.util.JsonMatcher.jsonEqualTo;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
 import com.yuriytkach.tracker.fundraiser.model.CommandType;
 import com.yuriytkach.tracker.fundraiser.model.ErrorResponse;
 import com.yuriytkach.tracker.fundraiser.model.SlackResponse;
+import com.yuriytkach.tracker.fundraiser.secret.SecretsReader;
 import com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbFundStorageClient;
 
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.mockito.InjectMock;
 import one.util.streamex.StreamEx;
 
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
+class CmdFailuresAwsLambdaTest implements AwsLambdaIntegrationTestCommon {
 
-  @Inject
-  FundTrackerConfig appConfig;
+  private static final String SLACK_TOKEN = "slackToken";
+
+  @InjectMock
+  SecretsReader secretsReaderMock;
 
   @Inject
   DynamoDbFundStorageClient fundStorageClient;
+
+  @BeforeEach
+  void initSecretsReaderMock() {
+    when(secretsReaderMock.readSecret(any())).thenReturn(Optional.of(SLACK_TOKEN));
+  }
 
   @Test
   void shouldReturnForbiddenResponseForInvalidToken() {
@@ -58,7 +70,7 @@ class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
   @Test
   void shouldReturnFailureIfCantMatchCommand() {
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&text=abc xyz");
+    request.setBody("token=" + SLACK_TOKEN + "&text=abc xyz");
 
     final String expectedAllowedStatuses = StreamEx.of(CommandType.values()).map(CommandType::name).joining(",");
     given()
@@ -84,7 +96,7 @@ class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
   })
   void shouldReturnFailureIfUnknownCurrency(final String cmd) {
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=" + FUND_OWNER + "&text=" + cmd);
+    request.setBody("token=" + SLACK_TOKEN + "&user_id=" + FUND_OWNER + "&text=" + cmd);
 
     given()
       .contentType(MediaType.APPLICATION_JSON)
@@ -109,7 +121,7 @@ class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
   })
   void shouldReturnErrorForUnknownFund(final String cmd) {
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&text=" + cmd);
+    request.setBody("token=" + SLACK_TOKEN + "&text=" + cmd);
 
     given()
       .contentType(MediaType.APPLICATION_JSON)
@@ -129,7 +141,7 @@ class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
   @Test
   void shouldReturnFailureIfTrackForNotOwnedFund() {
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=unknown_user"
+    request.setBody("token=" + SLACK_TOKEN + "&user_id=unknown_user"
       + "&text=track " + FUND.getName() + " " + FUND.getCurrency() + " 123 person 2022-02-01 15:13");
 
     given()
@@ -156,7 +168,7 @@ class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
         .build());
 
       final AwsProxyRequest request = createAwsProxyRequest();
-      request.setBody("token=" + appConfig.slackToken() + "&user_id=" + FUND_OWNER
+      request.setBody("token=" + SLACK_TOKEN + "&user_id=" + FUND_OWNER
         + "&text=track " + FUND.getName() + " " + FUND.getCurrency() + " 123 person 2022-02-01 15:13");
 
       given()
@@ -180,7 +192,7 @@ class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
   @Test
   void shouldReturnFailureIfDeleteNotOwnedFund() {
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=unknown_user"
+    request.setBody("token=" + SLACK_TOKEN + "&user_id=unknown_user"
       + "&text=delete " + FUND.getName());
 
     given()
@@ -201,7 +213,7 @@ class CmdFailuresAwsLambdaTest implements AwsLambdaTestCommon {
   @Test
   void shouldReturnFailureIfUpdateNotOwnedFund() {
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + appConfig.slackToken() + "&user_id=unknown_user"
+    request.setBody("token=" + SLACK_TOKEN + "&user_id=unknown_user"
       + "&text=update " + FUND.getName() + " curr:EUR");
 
     given()

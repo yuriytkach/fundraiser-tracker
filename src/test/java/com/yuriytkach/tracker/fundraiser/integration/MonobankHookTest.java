@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
 @DisplayName("Happy path integration test for tracking donation from Monobank statement")
-class MonobankHookTest extends AbstractFundOperationsTestCommon implements AwsLambdaTestCommon {
+class MonobankHookTest extends AbstractFundOperationsTestCommon implements AwsLambdaIntegrationTestCommon {
 
   private static final String MONO_STATEMENT_ID = "monoStatementId";
   private static final Instant MONO_STATEMENT_TIME = Instant.ofEpochSecond(1667731529);

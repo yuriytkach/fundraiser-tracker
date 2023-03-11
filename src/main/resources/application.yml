@@ -1,9 +1,10 @@
 app:
-  slack-token: HELLO
   funds-table: funds
   funds-enabled-index: enabled-index
   default-fund-color: green
   default-person-name: noname
+  slack:
+    token-secret-name: fundraiser-slack-token
   privatbank:
     token-secret-name: fundraiser-privat-token
     sync-period-days: 1
@@ -79,8 +80,6 @@ quarkus:
         level: DEBUG
 
 "%test":
-  app:
-    slack-token: test-slack-token
   quarkus:
     dynamodb:
       endpoint-override: http://localhost:8000
