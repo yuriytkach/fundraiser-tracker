@@ -53,7 +53,7 @@ import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
 
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-class FundStatusAwsLambdaTest implements AwsLambdaTestCommon {
+class FundStatusAwsLambdaTest implements AwsLambdaIntegrationTestCommon {
 
   private static final UUID ITEM_ID_1 = new UUID(1, 1);
   private static final UUID ITEM_ID_2 = new UUID(2, 2);

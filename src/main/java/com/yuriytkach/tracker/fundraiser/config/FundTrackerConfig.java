@@ -5,8 +5,6 @@ import io.smallrye.config.ConfigMapping;
 @ConfigMapping(prefix = "app")
 public interface FundTrackerConfig {
 
-  String slackToken();
-
   String fundsTable();
 
   String fundsEnabledIndex();
