@@ -7,7 +7,7 @@ app:
     token-secret-name: fundraiser-slack-token
   privatbank:
     token-secret-name: fundraiser-privat-token
-    sync-period-days: 1
+    sync-period-days: 3
     time-zone-id: Europe/Kiev
   web:
     cache-max-age-sec: 60
