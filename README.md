@@ -8,7 +8,7 @@ Additionally, application supports automatic synchronization of donations using 
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/224eb30e7e5c4f38934ee9601e15237e)](https://www.codacy.com/gh/yuriytkach/fundraiser-tracker/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yuriytkach/fundraiser-tracker&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/224eb30e7e5c4f38934ee9601e15237e)](https://www.codacy.com/gh/yuriytkach/fundraiser-tracker/dashboard?utm_source=github.com&utm_medium=referral&utm_content=yuriytkach/fundraiser-tracker&utm_campaign=Badge_Coverage)
-![Build](https://github.com/yuriytkach/fundraiser-tracker/actions/workflows/maven-no-native.yml/badge.svg)
+![Build](https://github.com/yuriytkach/fundraiser-tracker/actions/workflows/gradle-no-native.yml/badge.svg)
 
 ## Supported Slack commands
 
