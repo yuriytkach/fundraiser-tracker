@@ -2,8 +2,7 @@ package com.yuriytkach.tracker.fundraiser.service;
 
 import java.util.Map;
 
-import javax.enterprise.context.ApplicationScoped;
-
+import jakarta.enterprise.context.ApplicationScoped;
 import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.EntryStream;
 import one.util.streamex.IntStreamEx;

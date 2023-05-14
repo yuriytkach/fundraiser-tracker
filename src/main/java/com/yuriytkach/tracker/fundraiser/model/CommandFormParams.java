@@ -1,8 +1,7 @@
 package com.yuriytkach.tracker.fundraiser.model;
 
-import javax.ws.rs.FormParam;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.ws.rs.FormParam;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

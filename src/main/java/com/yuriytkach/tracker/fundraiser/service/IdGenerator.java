@@ -2,7 +2,7 @@ package com.yuriytkach.tracker.fundraiser.service;
 
 import java.util.UUID;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class IdGenerator {

@@ -7,9 +7,6 @@ import static org.mockserver.model.HttpResponse.response;
 
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.ws.rs.WebApplicationException;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,6 +19,8 @@ import com.yuriytkach.tracker.fundraiser.model.Currency;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
 import lombok.SneakyThrows;
 
 @QuarkusTest

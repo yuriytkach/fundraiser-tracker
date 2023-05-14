@@ -7,12 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import com.yuriytkach.tracker.fundraiser.model.Fund;
@@ -22,6 +16,11 @@ import com.yuriytkach.tracker.fundraiser.privatbank.model.Transaction;
 import com.yuriytkach.tracker.fundraiser.secret.SecretsReader;
 import com.yuriytkach.tracker.fundraiser.service.FundService;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.StreamEx;
 

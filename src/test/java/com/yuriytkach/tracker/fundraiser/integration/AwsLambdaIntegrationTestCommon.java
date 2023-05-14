@@ -2,10 +2,9 @@ package com.yuriytkach.tracker.fundraiser.integration;
 
 import java.util.Map;
 
-import javax.ws.rs.core.MediaType;
-
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
 import io.quarkus.amazon.lambda.http.model.Headers;
+import jakarta.ws.rs.core.MediaType;
 
 public interface AwsLambdaIntegrationTestCommon {
 

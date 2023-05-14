@@ -14,8 +14,6 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.ws.rs.core.MediaType;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +25,7 @@ import com.yuriytkach.tracker.fundraiser.model.Fund;
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.ws.rs.core.MediaType;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 

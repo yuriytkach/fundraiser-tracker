@@ -2,10 +2,9 @@ package com.yuriytkach.tracker.fundraiser.secret.awssm;
 
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import com.yuriytkach.tracker.fundraiser.secret.SecretsReader;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;

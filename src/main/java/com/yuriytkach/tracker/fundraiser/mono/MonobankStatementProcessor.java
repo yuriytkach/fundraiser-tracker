@@ -2,8 +2,6 @@ package com.yuriytkach.tracker.fundraiser.mono;
 
 import java.time.Instant;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import com.yuriytkach.tracker.fundraiser.model.Currency;
 import com.yuriytkach.tracker.fundraiser.model.Donation;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
@@ -12,6 +10,7 @@ import com.yuriytkach.tracker.fundraiser.service.DonationTracker;
 import com.yuriytkach.tracker.fundraiser.service.FundService;
 import com.yuriytkach.tracker.fundraiser.service.PersonNameConverter;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

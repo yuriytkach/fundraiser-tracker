@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.inject.Inject;
-
 import org.junit.jupiter.api.AfterEach;
 
 import com.yuriytkach.tracker.fundraiser.model.Donation;
@@ -21,6 +19,7 @@ import com.yuriytkach.tracker.fundraiser.service.FundService;
 import com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation;
 import com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbFundStorageClient;
 
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.StreamEx;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;

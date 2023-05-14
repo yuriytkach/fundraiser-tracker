@@ -25,9 +25,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -52,6 +49,8 @@ import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.StreamEx;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -65,10 +64,10 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements AwsLambdaIntegrationTestCommon {
 
   private static final String SLACK_TOKEN = "slack-token";
-  
+
   @Inject
   FundTrackerConfig appConfig;
-  
+
   @Inject
   SlackProperties slackProperties;
 

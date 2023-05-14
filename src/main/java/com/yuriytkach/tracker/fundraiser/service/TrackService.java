@@ -31,8 +31,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
 
 import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
 import com.yuriytkach.tracker.fundraiser.forex.ForexService;
@@ -52,6 +50,8 @@ import com.yuriytkach.tracker.fundraiser.model.slack.Block;
 import com.yuriytkach.tracker.fundraiser.model.slack.SlackBlock;
 import com.yuriytkach.tracker.fundraiser.model.slack.SlackText;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.StreamEx;

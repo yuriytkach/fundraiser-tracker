@@ -7,8 +7,6 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.inject.Singleton;
-
 import com.yuriytkach.tracker.fundraiser.config.FundersProperties;
 import com.yuriytkach.tracker.fundraiser.model.Donation;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
@@ -16,6 +14,7 @@ import com.yuriytkach.tracker.fundraiser.model.Funder;
 import com.yuriytkach.tracker.fundraiser.model.PagedFunders;
 import com.yuriytkach.tracker.fundraiser.model.SortOrder;
 
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

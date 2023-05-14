@@ -20,9 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,6 +39,8 @@ import io.quarkus.amazon.lambda.http.model.MultiValuedTreeMap;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MediaType;
 import lombok.SneakyThrows;
 import one.util.streamex.StreamEx;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;

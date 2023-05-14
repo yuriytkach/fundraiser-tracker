@@ -13,9 +13,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.WebApplicationException;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,6 +34,9 @@ import com.yuriytkach.tracker.fundraiser.privatbank.model.Transaction;
 import com.yuriytkach.tracker.fundraiser.privatbank.model.TransactionsResponse;
 import com.yuriytkach.tracker.fundraiser.secret.SecretsReader;
 import com.yuriytkach.tracker.fundraiser.service.FundService;
+
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.WebApplicationException;
 
 @ExtendWith(MockitoExtension.class)
 class PrivatbankServiceTest {
