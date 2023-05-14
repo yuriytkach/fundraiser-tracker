@@ -35,7 +35,6 @@ jobs:
              gh api $url > "$name.zip"
              unzip -d "$name" "$name.zip"
            done
-           mv coverage_reports/*.xml coverage_reports/jacoco.xml
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
