@@ -56,7 +56,7 @@ jobs:
         with:
           name: coverage_reports
           path: |
-            build/reports/jacoco/test/*.xml
+            build/jacoco-report/jacoco.xml
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
