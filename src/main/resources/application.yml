@@ -3,6 +3,8 @@ app:
   funds-enabled-index: enabled-index
   default-fund-color: green
   default-person-name: noname
+  funders:
+    min-donation-for-view: 1
   slack:
     token-secret-name: fundraiser-slack-token
   privatbank:
