@@ -43,7 +43,7 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:mockserver'
-    testImplementation 'org.mock-server:mockserver-client-java:5.13.2'
+    testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
 }
 
 group 'com.yuriytkach'
