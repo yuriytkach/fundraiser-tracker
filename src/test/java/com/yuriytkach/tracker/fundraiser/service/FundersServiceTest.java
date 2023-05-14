@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.yuriytkach.tracker.fundraiser.config.FundersProperties;
 import com.yuriytkach.tracker.fundraiser.model.Currency;
 import com.yuriytkach.tracker.fundraiser.model.Donation;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
@@ -46,11 +47,21 @@ class FundersServiceTest {
     .person("person2")
     .build();
 
+  private static final Donation DONATION_MIN = Donation.builder()
+    .amount(2)
+    .currency(Currency.UAH)
+    .dateTime(Instant.now())
+    .person("person2")
+    .build();
+
   @Mock
   private DonationStorageClient donationStorageClient;
 
   @Mock
   private FundService fundService;
+
+  @Mock
+  private FundersProperties fundersProperties;
 
   @InjectMocks
   private FundersService tested;
@@ -64,18 +75,20 @@ class FundersServiceTest {
     assertThat(result).isEqualTo(PagedFunders.empty());
 
     verify(fundService).findByName(FUND_NAME);
-    verifyNoInteractions(donationStorageClient);
+    verifyNoInteractions(donationStorageClient, fundersProperties);
   }
 
   @ParameterizedTest
   @EnumSource(SortOrder.class)
   void shouldReturnFundersSorted(final SortOrder sortOrder) {
+    when(fundersProperties.minDonationForView()).thenReturn(5);
+
     when(fundService.findByName(any())).thenReturn(Optional.of(Fund.builder()
       .id(FUND_ID)
       .name(FUND_NAME)
       .build()));
 
-    when(donationStorageClient.findAll(any())).thenReturn(List.of(DONATION_1, DONATION_2));
+    when(donationStorageClient.findAll(any())).thenReturn(List.of(DONATION_1, DONATION_2, DONATION_MIN));
 
     final var result = tested.getAllFunders(FUND_NAME, sortOrder, null, null);
 
@@ -113,6 +126,8 @@ class FundersServiceTest {
     final Boolean firstDonation,
     final boolean hasFundersInList
   ) {
+    when(fundersProperties.minDonationForView()).thenReturn(0);
+
     when(fundService.findByName(any())).thenReturn(Optional.of(Fund.builder()
       .enabled(true)
       .id(FUND_ID)
