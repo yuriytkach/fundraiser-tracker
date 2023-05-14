@@ -1,3 +1,7 @@
+# Gradle
+.gradle/
+build/
+
 #Maven
 target/
 pom.xml.tag
@@ -37,3 +41,6 @@ nb-configuration.xml
 
 # Local environment
 .env
+
+# Plugin directory
+/.quarkus/cli/plugins/

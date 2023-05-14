@@ -1,7 +1,10 @@
 # Fundraiser Tracker
 
-An AWS Lambda application written in Quarkus uses DynamoDB as storage, exposes REST interface to get data and Slack command REST interface to manipulate data. Applications supports currency conversion with rates obtained from Monobank API.
-Additionally application supports automatic synchronization of donations using Monobank and Privatbank sync by reacting to REST calls.
+An AWS Lambda application written in Quarkus uses DynamoDB as storage, exposes REST interface to get data 
+and Slack command REST interface to manipulate data. Application supports currency conversion with rates obtained 
+from Monobank API.
+
+Additionally, application supports automatic synchronization of donations using Monobank and Privatbank sync by reacting to REST calls.
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/224eb30e7e5c4f38934ee9601e15237e)](https://www.codacy.com/gh/yuriytkach/fundraiser-tracker/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yuriytkach/fundraiser-tracker&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/224eb30e7e5c4f38934ee9601e15237e)](https://www.codacy.com/gh/yuriytkach/fundraiser-tracker/dashboard?utm_source=github.com&utm_medium=referral&utm_content=yuriytkach/fundraiser-tracker&utm_campaign=Badge_Coverage)
@@ -66,7 +69,7 @@ This will delete fund `car` with all recorded donations. _**Warning! - Cannot be
 
 You can run your application in dev mode that enables live coding using:
 ```shell script
-./mvnw compile quarkus:dev
+./gradlew quarkusDev
 ```
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
@@ -75,33 +78,33 @@ You can run your application in dev mode that enables live coding using:
 
 The application can be packaged using:
 ```shell script
-./mvnw package
+./gradlew build
 ```
 It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Be aware that it’s not an _über-jar_ as the dependencies are copied into the `build/quarkus-app/lib/` directory.
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+The application is now runnable using `java -jar build/quarkus-app/quarkus-run.jar`.
 
 If you want to build an _über-jar_, execute the following command:
 ```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
+./gradlew build -Dquarkus.package.type=uber-jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+The application, packaged as an _über-jar_, is now runnable using `java -jar build/*-runner.jar`.
 
 ## Creating a native executable
 
 You can create a native executable using: 
 ```shell script
-./mvnw package -Pnative
+./gradlew build -Dquarkus.package.type=native
 ```
 
 Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
 ```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
+./gradlew build -Dquarkus.package.type=native -Dquarkus.native.container-build=true
 ```
 
-You can then execute your native executable with: `./target/fundraiser-tracker-1.0.0-SNAPSHOT-runner`
+You can then execute your native executable with: `./build/code-with-quarkus-1.0.0-SNAPSHOT-runner`
 
 ## Running in AWS
 You can manually create Lambda function in AWS from generated `function.zip`. Add the API Gateway for function's REST API.
@@ -114,6 +117,9 @@ If you want to sync Privatbank on a regular basis then you can create Event in t
 
 ## Related Guides
 
-- AWS Lambda HTTP ([guide](https://quarkus.io/guides/amazon-lambda-http)): Allow applications written for a servlet container to run in AWS Lambda
-- YAML Configuration ([guide](https://quarkus.io/guides/config#yaml)): Use YAML to configure your Quarkus application
+- REST Client Classic ([guide](https://quarkus.io/guides/rest-client)): Call REST services
+- YAML Configuration ([guide](https://quarkus.io/guides/config-yaml)): Use YAML to configure your Quarkus application
+- AWS Lambda Gateway REST API ([guide](https://quarkus.io/guides/amazon-lambda-http)): Build an API Gateway REST API with Lambda integration
 - Amazon DynamoDB ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-amazon-services/dev/amazon-dynamodb.html)): Connect to Amazon DynamoDB datastore
+- RESTEasy Classic ([guide](https://quarkus.io/guides/resteasy)): REST endpoint framework implementing Jakarta REST and more
+- Amazon Secrets Manager ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-amazon-services/dev/amazon-secretsmanager.html)): Connect to Amazon Secrets Manager
