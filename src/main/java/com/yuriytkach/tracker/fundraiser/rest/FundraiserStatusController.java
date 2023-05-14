@@ -18,7 +18,7 @@ import com.yuriytkach.tracker.fundraiser.model.Fund;
 import com.yuriytkach.tracker.fundraiser.model.FundStatus;
 import com.yuriytkach.tracker.fundraiser.model.SortOrder;
 import com.yuriytkach.tracker.fundraiser.service.FundService;
-import com.yuriytkach.tracker.fundraiser.service.TrackService;
+import com.yuriytkach.tracker.fundraiser.service.FundersService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +30,9 @@ public class FundraiserStatusController {
 
   private static final boolean SHORT_AGE = true;
 
-  private final TrackService trackService;
-
   private final FundService fundService;
+
+  private final FundersService fundersService;
 
   private final FundTrackerConfig config;
 
@@ -85,7 +85,7 @@ public class FundraiserStatusController {
     @QueryParam("page") final Integer page,
     @QueryParam("size") final Integer size
   ) {
-    final var pagedFunders = trackService.getAllFunders(fundName, sortOrder, page, size);
+    final var pagedFunders = fundersService.getAllFunders(fundName, sortOrder, page, size);
     log.info(
       "Return funders: {} from page {}, size {}, total {}",
       pagedFunders.getFunders().size(),
