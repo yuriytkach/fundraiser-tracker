@@ -75,6 +75,6 @@ jacocoTestReport {
     dependsOn test
     executionData { tasks.withType(Test).findAll { it.jacoco.destinationFile.exists() }*.jacoco.destinationFile }
     reports {
-        xml.enabled true
+        xml.required = true
     }
 }
