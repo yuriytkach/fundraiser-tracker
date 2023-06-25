@@ -324,8 +324,10 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
       .body("statusCode", equalTo(200))
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
-        .text(":white_check_mark: All Funds\n"
-          + ":open_book: 10.00% `fundy` [100 of 1000] EUR - description [red] - 0 h - :bank:-1")
+        .text("""
+          :white_check_mark: All Funds
+          :open_book: 10.00% `fundy` [100 of 1000] EUR - description [red] - 0 h - :bank:-1\
+          """)
         .build()));
   }
 
