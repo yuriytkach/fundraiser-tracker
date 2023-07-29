@@ -41,7 +41,7 @@ public class SlackBlock implements Block {
       return this;
     }
 
-    public SlackBlockBuilder section(List<SlackText> fields) {
+    public SlackBlockBuilder section(final List<SlackText> fields) {
       this.type = TYPE_SECTION;
       this.fields = fields;
       return this;

@@ -1,5 +1,7 @@
 package com.yuriytkach.tracker.fundraiser.model.slack;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 @Data
@@ -12,9 +14,11 @@ public class SlackImageBlock implements Block {
 
   private final String type = TYPE_IMAGE;
 
-  private final String image_url;
+  @JsonProperty("image_url")
+  private final String imageUrl;
 
-  private final String alt_text;
+  @JsonProperty("alt_text")
+  private final String altText;
 
   private final SlackImageTitle title;
 

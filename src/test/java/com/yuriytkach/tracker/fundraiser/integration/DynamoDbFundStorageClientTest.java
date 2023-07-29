@@ -21,7 +21,7 @@ import one.util.streamex.StreamEx;
 @Slf4j
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-public class DynamoDbFundStorageClientTest extends AbstractFundOperationsTestCommon {
+class DynamoDbFundStorageClientTest extends AbstractFundOperationsTestCommon {
 
   private static final String OTHER_ACCOUNT_ID = "some-other-account-id";
 

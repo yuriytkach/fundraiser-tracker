@@ -30,20 +30,5 @@ public class SlackText {
       this.text = text;
       return this;
     }
-
-    private SlackTextBuilder emoji(final Boolean emoji) {
-      this.emoji = emoji;
-      return this;
-    }
-
-    private SlackTextBuilder type(final String type) {
-      this.type = type;
-      return this;
-    }
-
-    private SlackTextBuilder text(final String text) {
-      this.text = text;
-      return this;
-    }
   }
 }
