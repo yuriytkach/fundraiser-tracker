@@ -6,8 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
-import software.amazon.awssdk.services.secretsmanager.model.CreateSecretRequest;
+import software.amazon.awssdk.services.ssm.SsmClient;
+import software.amazon.awssdk.services.ssm.model.ParameterType;
+import software.amazon.awssdk.services.ssm.model.PutParameterRequest;
 
 @QuarkusTest
 class AwsSecretsManagerReaderTest {
@@ -16,15 +17,15 @@ class AwsSecretsManagerReaderTest {
   private static final String SECRET_VALUE = "value";
 
   @Inject
-  SecretsManagerClient secretsManagerClient;
+  SsmClient ssmClient;
 
   @Inject
   AwsSecretsManagerReader tested;
 
   @Test
   void canReadSecret() {
-    secretsManagerClient.createSecret(
-      CreateSecretRequest.builder().name(SECRET_ID).secretString(SECRET_VALUE).build()
+    ssmClient.putParameter(
+      PutParameterRequest.builder().name(SECRET_ID).value(SECRET_VALUE).type(ParameterType.SECURE_STRING).build()
     );
 
     assertThat(tested.readSecret(SECRET_ID)).hasValue(SECRET_VALUE);
