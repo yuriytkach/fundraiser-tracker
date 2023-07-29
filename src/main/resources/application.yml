@@ -31,8 +31,9 @@ app:
     
     *Update fund:*
     
-    `/fund update car curr:UAH goal:1000 desc:/New description/ color:red mono:account`
-    Update fund `car` by setting currency to `UAH`, goal to `1000`, description to `New description`, color to `red`, and monobank account id to `account`.
+    `/fund update car curr:UAH goal:1000 desc:/New description/ color:red bank:account`
+    Update fund `car` by setting currency to `UAH`, goal to `1000`, description to `New description`, color to `red`, 
+    and bank account id to `account`.
     You can skip any of the fields, but keep the order of fields.
     
     So to update only the goal, just do:  
@@ -45,9 +46,9 @@ app:
 
     *Track donation:*
 
-    `/fund track car eur 500 Vasya 2022-05-12 14:15`
-    `/fund track car uah 500 Vasya 14:15` - track for today's date
-    `/fund track car usd 500 Vasya` - track for today's date and time
+    `/fund track car eur 500 Ivan 2022-05-12 14:15`
+    `/fund track car uah 500 Ivan 14:15` - track for today's date
+    `/fund track car usd 500 Ivan` - track for today's date and time
     `/fund track car usd 500` - track for `noname` person
 
     This will track donation for fund with short name `car`.
@@ -76,7 +77,6 @@ quarkus:
     console:
       enable: true
       format: '%d{HH:mm:ss.SSS} %-5p (%-10t) [%c{2.}] %s%e%n'
-      color: false
     category:
       "com.yuriytkach":
         level: DEBUG
