@@ -25,9 +25,9 @@ import com.yuriytkach.tracker.fundraiser.secret.SecretsReader;
 import com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbFundStorageClient;
 
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import one.util.streamex.StreamEx;

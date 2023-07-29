@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import com.yuriytkach.tracker.fundraiser.privatbank.PrivatbankService;
 
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
 

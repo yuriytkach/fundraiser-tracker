@@ -46,9 +46,9 @@ import com.yuriytkach.tracker.fundraiser.service.IdGenerator;
 import com.yuriytkach.tracker.fundraiser.slack.SlackProperties;
 
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;

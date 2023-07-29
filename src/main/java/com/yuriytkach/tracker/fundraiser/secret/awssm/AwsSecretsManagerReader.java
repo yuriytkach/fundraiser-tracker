@@ -7,28 +7,31 @@ import com.yuriytkach.tracker.fundraiser.secret.SecretsReader;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
-import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
-import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
+import software.amazon.awssdk.services.ssm.SsmClient;
+import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
+import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 
 @Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
 class AwsSecretsManagerReader implements SecretsReader {
 
-  private final SecretsManagerClient secretsManagerClient;
+  private final SsmClient ssmClient;
 
   @Override
   public Optional<String> readSecret(final String secretId) {
-    final var request = GetSecretValueRequest.builder().secretId(secretId).build();
+    final var request = GetParameterRequest.builder()
+      .name(secretId)
+      .withDecryption(true)
+      .build();
 
-    log.info("Reading secret by id: {}", secretId);
+    log.info("Reading ssm parameter by name: {}", secretId);
 
     try {
-      final GetSecretValueResponse response = secretsManagerClient.getSecretValue(request);
-      return Optional.ofNullable(response.secretString());
+      final GetParameterResponse response = ssmClient.getParameter(request);
+      return Optional.ofNullable(response.parameter().value());
     } catch (final Exception ex) {
-      log.warn("Cannot read secret by id `{}`: {}", secretId, ex.getMessage());
+      log.warn("Cannot read ssm parameter by name `{}`: {}", secretId, ex.getMessage());
       return Optional.empty();
     }
   }
