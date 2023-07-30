@@ -48,10 +48,10 @@ Displays all created funds with status (how much raised)
 
 **Track donation:**
 ```text
-/fund track car eur 500 Vasya 2022-05-12 14:15
-/fund track car uah 500 Vasya 14:15             - track for today's date
-/fund track car usd 500 Vasya                   - track for today's date and time
-/fund track car usd 500                         - track for noname person
+/fund track car eur 500 Ivan 2022-05-12 14:15
+/fund track car uah 500 Ivan 14:15             - track for today's date
+/fund track car usd 500 Ivan                   - track for today's date and time
+/fund track car usd 500                        - track for noname person
 ```
 This will track donation for fund with short name `car`. 
 - Any supported currency is allowed. Currency conversion takes place.
