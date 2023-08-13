@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
@@ -158,7 +157,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
   }
 
   @Override
-  public Collection<Fund> findAll() {
+  public Stream<Fund> findAll() {
     final var request = ScanRequest.builder()
       .tableName(config.fundsTable())
       .attributesToGet(ALL_ATTRIBUTES)
@@ -166,8 +165,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
 
     return dynamoDB.scanPaginator(request).items().stream()
       .map(DynamoDbFundStorageClient::parseFund)
-      .flatMap(Optional::stream)
-      .collect(Collectors.toUnmodifiableList());
+      .flatMap(Optional::stream);
   }
 
   @Override

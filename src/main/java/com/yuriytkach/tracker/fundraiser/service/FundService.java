@@ -2,7 +2,7 @@ package com.yuriytkach.tracker.fundraiser.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.yuriytkach.tracker.fundraiser.model.Fund;
 import com.yuriytkach.tracker.fundraiser.model.exception.DuplicateFundException;
@@ -61,14 +61,15 @@ public class FundService {
     }
   }
 
-  public List<Fund> findAllFunds(final String owner) {
-    return fundStorageClient.findAll().stream()
+  public List<Fund> findAllFunds(final String owner, final boolean includeDisabled) {
+    final Stream<Fund> funds = includeDisabled ? fundStorageClient.findAll() : fundStorageClient.findAllEnabled();
+    return funds
       .filter(fund -> owner == null || fund.getOwner().equals(owner))
-      .collect(Collectors.toUnmodifiableList());
+      .toList();
   }
 
   public List<Fund> findAllEnabled() {
-    return fundStorageClient.findAllEnabled().collect(Collectors.toUnmodifiableList());
+    return fundStorageClient.findAllEnabled().toList();
   }
 
   public Fund findByNameOrException(final String fundName) {

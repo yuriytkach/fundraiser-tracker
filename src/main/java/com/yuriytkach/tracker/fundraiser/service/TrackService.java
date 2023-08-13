@@ -12,7 +12,6 @@ import static com.yuriytkach.tracker.fundraiser.service.PatternUtils.UPDATE_PATT
 import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -317,10 +316,13 @@ public class TrackService {
     final List<String> responseTextLines;
     final String title;
     final String fundName = matcher.group("name");
+    final boolean showAll = matcher.group("all") != null;
     if (fundName == null) {
-      log.info("Listing all funds for user: {}", user);
+      log.info("Listing all funds for user: {}, includeDisabled: {}", user, showAll);
       title = null;
-      responseTextLines = StreamEx.of(fundService.findAllFunds(user))
+      final List<Fund> funds = fundService.findAllFunds(user, showAll);
+      log.info("Found funds: {}", funds.size());
+      responseTextLines = StreamEx.of(funds)
         .sorted(comparing(Fund::isEnabled).reversed().thenComparing(comparing(Fund::getUpdatedAt).reversed()))
         .map(Fund::toOutputStringLong)
         .prepend("All Funds")
@@ -332,7 +334,7 @@ public class TrackService {
       responseTextLines = donationStorageClient.findAll(fund.getId()).stream()
         .sorted(comparing(Donation::getDateTime))
         .map(Donation::toStringLong)
-        .collect(toUnmodifiableList());
+        .toList();
     }
     return createSuccessResponse(title, responseTextLines);
   }

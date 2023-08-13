@@ -22,6 +22,7 @@ class PatternUtilsTest {
   @CsvSource({
     "list, true",
     "list fund, true",
+    "list -all, true",
     "abc      hello, true",
     "'', false"
   })
@@ -68,8 +69,10 @@ class PatternUtilsTest {
   @ParameterizedTest
   @CsvSource({
     "'', true",
+    "-all, true",
     "fund, true",
-    "'  ', false"
+    "'  ', false",
+    "--all, false"
   })
   void shouldMatchListCommand(final String text, final boolean expected) {
     final Matcher matcher = LIST_PATTERN.matcher(text);

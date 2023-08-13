@@ -1,6 +1,5 @@
 package com.yuriytkach.tracker.fundraiser.service;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -11,7 +10,7 @@ public interface FundStorageClient {
 
   void save(Fund fund);
 
-  Collection<Fund> findAll();
+  Stream<Fund> findAll();
 
   Optional<Fund> getByName(String name);
 

@@ -308,10 +308,20 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
       .build());
   }
 
-  @Test
-  void shouldReturnResultForListAllFundsCommand() {
+  @ParameterizedTest
+  @ValueSource(booleans = { true, false })
+  void shouldReturnResultForListAllFundsCommand(final boolean allFunds) {
     final AwsProxyRequest request = createAwsProxyRequest();
-    request.setBody("token=" + SLACK_TOKEN + "&user_id=" + FUND_OWNER + "&text=list");
+    request.setBody("token=%s&user_id=%s&text=list%s".formatted(
+      SLACK_TOKEN,
+      FUND_OWNER,
+      allFunds ? " -all" : ""
+    ));
+
+    final String expectedText = """
+          :white_check_mark: All Funds
+          :open_book: 10.00% `fundy` [100 of 1000] EUR - description [red] - 0 h - :bank:-1\
+          """;
 
     given()
       .contentType(MediaType.APPLICATION_JSON)
@@ -324,10 +334,12 @@ class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements 
       .body("statusCode", equalTo(200))
       .body("body", jsonEqualTo(SlackResponse.builder()
         .responseType(SlackResponse.RESPONSE_PRIVATE)
-        .text("""
-          :white_check_mark: All Funds
-          :open_book: 10.00% `fundy` [100 of 1000] EUR - description [red] - 0 h - :bank:-1\
-          """)
+        .text(
+          allFunds
+          ? expectedText
+            + "\n:closed_book: 110.00% `dis-fund` [2200 of 2000] USD - description [red] - 0 d (Closed 0 d ago)"
+          : expectedText
+        )
         .build()));
   }
 

@@ -10,6 +10,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -132,7 +133,7 @@ class FundStatusAwsLambdaTest implements AwsLambdaIntegrationTestCommon {
   @NullSource
   void shouldReturnAllFunds(final String owner) {
     final Fund fund = dummyFund();
-    when(fundService.findAllFunds(any())).thenReturn(List.of(fund));
+    when(fundService.findAllFunds(any(), anyBoolean())).thenReturn(List.of(fund));
 
     final AwsProxyRequest request = createAwsProxyRequest();
     request.setBody(null);
@@ -167,7 +168,7 @@ class FundStatusAwsLambdaTest implements AwsLambdaIntegrationTestCommon {
       .body("statusCode", equalTo(200))
       .body("body", jsonEqualTo(List.of(expectedFundStatus)));
 
-    verify(fundService).findAllFunds(owner);
+    verify(fundService).findAllFunds(owner, false);
   }
 
   @Test

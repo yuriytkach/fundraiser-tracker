@@ -41,12 +41,14 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
   static final String FUNDS_TABLE = "all-funds-table";
   static final String ENABLED_INDEX = "test-mono-index";
   static final String FUND_1_TABLE = "donations-table";
+  static final String FUND_2_TABLE = "disabled-table";
   static final String FUND_OWNER = "owner";
   static final String FUND_RED = "red";
   static final String FUND_DESC = "description";
   static final String FUND_BANK_ACCOUNT_ID = "bankAccountId";
 
   static final String FUND_1_NAME = "fundy";
+  static final String FUND_DISABLED_NAME = "dis-fund";
 
   static final Fund FUND = Fund.builder()
     .id(FUND_1_TABLE)
@@ -61,6 +63,20 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     .color(FUND_RED)
     .owner(FUND_OWNER)
     .bankAccounts(Set.of(FUND_BANK_ACCOUNT_ID))
+    .build();
+
+  static final Fund FUND_DISABLED = Fund.builder()
+    .id(FUND_2_TABLE)
+    .enabled(false)
+    .name(FUND_DISABLED_NAME)
+    .goal(2000)
+    .raised(2200)
+    .currency(Currency.USD)
+    .createdAt(Instant.now())
+    .updatedAt(Instant.now())
+    .description(FUND_DESC)
+    .color(FUND_RED)
+    .owner(FUND_OWNER)
     .build();
 
   private static final GenericContainer<?> CONTAINER = new GenericContainer<>("amazon/dynamodb-local:1.11.477")
@@ -87,7 +103,8 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     );
     createTable(dynamoDB, FUND_1_TABLE, DynamoDbDonationClientDonation.COL_ID, null);
 
-    createFundItem(dynamoDB);
+    createFundItem(dynamoDB, FUND);
+    createFundItem(dynamoDB, FUND_DISABLED);
 
     return Map.of(
       "app.funds-table", FUNDS_TABLE,
@@ -112,33 +129,35 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     CONTAINER.stop();
   }
 
-  private void createFundItem(final AmazonDynamoDB dynamoDB) {
+  private void createFundItem(final AmazonDynamoDB dynamoDB, final Fund fund) {
     final PutItemRequest putRequest = new PutItemRequest();
     putRequest.setTableName(FUNDS_TABLE);
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_ID, new AttributeValue().withS(FUND.getId()));
+      DynamoDbFundStorageClient.COL_ID, new AttributeValue().withS(fund.getId()));
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_ENABLED, new AttributeValue().withN(FUND.getEnabledNkey()));
+      DynamoDbFundStorageClient.COL_ENABLED, new AttributeValue().withN(fund.getEnabledNkey()));
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_NAME, new AttributeValue().withS(FUND.getName()));
+      DynamoDbFundStorageClient.COL_NAME, new AttributeValue().withS(fund.getName()));
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_DESC, new AttributeValue().withS(FUND.getDescription()));
+      DynamoDbFundStorageClient.COL_DESC, new AttributeValue().withS(fund.getDescription()));
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_COLOR, new AttributeValue().withS(FUND.getColor()));
+      DynamoDbFundStorageClient.COL_COLOR, new AttributeValue().withS(fund.getColor()));
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_OWNER, new AttributeValue().withS(FUND.getOwner()));
+      DynamoDbFundStorageClient.COL_OWNER, new AttributeValue().withS(fund.getOwner()));
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_GOAL, new AttributeValue().withN(String.valueOf(FUND.getGoal())));
+      DynamoDbFundStorageClient.COL_GOAL, new AttributeValue().withN(String.valueOf(fund.getGoal())));
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_RAISED, new AttributeValue().withN(String.valueOf(FUND.getRaised())));
+      DynamoDbFundStorageClient.COL_RAISED, new AttributeValue().withN(String.valueOf(fund.getRaised())));
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_CURR, new AttributeValue().withS(FUND.getCurrency().name()));
+      DynamoDbFundStorageClient.COL_CURR, new AttributeValue().withS(fund.getCurrency().name()));
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_CREATED_AT, new AttributeValue().withS(FUND.getCreatedAt().toString()));
+      DynamoDbFundStorageClient.COL_CREATED_AT, new AttributeValue().withS(fund.getCreatedAt().toString()));
     putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_UPDATED_AT, new AttributeValue().withS(FUND.getUpdatedAt().toString()));
-    putRequest.addItemEntry(
-      DynamoDbFundStorageClient.COL_BANK, new AttributeValue().withSS(FUND.getBankAccounts()));
+      DynamoDbFundStorageClient.COL_UPDATED_AT, new AttributeValue().withS(fund.getUpdatedAt().toString()));
+    if (fund.getBankAccounts() != null && !fund.getBankAccounts().isEmpty()) {
+      putRequest.addItemEntry(
+        DynamoDbFundStorageClient.COL_BANK, new AttributeValue().withSS(fund.getBankAccounts()));
+    }
 
     dynamoDB.putItem(putRequest);
   }

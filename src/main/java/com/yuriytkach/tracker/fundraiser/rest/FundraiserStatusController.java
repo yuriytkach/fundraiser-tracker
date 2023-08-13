@@ -1,7 +1,6 @@
 package com.yuriytkach.tracker.fundraiser.rest;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.yuriytkach.tracker.fundraiser.config.FundTrackerConfig;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
@@ -41,9 +40,9 @@ public class FundraiserStatusController {
   public Response allFunds(
     @QueryParam("userId") final String userId
   ) {
-    final List<FundStatus> allFunds = fundService.findAllFunds(userId).stream()
+    final List<FundStatus> allFunds = fundService.findAllFunds(userId, false).stream()
       .map(this::mapFundToFundStatus)
-      .collect(Collectors.toUnmodifiableList());
+      .toList();
 
     log.info("Found funds for user {}: {}", userId, allFunds.size());
 

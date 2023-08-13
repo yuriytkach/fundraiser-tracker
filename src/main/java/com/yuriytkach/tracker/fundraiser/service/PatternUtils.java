@@ -28,7 +28,7 @@ public class PatternUtils {
     (\\s(?<bank>bank:\\S+))?\
     """);
 
-  public static final Pattern LIST_PATTERN = Pattern.compile("(?<name>\\w+)?");
+  public static final Pattern LIST_PATTERN = Pattern.compile("(?<name>\\w+)?(?<all>-all)?");
 
   public static final Pattern DELETE_PATTERN = Pattern.compile("(?<name>\\w+)");
 
