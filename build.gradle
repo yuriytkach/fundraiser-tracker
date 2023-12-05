@@ -64,7 +64,6 @@ tasks.withType(Test).configureEach {
         excludeClassLoaders = ["*QuarkusClassLoader"]
         destinationFile = layout.buildDirectory.file("jacoco-quarkus.exec").get().asFile
     }
-    jacocoTestReport.enabled = false
 }
 
 compileJava {
