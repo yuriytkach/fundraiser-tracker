@@ -35,6 +35,8 @@ jobs:
              gh api $url > "$name.zip"
              unzip -d "$name" "$name.zip"
            done
+           ls -la coverage_reports_integration
+           ls -la coverage_reports_unit
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
@@ -50,6 +52,4 @@ jobs:
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: |
-            artifacts/coverage_reports_unit/jacocoTestReport.xml
-            artifacts/coverage_reports_integration/jacocoTestReport.xml
+          coverage-reports: artifacts/coverage_reports_unit/jacocoTestReport.xml, artifacts/coverage_reports_integration/jacocoTestReport.xml
