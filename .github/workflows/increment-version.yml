@@ -1,0 +1,32 @@
+name: Increment Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      newVersion:
+        description: 'New version (e.g., 3.3.0). Leave blank to increment patch version.'
+        required: false
+        default: ''
+
+jobs:
+  version-bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Increment Version
+        id: version-bump
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+          custom_version: ${{ github.event.inputs.newVersion }}
+          release_branches: main
+          dry_run: true
