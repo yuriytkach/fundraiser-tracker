@@ -9,13 +9,8 @@ on:
 
 jobs:
   build:
-    name: Build and Test
+    name: Build
     runs-on: ubuntu-latest
-
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
 
     steps:
       - name: Checkout
@@ -28,29 +23,56 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: java
-
       - name: Grant permissions
         run: chmod +x gradlew
 
       - name: Build
-        run: ./gradlew build -x test -x quarkusIntTest
+        run: ./gradlew assemble -x test
 
-      - name: Unit Tests
+  unit-tests:
+    name: Unit Tests
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Run Unit Tests
         run: ./gradlew test
 
       - name: Upload Unit Test Results
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: test_results
+          name: unit_test_results
           path: |
             build/test-results/test/*.xml
 
-      - name: Integration Tests
+  integration-tests:
+    name: Integration Tests
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Run Integration Tests
         run: ./gradlew -x test quarkusIntTest
 
       - name: Upload Integration Test Results
@@ -61,13 +83,19 @@ jobs:
           path: |
             build/test-results/quarkusIntTest/*.xml
 
-      - name: Upload Coverage Reports
-        if: always()
-        uses: actions/upload-artifact@v3
+  code-analysis:
+    name: CodeQL Analysis
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
         with:
-          name: coverage_reports
-          path: |
-            build/jacoco-report/jacoco.xml
+          languages: java
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
@@ -76,8 +104,8 @@ jobs:
     name: "Event File"
     runs-on: ubuntu-latest
     steps:
-    - name: Upload
-      uses: actions/upload-artifact@v3
-      with:
-        name: event_file
-        path: ${{ github.event_path }}
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: event_file
+          path: ${{ github.event_path }}

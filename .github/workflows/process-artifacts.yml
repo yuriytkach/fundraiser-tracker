@@ -42,7 +42,9 @@ jobs:
           commit: ${{ github.event.workflow_run.head_sha }}
           event_file: artifacts/event_file/event.json
           event_name: ${{ github.event.workflow_run.event }}
-          files: "artifacts/test_results/*.xml"
+          files: |
+            artifacts/unit_test_results/*.xml
+            artifacts/integration_test_results/*.xml
 
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1
