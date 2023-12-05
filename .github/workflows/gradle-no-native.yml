@@ -7,10 +7,15 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     name: Build and CodeQL Analysis
     runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.event.head_commit.message, 'build: Set version to') }}
 
     steps:
       - name: Checkout
@@ -93,6 +98,7 @@ jobs:
 
   event_file:
     name: "Event File"
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Upload
