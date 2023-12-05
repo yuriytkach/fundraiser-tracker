@@ -8,25 +8,36 @@ on:
         required: false
         default: ''
 
+permissions:
+  contents: write
+
 jobs:
   version-bump:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Setup Java
-        uses: actions/setup-java@v2
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Increment Version
+      - name: Calculate Version
         id: version-bump
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: patch
-          custom_version: ${{ github.event.inputs.newVersion }}
+          custom_tag: ${{ github.event.inputs.newVersion }}
           release_branches: main
           dry_run: true
+
+      - name: Update build.gradle
+        run: |
+          sed -i "s/^version '.*'$/version '${{ steps.version-bump.outputs.new_version }}'/" build.gradle
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add build.gradle
+          git commit -m "build: Set version to ${{ steps.version-bump.outputs.new_version }}" -m "${{ steps.version-bump.outputs.changelog }}"
+          git push

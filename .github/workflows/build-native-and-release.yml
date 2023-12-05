@@ -1,0 +1,79 @@
+name: Build and Release
+
+on:
+  workflow_run:
+    workflows: ["Increment Version"]
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Grant permissions
+        run: chmod +x gradlew
+
+      - name: Build Native
+        run: ./gradlew build -x check -x test -x quarkusIntTest -Dquarkus.package.type=native -Dquarkus.native.container-build=true
+
+      - name: Extract Version from build.gradle
+        id: extract_version
+        run: |
+          VERSION=$(grep -oP "^version '\K[^']+" build.gradle)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Increment Tag Version
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ steps.extract_version.outputs.version }}
+          release_branches: main
+          create_annotated_tag: true
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          release_name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          draft: false
+          prerelease: false
+
+      - name: Upload function.zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/function.zip
+          asset_name: function.zip
+          asset_content_type: application/zip
+
+      - name: Upload sam.jvm.yaml
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/sam.native.yaml
+          asset_name: sam.native.yaml
+          asset_content_type: text/yaml
