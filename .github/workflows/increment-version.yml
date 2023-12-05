@@ -8,9 +8,6 @@ on:
         required: false
         default: ''
 
-permissions:
-  contents: write
-
 jobs:
   version-bump:
     runs-on: ubuntu-latest
@@ -18,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MY_PAT }}
 
       - name: Calculate Version
         id: version-bump
@@ -40,4 +37,4 @@ jobs:
           git config --global user.email 'actions@github.com'
           git add build.gradle
           git commit -m "build: Set version to ${{ steps.version-bump.outputs.new_version }}" -m "${{ steps.version-bump.outputs.changelog }}"
-          git push
+          git push -f
