@@ -55,11 +55,16 @@ java {
 }
 
 tasks.withType(Test).configureEach {
-    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
     finalizedBy jacocoTestReport
+    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
     testLogging {
         events "passed", "skipped", "failed"
     }
+    jacoco {
+        excludeClassLoaders = ["*QuarkusClassLoader"]
+        destinationFile = layout.buildDirectory.file("jacoco-quarkus.exec").get().asFile
+    }
+    jacocoTestReport.enabled = false
 }
 
 compileJava {
