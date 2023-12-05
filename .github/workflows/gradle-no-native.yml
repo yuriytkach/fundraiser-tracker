@@ -15,7 +15,8 @@ jobs:
   build:
     name: Build and CodeQL Analysis
     runs-on: ubuntu-latest
-    if: ${{ !startsWith(github.event.head_commit.message, 'build: Set version to') }}
+    if:
+      ${{ !startsWith(github.event.head_commit.message, 'build: Set version to') }}
 
     steps:
       - name: Checkout
