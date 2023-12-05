@@ -1,4 +1,4 @@
-package com.yuriytkach.tracker.fundraiser.integration;
+package com.yuriytkach.tracker.fundraiser.privatbank;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.yuriytkach.tracker.fundraiser.privatbank.PrivatbankService;
+import com.yuriytkach.tracker.fundraiser.AwsLambdaIntegrationTestCommon;
 
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
 import io.quarkus.test.InjectMock;
@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @QuarkusTest
-class PrivatEventTest implements AwsLambdaIntegrationTestCommon {
+class PrivatEventIT implements AwsLambdaIntegrationTestCommon {
 
   @InjectMock
   PrivatbankService privatbankService;

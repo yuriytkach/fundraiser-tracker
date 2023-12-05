@@ -1,4 +1,4 @@
-package com.yuriytkach.tracker.fundraiser.integration;
+package com.yuriytkach.tracker.fundraiser;
 
 import java.time.Instant;
 import java.util.List;
@@ -38,19 +38,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager {
 
-  static final String FUNDS_TABLE = "all-funds-table";
-  static final String ENABLED_INDEX = "test-mono-index";
-  static final String FUND_1_TABLE = "donations-table";
-  static final String FUND_2_TABLE = "disabled-table";
-  static final String FUND_OWNER = "owner";
-  static final String FUND_RED = "red";
-  static final String FUND_DESC = "description";
-  static final String FUND_BANK_ACCOUNT_ID = "bankAccountId";
+  public static final String FUNDS_TABLE = "all-funds-table";
+  public static final String ENABLED_INDEX = "test-mono-index";
+  public static final String FUND_1_TABLE = "donations-table";
+  public static final String FUND_2_TABLE = "disabled-table";
+  public static final String FUND_OWNER = "owner";
+  public static final String FUND_RED = "red";
+  public static final String FUND_DESC = "description";
+  public static final String FUND_BANK_ACCOUNT_ID = "bankAccountId";
 
-  static final String FUND_1_NAME = "fundy";
-  static final String FUND_DISABLED_NAME = "dis-fund";
+  public static final String FUND_1_NAME = "fundy";
+  public static final String FUND_DISABLED_NAME = "dis-fund";
 
-  static final Fund FUND = Fund.builder()
+  public static final Fund FUND = Fund.builder()
     .id(FUND_1_TABLE)
     .enabled(true)
     .name(FUND_1_NAME)
@@ -65,7 +65,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     .bankAccounts(Set.of(FUND_BANK_ACCOUNT_ID))
     .build();
 
-  static final Fund FUND_DISABLED = Fund.builder()
+  public static final Fund FUND_DISABLED = Fund.builder()
     .id(FUND_2_TABLE)
     .enabled(false)
     .name(FUND_DISABLED_NAME)

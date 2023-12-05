@@ -11,7 +11,7 @@ import software.amazon.awssdk.services.ssm.model.ParameterType;
 import software.amazon.awssdk.services.ssm.model.PutParameterRequest;
 
 @QuarkusTest
-class AwsSecretsManagerReaderTest {
+class AwsSecretsManagerReaderIT {
 
   private static final String SECRET_ID = "id";
   private static final String SECRET_VALUE = "value";

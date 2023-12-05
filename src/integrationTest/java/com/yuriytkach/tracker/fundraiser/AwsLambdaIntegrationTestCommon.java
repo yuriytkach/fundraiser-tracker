@@ -1,4 +1,4 @@
-package com.yuriytkach.tracker.fundraiser.integration;
+package com.yuriytkach.tracker.fundraiser;
 
 import java.util.Map;
 

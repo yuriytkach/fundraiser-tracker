@@ -1,7 +1,7 @@
-package com.yuriytkach.tracker.fundraiser.integration;
+package com.yuriytkach.tracker.fundraiser.mono;
 
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND;
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND_1_TABLE;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_1_TABLE;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_ID;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,6 +18,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.yuriytkach.tracker.fundraiser.AbstractFundOperationsTestCommon;
+import com.yuriytkach.tracker.fundraiser.AwsLambdaIntegrationTestCommon;
+import com.yuriytkach.tracker.fundraiser.DynamoDbTestResource;
 import com.yuriytkach.tracker.fundraiser.model.Currency;
 import com.yuriytkach.tracker.fundraiser.model.Donation;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
@@ -33,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
 @DisplayName("Happy path integration test for tracking donation from Monobank statement")
-class MonobankHookTest extends AbstractFundOperationsTestCommon implements AwsLambdaIntegrationTestCommon {
+class MonobankHookIT extends AbstractFundOperationsTestCommon implements AwsLambdaIntegrationTestCommon {
 
   private static final String MONO_STATEMENT_ID = "monoStatementId";
   private static final Instant MONO_STATEMENT_TIME = Instant.ofEpochSecond(1667731529);

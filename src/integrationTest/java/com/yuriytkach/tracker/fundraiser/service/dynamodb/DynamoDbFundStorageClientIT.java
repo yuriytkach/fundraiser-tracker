@@ -1,7 +1,7 @@
-package com.yuriytkach.tracker.fundraiser.integration;
+package com.yuriytkach.tracker.fundraiser.service.dynamodb;
 
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND;
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND_BANK_ACCOUNT_ID;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_BANK_ACCOUNT_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
@@ -10,6 +10,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.yuriytkach.tracker.fundraiser.AbstractFundOperationsTestCommon;
+import com.yuriytkach.tracker.fundraiser.DynamoDbTestResource;
 import com.yuriytkach.tracker.fundraiser.model.Currency;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
 
@@ -21,7 +23,7 @@ import one.util.streamex.StreamEx;
 @Slf4j
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-class DynamoDbFundStorageClientTest extends AbstractFundOperationsTestCommon {
+class DynamoDbFundStorageClientIT extends AbstractFundOperationsTestCommon {
 
   private static final String OTHER_ACCOUNT_ID = "some-other-account-id";
 

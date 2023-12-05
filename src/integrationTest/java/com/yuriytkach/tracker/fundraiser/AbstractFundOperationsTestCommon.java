@@ -1,8 +1,8 @@
-package com.yuriytkach.tracker.fundraiser.integration;
+package com.yuriytkach.tracker.fundraiser;
 
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND;
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUNDS_TABLE;
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND_1_TABLE;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUNDS_TABLE;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_1_TABLE;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.ALL_ATTRIBUTES;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_ID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,17 +32,17 @@ import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
 
 @Slf4j
-abstract class AbstractFundOperationsTestCommon {
+public abstract class AbstractFundOperationsTestCommon {
 
   static final UUID ITEM_ID_1 = new UUID(1, 1);
   static final UUID ITEM_ID_2 = new UUID(2, 2);
   static final String FUND_2_NAME = "carFund";
 
   @Inject
-  DynamoDbFundStorageClient fundStorageClient;
+  public DynamoDbFundStorageClient fundStorageClient;
 
   @Inject
-  DynamoDbClient dynamoDB;
+  public DynamoDbClient dynamoDB;
 
   @AfterEach
   void cleanUp() {

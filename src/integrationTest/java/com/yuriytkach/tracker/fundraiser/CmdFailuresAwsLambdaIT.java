@@ -1,8 +1,8 @@
-package com.yuriytkach.tracker.fundraiser.integration;
+package com.yuriytkach.tracker.fundraiser;
 
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND;
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND_1_NAME;
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND_OWNER;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_1_NAME;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_OWNER;
 import static com.yuriytkach.tracker.fundraiser.util.JsonMatcher.jsonEqualTo;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -34,7 +34,7 @@ import one.util.streamex.StreamEx;
 
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-class CmdFailuresAwsLambdaTest implements AwsLambdaIntegrationTestCommon {
+class CmdFailuresAwsLambdaIT implements AwsLambdaIntegrationTestCommon {
 
   private static final String SLACK_TOKEN = "slackToken";
 

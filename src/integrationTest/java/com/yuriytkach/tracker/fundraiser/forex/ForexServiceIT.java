@@ -25,7 +25,7 @@ import lombok.SneakyThrows;
 
 @QuarkusTest
 @QuarkusTestResource(MockServerTestResource.class)
-class ForexServiceIntegrationTest {
+class ForexServiceIT {
 
   @Inject
   ForexService tested;
@@ -39,6 +39,8 @@ class ForexServiceIntegrationTest {
     final var port = MockServerTestResource.CONTAINER.getServerPort();
 
     mockServerClient = new MockServerClient(host, port);
+
+    tested.setCurrencies(null); // clear cache
   }
 
   @ParameterizedTest
@@ -67,11 +69,45 @@ class ForexServiceIntegrationTest {
 
   @SneakyThrows
   private void initMockGoodResponse() {
-    final List<MonoCurrencyRate> currencies;
-
-    try (var is = this.getClass().getClassLoader().getResourceAsStream("monobank_response.json")) {
-      currencies = new ObjectMapper().readerForListOf(MonoCurrencyRate.class).readValue(is);
-    }
+    final List<MonoCurrencyRate> currencies = new ObjectMapper()
+      .readerForListOf(MonoCurrencyRate.class)
+      .readValue("""
+        [
+          {
+            "currencyCodeA": 840,
+            "currencyCodeB": 980,
+            "date": 1653426607,
+            "rateBuy": 29.5,
+            "rateSell": 32.5002
+          },
+          {
+            "currencyCodeA": 978,
+            "currencyCodeB": 980,
+            "date": 1653497407,
+            "rateBuy": 31.4,
+            "rateSell": 34.75
+          },
+          {
+            "currencyCodeA": 756,
+            "currencyCodeB": 980,
+            "date": 1653501207,
+            "rateCross": 33.9508
+          },
+          {
+            "currencyCodeA": 826,
+            "currencyCodeB": 980,
+            "date": 1653501270,
+            "rateCross": 40.9485
+          },
+          {
+            "currencyCodeA": 978,
+            "currencyCodeB": 840,
+            "date": 1653497407,
+            "rateBuy": 1.057,
+            "rateSell": 1.077
+          }
+        ]
+        """);
 
     mockServerClient.reset();
     mockServerClient

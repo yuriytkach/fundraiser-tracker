@@ -1,9 +1,9 @@
-package com.yuriytkach.tracker.fundraiser.integration;
+package com.yuriytkach.tracker.fundraiser;
 
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND;
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUNDS_TABLE;
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND_1_TABLE;
-import static com.yuriytkach.tracker.fundraiser.integration.DynamoDbTestResource.FUND_OWNER;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUNDS_TABLE;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_1_TABLE;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_OWNER;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_AMOUNT;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_CURR;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_ID;
@@ -61,7 +61,7 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 @Slf4j
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-class CmdTrackAwsLambdaTest extends AbstractFundOperationsTestCommon implements AwsLambdaIntegrationTestCommon {
+class CmdTrackAwsLambdaIT extends AbstractFundOperationsTestCommon implements AwsLambdaIntegrationTestCommon {
 
   private static final String SLACK_TOKEN = "slack-token";
 

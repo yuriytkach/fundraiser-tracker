@@ -43,7 +43,7 @@ class ForexServiceTest {
   void initRestClientResponse() {
     final List<MonoCurrencyRate> currencies;
 
-    try (var is = this.getClass().getClassLoader().getResourceAsStream("monobank_response.json")) {
+    try (var is = this.getClass().getClassLoader().getResourceAsStream("monobank_currencies_response.json")) {
       currencies = new ObjectMapper().readerForListOf(MonoCurrencyRate.class).readValue(is);
     }
 

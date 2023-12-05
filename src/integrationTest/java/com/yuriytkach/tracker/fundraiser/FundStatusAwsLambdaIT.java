@@ -1,4 +1,4 @@
-package com.yuriytkach.tracker.fundraiser.integration;
+package com.yuriytkach.tracker.fundraiser;
 
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_AMOUNT;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_CURR;
@@ -53,7 +53,7 @@ import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
 
 @QuarkusTest
 @QuarkusTestResource(DynamoDbTestResource.class)
-class FundStatusAwsLambdaTest implements AwsLambdaIntegrationTestCommon {
+class FundStatusAwsLambdaIT implements AwsLambdaIntegrationTestCommon {
 
   private static final UUID ITEM_ID_1 = new UUID(1, 1);
   private static final UUID ITEM_ID_2 = new UUID(2, 2);
