@@ -37,18 +37,29 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build
-        run: ./gradlew build -x test
+        run: ./gradlew build -x test -x quarkusIntTest
 
-      - name: Test
+      - name: Unit Tests
         run: ./gradlew test
 
-      - name: Upload Test Results
+      - name: Upload Unit Test Results
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: test_results
           path: |
             build/test-results/test/*.xml
+
+      - name: Integration Tests
+        run: ./gradlew -x test quarkusIntTest
+
+      - name: Upload Integration Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: integration_test_results
+          path: |
+            build/test-results/quarkusIntTest/*.xml
 
       - name: Upload Coverage Reports
         if: always()
