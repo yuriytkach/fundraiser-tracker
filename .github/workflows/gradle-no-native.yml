@@ -68,6 +68,14 @@ jobs:
           path: |
             build/test-results/test/*.xml
 
+      - name: Upload Coverage Reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_reports_unit
+          path: |
+            build/jacoco-report/jacoco.xml
+
   integration-tests:
     name: Integration Tests
     needs: build
@@ -95,9 +103,17 @@ jobs:
           path: |
             build/test-results/quarkusIntTest/*.xml
 
+      - name: Upload Coverage Reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_reports_integration
+          path: |
+            build/jacoco-report/jacoco.xml
+
   event_file:
     name: "Event File"
-    needs: build
+    needs: [unit-tests, integration-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Upload
