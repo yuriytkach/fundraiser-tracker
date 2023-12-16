@@ -35,7 +35,7 @@ public class DynamoDbDonationClientDonation implements DonationStorageClient {
   public static final String COL_PERSON = "person";
   public static final String COL_ID = "id";
 
-  public static final String[] ALL_ATTRIBUTES = new String[] {
+  public static final String[] ALL_ATTRIBUTES = {
     COL_ID,
     COL_CURR,
     COL_AMOUNT,
@@ -62,7 +62,7 @@ public class DynamoDbDonationClientDonation implements DonationStorageClient {
   @Override
   public void addAll(final String fundId, final Collection<Donation> donations) {
     log.debug("Saving donations to table `{}`: {}", fundId, donations.size());
-    final var writeRequests = StreamEx.of(donations)
+    final Set<WriteRequest> writeRequests = StreamEx.of(donations)
       .map(this::createPutRequest)
       .map(putRequest -> WriteRequest.builder().putRequest(putRequest).build())
       .toImmutableSet();
@@ -74,14 +74,13 @@ public class DynamoDbDonationClientDonation implements DonationStorageClient {
       .conditionExpression(conditionExpression)
       .expressionAttributeValues(expressionAttributeValues)
       .build();
-    BatchWriteItemResponse response;
     final BatchWriteItemResponse response = dynamoDB.batchWriteItem(request);
     log.debug("Saved donations. Consumed capacity: {}", response.consumedCapacity());
   }
 
   @Override
   public Collection<Donation> findAll(final String fundId) {
-    final var request = ScanRequest.builder()
+    final ScanRequest request = ScanRequest.builder()
       .tableName(fundId)
       .attributesToGet(ALL_ATTRIBUTES)
       .build();
@@ -93,7 +92,7 @@ public class DynamoDbDonationClientDonation implements DonationStorageClient {
   }
 
   private PutRequest createPutRequest(final Donation donation) {
-    final Map<String, AttributeValue> item = new HashMap<>();
+    final Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
     item.put(COL_ID, AttributeValue.builder().s(donation.getId()).build());
     item.put(COL_CURR, AttributeValue.builder().s(donation.getCurrency().name()).build());
     item.put(COL_AMOUNT, AttributeValue.builder().n(String.valueOf(donation.getAmount())).build());
