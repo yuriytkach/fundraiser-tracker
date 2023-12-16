@@ -149,7 +149,7 @@ public class TrackService {
     }
 
     log.info("Updating data for fund: {}", fundName);
-    final var updatedFund = extractFundDataFromMatchedTextAndUpdate(fund, matcher);
+    final Fund updatedFund = extractFundDataFromMatchedTextAndUpdate(fund, matcher);
     try {
       fundService.updateFund(updatedFund);
       log.info("The Fund with name: `{}` has been updated", fundName);
@@ -183,7 +183,7 @@ public class TrackService {
   }
 
   private Fund extractFundDataFromMatchedTextAndUpdate(final Fund fund, final Matcher matcher) {
-    final var fundBuilder = fund.toBuilder();
+    final Fund.FundBuilder fundBuilder = fund.toBuilder();
 
     final var open = matcher.group("open");
     if (open != null) {
@@ -200,7 +200,7 @@ public class TrackService {
       final var currName = currArg.split(":")[1];
       log.debug("Update fund's currency {} to: {}", fund.getCurrency(), currName);
 
-      final var curr = Currency.fromString(currName).orElseThrow(UnknownCurrencyException::new);
+      final Currency curr = Currency.fromString(currName).orElseThrow(UnknownCurrencyException::new);
       if (fund.getCurrency() != curr) {
         final var convertedAmount = forexService.convertCurrency(fund.getRaised(), fund.getCurrency(), curr);
         fundBuilder.raised(convertedAmount);
@@ -230,9 +230,9 @@ public class TrackService {
       fundBuilder.color(color);
     }
 
-    final var bankArg = matcher.group("bank");
+    final String bankArg = matcher.group("bank");
     if (bankArg != null) {
-      final var bank = bankArg.split(":")[1];
+      final String bank = bankArg.split(":")[1];
       final var bankAccounts = Arrays.stream(bank.split(","))
         .map(String::strip)
         .filter(not(String::isBlank))
@@ -278,7 +278,7 @@ public class TrackService {
       instant = Instant.now();
     } else {
       log.debug("Datetime was specified. Parsing it.");
-      final var dt = matcher.group("dt");
+      final String dt = matcher.group("dt");
       final LocalDateTime localDateTime;
       if (dt.length() == 5) {
         final TemporalAccessor onlyTime = DATE_TIME_FORMATTER_ONLY_TIME.parse(matcher.group("dt"));
