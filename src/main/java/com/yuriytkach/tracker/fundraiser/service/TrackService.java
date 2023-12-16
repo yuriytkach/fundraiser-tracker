@@ -40,6 +40,7 @@ import com.yuriytkach.tracker.fundraiser.model.Donation;
 import com.yuriytkach.tracker.fundraiser.model.Fund;
 import com.yuriytkach.tracker.fundraiser.model.SlackResponse;
 import com.yuriytkach.tracker.fundraiser.model.exception.DuplicateFundException;
+import com.yuriytkach.tracker.fundraiser.model.exception.FundTotalMismatchException;
 import com.yuriytkach.tracker.fundraiser.model.exception.FundClosedException;
 import com.yuriytkach.tracker.fundraiser.model.exception.FundNotFoundException;
 import com.yuriytkach.tracker.fundraiser.model.exception.FundNotOwnedException;
@@ -173,7 +174,15 @@ public class TrackService {
       throw FundClosedException.withFundAndMessage(fund, "Can't track donations");
     }
 
-    final Fund updatedFund = donationTracker.trackDonation(fund, donation);
+    Fund updatedFund;
+    while (true) {
+      try {
+        updatedFund = donationTracker.trackDonation(fund, donation);
+        break;
+      } catch (FundTotalMismatchException e) {
+        log.warn("Fund total mismatch when tracking donation, retrying...");
+      }
+    }
 
     return createSuccessResponse(
       null,
