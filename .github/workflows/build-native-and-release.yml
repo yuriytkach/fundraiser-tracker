@@ -40,6 +40,12 @@ jobs:
       - name: Increment Tag Version
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.1
+
+      - name: Upload Artifact function.zip
+        uses: actions/upload-artifact@v2
+        with:
+          name: function
+          path: build/function.zip
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           custom_tag: ${{ steps.extract_version.outputs.version }}
@@ -67,13 +73,26 @@ jobs:
           asset_path: build/function.zip
           asset_name: function.zip
           asset_content_type: application/zip
+  publish-to-github-packages:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Upload sam.jvm.yaml
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download Artifact function.zip
+        uses: actions/download-artifact@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/sam.native.yaml
-          asset_name: sam.native.yaml
-          asset_content_type: text/yaml
+          name: function
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Publish to Github Packages
+        uses: eskatos/gradle-command-action@v2
+        with:
+          arguments: publish
+      # Step removed: Upload sam.jvm.yaml
