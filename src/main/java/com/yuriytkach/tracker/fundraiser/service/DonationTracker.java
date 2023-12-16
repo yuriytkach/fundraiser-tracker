@@ -56,7 +56,7 @@ public class DonationTracker {
 
     donationStorageClient.addAll(fund.getId(), donations);
 
-    fundService.updateFund(updatedFund);
+        fundService.updateFundWithCondition(updatedFund, fund.getRaised());
 
     return updatedFund;
   }
