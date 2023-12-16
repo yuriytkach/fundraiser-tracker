@@ -22,6 +22,7 @@ import software.amazon.awssdk.services.dynamodb.model.BatchWriteItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 
 @Slf4j
 @Singleton
@@ -66,11 +67,21 @@ public class DynamoDbDonationClientDonation implements DonationStorageClient {
       .map(putRequest -> WriteRequest.builder().putRequest(putRequest).build())
       .toImmutableSet();
 
+    final String conditionExpression = "attribute_not_exists(" + COL_CURR + ") OR " + COL_AMOUNT + " = :value";
+    final Map<String, AttributeValue> expressionAttributeValues = Map.of(":value", AttributeValue.builder().n(String.valueOf(currentFundTotal)).build());
+
     final BatchWriteItemRequest request = BatchWriteItemRequest.builder()
       .requestItems(Map.of(fundId, writeRequests))
+      .conditionExpression(conditionExpression)
+      .expressionAttributeValues(expressionAttributeValues)
       .build();
-    final BatchWriteItemResponse response = dynamoDB.batchWriteItem(request);
-    log.debug("Saved donations. Consumed capacity: {}", response.consumedCapacity());
+    BatchWriteItemResponse response;
+    try {
+      response = dynamoDB.batchWriteItem(request);
+      log.debug("Saved donations. Consumed capacity: {}", response.consumedCapacity());
+    } catch (ConditionalCheckFailedException e) {
+      throw new FundTotalMismatchException("Failed to save donations due to a mismatch in fund total.", e);
+    }
   }
 
   @Override
