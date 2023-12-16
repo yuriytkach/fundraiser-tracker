@@ -74,6 +74,9 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
 
   private final FundTrackerConfig config;
 
+  private static final int MAX_RETRIES = 3;
+  private static final long INITIAL_BACKOFF = 50; // milliseconds
+
   public static Optional<Fund> parseFund(final Map<String, AttributeValue> item) {
     if (item == null || item.isEmpty()) {
       return Optional.empty();
@@ -97,7 +100,12 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
 
   @Override
   public void create(final Fund fund) {
-    final var createTableRequest = CreateTableRequest.builder()
+    createFundTable(fund);
+    save(fund, fund.getRaised()); // Pass the expected raised amount
+  }
+
+  private void createFundTable(final Fund fund) {
+    final CreateTableRequest createTableRequest = CreateTableRequest.builder()
       .tableName(fund.getId())
       .keySchema(
         KeySchemaElement.builder()
@@ -122,10 +130,10 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
   }
 
   @Override
-  public void save(final Fund item) {
+  public void save(final Fund item, final int expectedRaised) {
     log.debug("Saving: {}", item);
 
-    final var attributes = EntryStream.of(
+    final Map<String, AttributeValue> attributes = EntryStream.of(
       COL_ID, AttributeValue.builder().s(item.getId()).build(),
       COL_ENABLED, AttributeValue.builder().n(item.getEnabledNkey()).build(),
       COL_NAME, AttributeValue.builder().s(item.getName()).build(),
@@ -146,14 +154,35 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
       .filterValues(Objects::nonNull)
       .toImmutableMap();
 
-    final PutItemRequest putRequest = PutItemRequest.builder()
-      .tableName(config.fundsTable())
-      .item(attributes)
-      .build();
+    boolean success = false;
+    int retries = 0;
+    long backoff = INITIAL_BACKOFF;
 
-    dynamoDB.putItem(putRequest);
+    while (!success && retries < MAX_RETRIES) {
+      try {
+        final PutItemRequest putRequest = PutItemRequest.builder()
+          .tableName(config.fundsTable())
+          .item(attributes)
+          .conditionExpression("attribute_not_exists(#raised) OR #raised = :expected")
+          .expressionAttributeNames(Map.of("#raised", COL_RAISED))
+          .expressionAttributeValues(Map.of(":expected", AttributeValue.builder().n(String.valueOf(expectedRaised)).build()))
+          .build();
 
-    log.info("Saved: {}", item);
+        dynamoDB.putItem(putRequest);
+        success = true;
+        log.info("Saved: {}", item);
+      } catch (ConditionalCheckFailedException e) {
+        log.info("Conditional check failed, retrying... {}", retries + 1);
+        Thread.sleep(backoff);
+        backoff *= 2;
+        retries++;
+      }
+    }
+
+    if (!success) {
+      log.error("Failed to save fund after retries", item);
+      throw new RuntimeException("Failed to save fund after retries");
+    }
   }
 
   @Override
@@ -217,7 +246,43 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
   }
 
   @Override
-  public void remove(final Fund fund) {
+  public void remove(final Fund fund, final int expectedRaised) {
+    removeFundRecord(fund, expectedRaised); // Use conditional write with retries
+    removeFundTable(fund);
+  }
+
+  private void removeFundRecord(final Fund fund, final int expectedRaised) {
+    boolean success = false;
+    int retries = 0;
+    long backoff = INITIAL_BACKOFF;
+    final DeleteItemRequest itemDeleteRequest = DeleteItemRequest.builder()
+      .tableName(config.fundsTable())
+      .key(Map.of(COL_NAME, AttributeValue.builder().s(fund.getName()).build()))
+      .conditionExpression("attribute_not_exists(#raised) OR #raised = :expected")
+      .expressionAttributeNames(Map.of("#raised", COL_RAISED))
+      .expressionAttributeValues(Map.of(":expected", AttributeValue.builder().n(String.valueOf(expectedRaised)).build()))
+      .build();
+
+    while (!success && retries < MAX_RETRIES) {
+      try {
+        dynamoDB.deleteItem(itemDeleteRequest);
+        success = true;
+        log.info("Deleted fund record: {}", fund.getName());
+      } catch (ConditionalCheckFailedException e) {
+        log.info("Conditional check failed, retry failed delete operation {}", retries + 1);
+        Thread.sleep(backoff);
+        backoff *= 2;
+        retries++;
+      }
+    }
+
+    if (!success) {
+      log.error("Failed to delete fund after retries", fund.getName());
+      throw new RuntimeException("Failed to delete fund after retries");
+    }
+  }
+
+  private void removeFundTable(final Fund fund) {
     final DeleteItemRequest itemDeleteRequest = DeleteItemRequest.builder()
       .tableName(config.fundsTable())
       .key(Map.of(COL_NAME, AttributeValue.builder().s(fund.getName()).build()))
