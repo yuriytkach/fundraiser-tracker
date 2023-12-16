@@ -13,9 +13,11 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 public class TrackServiceIT extends AwsLambdaIntegrationTestCommon {
 
+    
+
     @Test
     public void testProcessTrackCommand() {
-        AwsProxyRequest request = createAwsProxyRequest(
+        final AwsProxyRequest request = createAwsProxyRequest(
             "/slack/cmd",
             "POST",
             Map.of(
@@ -24,7 +26,7 @@ public class TrackServiceIT extends AwsLambdaIntegrationTestCommon {
             )
         );
 
-        String response = RestAssured.given()
+        final String response = RestAssured.given()
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .when()
@@ -33,6 +35,7 @@ public class TrackServiceIT extends AwsLambdaIntegrationTestCommon {
             .statusCode(200)
             .extract()
             .asString();
+        
 
         Assertions.assertNotNull(response);
         Assertions.assertTrue(response.contains("Tracked"));
