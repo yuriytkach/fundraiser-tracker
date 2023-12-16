@@ -3,11 +3,12 @@ package com.yuriytkach.tracker.fundraiser.model.exception;
 import java.lang.RuntimeException;
 
 public class FundTotalMismatchException extends RuntimeException {
-    public FundTotalMismatchException(String message) {
+
+    public FundTotalMismatchException(final String message) {
         super(message);
     }
 
-    public FundTotalMismatchException(String message, Throwable cause) {
+    public FundTotalMismatchException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }
