@@ -1,9 +1,10 @@
 package com.yuriytkach.tracker.fundraiser;
 
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.DONATIONS_TABLE;
 import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND;
 import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUNDS_TABLE;
-import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_1_TABLE;
-import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.ALL_ATTRIBUTES;
+import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.ALL_ATTRIBUTES_WITHOUT_FUND_ID;
+import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_FUND_ID;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,21 +48,23 @@ public abstract class AbstractFundOperationsTestCommon {
   @AfterEach
   void cleanUp() {
     log.info("----- CLEANUP ------");
-    deleteItemByIdDirectly(FUND_1_TABLE, COL_ID, ITEM_ID_1, ITEM_ID_2);
+    deleteItemByIdDirectly(DONATIONS_TABLE, COL_ID, ITEM_ID_1, ITEM_ID_2);
     deleteItemByIdDirectly(FUNDS_TABLE, DynamoDbFundStorageClient.COL_NAME, FUND_2_NAME);
     deleteTableIfExists(FundService.FUND_TABLE_PREFIX + FUND_2_NAME);
     fundStorageClient.save(FUND);
   }
 
-  protected Optional<Donation> getDonationDirectlyById(final String donationId) {
+  protected Optional<DonationWithFundId> getDonationDirectlyById(final String donationId) {
     final GetItemRequest dbGetItemRequest = GetItemRequest.builder()
-      .tableName(FUND_1_TABLE)
+      .tableName(DONATIONS_TABLE)
       .key(Map.of(COL_ID, AttributeValue.builder().s(donationId).build()))
-      .attributesToGet(ALL_ATTRIBUTES)
+      .attributesToGet(StreamEx.of(ALL_ATTRIBUTES_WITHOUT_FUND_ID, 0, ALL_ATTRIBUTES_WITHOUT_FUND_ID.length)
+        .append(COL_FUND_ID).toArray(String.class))
       .build();
     final GetItemResponse response = dynamoDB.getItem(dbGetItemRequest);
     assertThat(response.item()).isNotEmpty();
-    return DynamoDbDonationClientDonation.parseDonation(response.item());
+    return DynamoDbDonationClientDonation.parseDonation(response.item())
+      .map(donation -> new DonationWithFundId(response.item().get(COL_FUND_ID).s(), donation));
   }
 
   protected Optional<Fund> getFundDirectlyByName(final String name) {
@@ -75,7 +78,7 @@ public abstract class AbstractFundOperationsTestCommon {
     return DynamoDbFundStorageClient.parseFund(response.item());
   }
 
-  protected void deleteItemByIdDirectly(final String fundTable, final String keyColumn, final Object... ids) {
+  protected void deleteItemByIdDirectly(final String table, final String keyColumn, final Object... ids) {
     final var requests = StreamEx.of(ids)
       .map(id -> AttributeValue.builder().s(id.toString()).build())
       .map(attrValue -> Map.of(keyColumn, attrValue))
@@ -84,7 +87,7 @@ public abstract class AbstractFundOperationsTestCommon {
       .toList();
 
     dynamoDB.batchWriteItem(BatchWriteItemRequest.builder()
-      .requestItems(Map.of(fundTable, requests))
+      .requestItems(Map.of(table, requests))
       .build());
   }
 
@@ -94,5 +97,7 @@ public abstract class AbstractFundOperationsTestCommon {
       dynamoDB.deleteTable(DeleteTableRequest.builder().tableName(tableName).build());
     }
   }
+
+  public record DonationWithFundId(String fundId, Donation donation) { }
 
 }

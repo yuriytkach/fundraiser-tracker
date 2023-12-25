@@ -39,9 +39,11 @@ import lombok.extern.slf4j.Slf4j;
 public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager {
 
   public static final String FUNDS_TABLE = "all-funds-table";
-  public static final String ENABLED_INDEX = "test-mono-index";
-  public static final String FUND_1_TABLE = "donations-table";
-  public static final String FUND_2_TABLE = "disabled-table";
+  public static final String ENABLED_INDEX = "test-enabled-index";
+  public static final String FUND_ID_INDEX = "test-fund-id-index";
+  public static final String DONATIONS_TABLE = "donations-table";
+  public static final String FUND_1_ID = "fund-id-1";
+  public static final String FUND_2_ID = "fund-id-2";
   public static final String FUND_OWNER = "owner";
   public static final String FUND_RED = "red";
   public static final String FUND_DESC = "description";
@@ -51,7 +53,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
   public static final String FUND_DISABLED_NAME = "dis-fund";
 
   public static final Fund FUND = Fund.builder()
-    .id(FUND_1_TABLE)
+    .id(FUND_1_ID)
     .enabled(true)
     .name(FUND_1_NAME)
     .goal(1000)
@@ -66,7 +68,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     .build();
 
   public static final Fund FUND_DISABLED = Fund.builder()
-    .id(FUND_2_TABLE)
+    .id(FUND_2_ID)
     .enabled(false)
     .name(FUND_DISABLED_NAME)
     .goal(2000)
@@ -99,9 +101,16 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
       dynamoDB,
       FUNDS_TABLE,
       DynamoDbFundStorageClient.COL_NAME,
-      buildSecondaryIndex(ENABLED_INDEX, DynamoDbFundStorageClient.COL_ENABLED)
+      buildSecondaryIndex(ENABLED_INDEX, DynamoDbFundStorageClient.COL_ENABLED),
+      ScalarAttributeType.N
     );
-    createTable(dynamoDB, FUND_1_TABLE, DynamoDbDonationClientDonation.COL_ID, null);
+    createTable(
+      dynamoDB,
+      DONATIONS_TABLE,
+      DynamoDbDonationClientDonation.COL_ID,
+      buildSecondaryIndex(FUND_ID_INDEX, DynamoDbDonationClientDonation.COL_FUND_ID),
+      ScalarAttributeType.S
+    );
 
     createFundItem(dynamoDB, FUND);
     createFundItem(dynamoDB, FUND_DISABLED);
@@ -109,6 +118,8 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     return Map.of(
       "app.funds-table", FUNDS_TABLE,
       "app.funds-enabled-index", ENABLED_INDEX,
+      "app.donations-table", DONATIONS_TABLE,
+      "app.donations-fund-id-index", FUND_ID_INDEX,
       "quarkus.dynamodb.endpoint-override", url
     );
   }
@@ -166,7 +177,8 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     final AmazonDynamoDB dynamoDB,
     final String tableName,
     final String keyColumn,
-    @Nullable final GlobalSecondaryIndex index
+    @Nullable final GlobalSecondaryIndex index,
+    final ScalarAttributeType secondKeyType
   ) {
     final CreateTableRequest request = new CreateTableRequest();
     request.setTableName(tableName);
@@ -181,7 +193,7 @@ public class DynamoDbTestResource implements QuarkusTestResourceLifecycleManager
     if (index != null) {
       request.withGlobalSecondaryIndexes(List.of(index));
       request.withAttributeDefinitions(new AttributeDefinition(
-        index.getKeySchema().get(0).getAttributeName(), ScalarAttributeType.N));
+        index.getKeySchema().get(0).getAttributeName(), secondKeyType));
     }
 
     final CreateTableResult table = dynamoDB.createTable(request);

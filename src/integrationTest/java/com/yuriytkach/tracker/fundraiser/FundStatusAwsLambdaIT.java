@@ -2,6 +2,7 @@ package com.yuriytkach.tracker.fundraiser;
 
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_AMOUNT;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_CURR;
+import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_FUND_ID;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_ID;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_PERSON;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_TIME;
@@ -261,13 +262,14 @@ class FundStatusAwsLambdaIT implements AwsLambdaIntegrationTestCommon {
   ) {
     final Map<String, AttributeValue> item = new HashMap<>();
     item.put(COL_ID, AttributeValue.builder().s(itemId.toString()).build());
+    item.put(COL_FUND_ID, AttributeValue.builder().s(DynamoDbTestResource.FUND_1_ID).build());
     item.put(COL_CURR, AttributeValue.builder().s(curr).build());
     item.put(COL_PERSON, AttributeValue.builder().s(person).build());
     item.put(COL_AMOUNT, AttributeValue.builder().n(String.valueOf(amount)).build());
     item.put(COL_TIME, AttributeValue.builder().s(dateTime.toString()).build());
 
     final var putRequest = PutItemRequest.builder()
-      .tableName(DynamoDbTestResource.FUND_1_TABLE)
+      .tableName(DynamoDbTestResource.DONATIONS_TABLE)
       .item(item)
       .build();
     dynamoDB.putItem(putRequest);
@@ -282,13 +284,13 @@ class FundStatusAwsLambdaIT implements AwsLambdaIntegrationTestCommon {
       .toList();
 
     dynamoDB.batchWriteItem(BatchWriteItemRequest.builder()
-      .requestItems(Map.of(DynamoDbTestResource.FUND_1_TABLE, requests))
+      .requestItems(Map.of(DynamoDbTestResource.DONATIONS_TABLE, requests))
       .build());
   }
 
   private Fund dummyFund() {
     return Fund.builder()
-      .id(DynamoDbTestResource.FUND_1_TABLE)
+      .id(DynamoDbTestResource.FUND_1_ID)
       .goal(1000)
       .currency(FUND_CURR)
       .raised(0)

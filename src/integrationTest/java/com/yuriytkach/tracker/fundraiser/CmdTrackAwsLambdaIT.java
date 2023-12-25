@@ -1,11 +1,11 @@
 package com.yuriytkach.tracker.fundraiser;
 
 import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND;
-import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUNDS_TABLE;
-import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_1_TABLE;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_1_ID;
 import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_OWNER;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_AMOUNT;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_CURR;
+import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_FUND_ID;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_ID;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_PERSON;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_TIME;
@@ -55,7 +55,6 @@ import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.StreamEx;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.ListTablesResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
 @Slf4j
@@ -145,11 +144,6 @@ class CmdTrackAwsLambdaIT extends AbstractFundOperationsTestCommon implements Aw
     assertThat(fund2.getCurrency()).isEqualTo(fund2Currency);
     assertThat(fund2.getCreatedAt()).isCloseTo(Instant.now(), within(1, SECONDS));
     assertThat(fund2.getUpdatedAt()).isCloseTo(Instant.now(), within(1, SECONDS));
-
-    final ListTablesResponse allTablesResponse = dynamoDB.listTables();
-    assertThat(allTablesResponse.tableNames()).containsExactlyInAnyOrder(
-      expectedFund2TableName, FUNDS_TABLE, FUND_1_TABLE
-    );
   }
 
   @Test
@@ -190,11 +184,6 @@ class CmdTrackAwsLambdaIT extends AbstractFundOperationsTestCommon implements Aw
         .responseType(SlackResponse.RESPONSE_PRIVATE)
         .text(":white_check_mark: Deleted fund `" + FUND_2_NAME + "`")
         .build()));
-
-    final ListTablesResponse allTablesResponse = dynamoDB.listTables();
-    assertThat(allTablesResponse.tableNames()).containsExactlyInAnyOrder(
-      FUNDS_TABLE, FUND_1_TABLE
-    );
   }
 
   @ParameterizedTest
@@ -225,14 +214,17 @@ class CmdTrackAwsLambdaIT extends AbstractFundOperationsTestCommon implements Aw
           + " - :open_book: `fundy` 22.30% [223 of 1000] EUR - :bank:-1")
         .build()));
 
-    final Optional<Donation> donation = getDonationDirectlyById(ITEM_ID_1.toString());
-    assertThat(donation).hasValue(Donation.builder()
-      .id(ITEM_ID_1.toString())
-      .currency(FUND.getCurrency())
-      .amount(123)
-      .dateTime(Instant.parse("2022-02-01T12:13:00Z"))
-      .person(expectedPerson)
-      .build());
+    final Optional<DonationWithFundId> donation = getDonationDirectlyById(ITEM_ID_1.toString());
+    assertThat(donation).hasValue(new DonationWithFundId(
+      FUND_1_ID,
+      Donation.builder()
+        .id(ITEM_ID_1.toString())
+        .currency(FUND.getCurrency())
+        .amount(123)
+        .dateTime(Instant.parse("2022-02-01T12:13:00Z"))
+        .person(expectedPerson)
+        .build()
+    ));
 
     final Optional<Fund> fund = getFundDirectlyByName(FUND.getName());
     assertThat(fund).hasValue(FUND.toBuilder()
@@ -417,13 +409,14 @@ class CmdTrackAwsLambdaIT extends AbstractFundOperationsTestCommon implements Aw
   ) {
     final Map<String, AttributeValue> item = new HashMap<>();
     item.put(COL_ID, AttributeValue.builder().s(itemId.toString()).build());
+    item.put(COL_FUND_ID, AttributeValue.builder().s(FUND_1_ID).build());
     item.put(COL_CURR, AttributeValue.builder().s(curr).build());
     item.put(COL_PERSON, AttributeValue.builder().s(person).build());
     item.put(COL_AMOUNT, AttributeValue.builder().n(String.valueOf(amount)).build());
     item.put(COL_TIME, AttributeValue.builder().s(dateTime.toString()).build());
 
     final var putRequest = PutItemRequest.builder()
-      .tableName(FUND_1_TABLE)
+      .tableName(DynamoDbTestResource.DONATIONS_TABLE)
       .item(item)
       .build();
     dynamoDB.putItem(putRequest);

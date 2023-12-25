@@ -5,7 +5,7 @@ import java.util.Collection;
 import com.yuriytkach.tracker.fundraiser.model.Donation;
 
 public interface DonationStorageClient {
-  void addAll(String id, Collection<Donation> donations);
+  void addAll(String fundId, Collection<Donation> donations);
 
   Collection<Donation> findAll(String fundId);
 
