@@ -56,7 +56,7 @@ public abstract class AbstractFundOperationsTestCommon {
 
   protected Optional<DonationWithFundId> getDonationDirectlyById(final String donationId) {
     final GetItemRequest dbGetItemRequest = GetItemRequest.builder()
-      .tableName(DynamoDbTestResource.DONATIONS_TABLE)
+      .tableName(DONATIONS_TABLE)
       .key(Map.of(COL_ID, AttributeValue.builder().s(donationId).build()))
       .attributesToGet(StreamEx.of(ALL_ATTRIBUTES_WITHOUT_FUND_ID, 0, ALL_ATTRIBUTES_WITHOUT_FUND_ID.length)
         .append(COL_FUND_ID).toArray(String.class))
