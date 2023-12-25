@@ -36,7 +36,7 @@ public class DynamoDbDonationClientDonation implements DonationStorageClient {
   public static final String COL_TIME = "time";
   public static final String COL_PERSON = "person";
   public static final String COL_ID = "id";
-  public static final String COL_FUND_ID = "find_id";
+  public static final String COL_FUND_ID = "fund_id";
 
   public static final String[] ALL_ATTRIBUTES_WITHOUT_FUND_ID = new String[] {
     COL_ID,
