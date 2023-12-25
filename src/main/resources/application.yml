@@ -1,6 +1,8 @@
 app:
   funds-table: funds
   funds-enabled-index: enabled-index
+  donations-table: donations
+  donations-fund-id-index: fund-id-index
   default-fund-color: green
   default-person-name: noname
   funders:

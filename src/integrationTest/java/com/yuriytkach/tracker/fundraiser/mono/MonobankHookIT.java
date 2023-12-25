@@ -1,7 +1,8 @@
 package com.yuriytkach.tracker.fundraiser.mono;
 
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.DONATIONS_TABLE;
 import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND;
-import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_1_TABLE;
+import static com.yuriytkach.tracker.fundraiser.DynamoDbTestResource.FUND_1_ID;
 import static com.yuriytkach.tracker.fundraiser.service.dynamodb.DynamoDbDonationClientDonation.COL_ID;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,7 +45,7 @@ class MonobankHookIT extends AbstractFundOperationsTestCommon implements AwsLamb
 
   @AfterEach
   void cleanUpDataFromMono() {
-    deleteItemByIdDirectly(FUND_1_TABLE, COL_ID, MONO_STATEMENT_ID);
+    deleteItemByIdDirectly(DONATIONS_TABLE, COL_ID, MONO_STATEMENT_ID);
   }
 
   @Test
@@ -75,14 +76,17 @@ class MonobankHookIT extends AbstractFundOperationsTestCommon implements AwsLamb
       .body("statusCode", equalTo(200))
       .body("body", nullValue());
 
-    final Optional<Donation> donation = getDonationDirectlyById(MONO_STATEMENT_ID);
-    assertThat(donation).hasValue(Donation.builder()
-      .id(MONO_STATEMENT_ID)
-      .currency(Currency.EUR)
-      .amount(MONO_STATEMENT_AMOUNT)
-      .dateTime(MONO_STATEMENT_TIME)
-      .person("YuriyT")
-      .build());
+    final Optional<DonationWithFundId> donation = getDonationDirectlyById(MONO_STATEMENT_ID);
+    assertThat(donation).hasValue(new DonationWithFundId(
+      FUND_1_ID,
+      Donation.builder()
+        .id(MONO_STATEMENT_ID)
+        .currency(Currency.EUR)
+        .amount(MONO_STATEMENT_AMOUNT)
+        .dateTime(MONO_STATEMENT_TIME)
+        .person("YuriyT")
+        .build()
+    ));
 
     final Optional<Fund> fund = getFundDirectlyByName(FUND.getName());
     assertThat(fund).hasValue(FUND.toBuilder()

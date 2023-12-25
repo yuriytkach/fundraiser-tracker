@@ -9,6 +9,10 @@ public interface FundTrackerConfig {
 
   String fundsEnabledIndex();
 
+  String donationsTable();
+
+  String donationsFundIdIndex();
+
   String defaultFundColor();
 
   String defaultPersonName();

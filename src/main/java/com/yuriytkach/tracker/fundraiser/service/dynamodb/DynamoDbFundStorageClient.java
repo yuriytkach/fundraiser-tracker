@@ -18,23 +18,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.EntryStream;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ComparisonOperator;
 import software.amazon.awssdk.services.dynamodb.model.Condition;
-import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
-import software.amazon.awssdk.services.dynamodb.model.CreateTableResponse;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
-import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
-import software.amazon.awssdk.services.dynamodb.model.KeyType;
-import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughput;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
-import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 
 @Slf4j
@@ -97,27 +89,6 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
 
   @Override
   public void create(final Fund fund) {
-    final var createTableRequest = CreateTableRequest.builder()
-      .tableName(fund.getId())
-      .keySchema(
-        KeySchemaElement.builder()
-          .keyType(KeyType.HASH)
-          .attributeName(DynamoDbDonationClientDonation.COL_ID)
-          .build()
-      )
-      .attributeDefinitions(
-        AttributeDefinition.builder()
-          .attributeName(DynamoDbDonationClientDonation.COL_ID)
-          .attributeType(ScalarAttributeType.S)
-          .build()
-      )
-      .provisionedThroughput(ProvisionedThroughput.builder().readCapacityUnits(1L).writeCapacityUnits(1L).build())
-      .build();
-
-    log.debug("Creating table for fund '{}': {}", fund.getName(), fund.getId());
-    final CreateTableResponse createTableResponse = dynamoDB.createTable(createTableRequest);
-    log.info("Created table: {}", createTableResponse.tableDescription().tableName());
-
     save(fund);
   }
 
@@ -225,13 +196,6 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
     dynamoDB.deleteItem(itemDeleteRequest);
 
     log.info("Deleted fund record: {}", fund.getName());
-
-    final DeleteTableRequest deleteTableRequest = DeleteTableRequest.builder()
-      .tableName(fund.getId())
-      .build();
-    dynamoDB.deleteTable(deleteTableRequest);
-
-    log.info("Deleted fund table: {}", fund.getId());
   }
 
 }
