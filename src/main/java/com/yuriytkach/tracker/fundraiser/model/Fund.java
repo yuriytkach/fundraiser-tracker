@@ -30,6 +30,7 @@ public class Fund {
   private final Set<String> bankAccounts = Set.of();
   private final Instant createdAt;
   private final Instant updatedAt;
+  private final boolean monoOnly;
 
   public String getEnabledNkey() {
     return enabled ? ENABLED_N_KEY : DISABLED_N_KEY;

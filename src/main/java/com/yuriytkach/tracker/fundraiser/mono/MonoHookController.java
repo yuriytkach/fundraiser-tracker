@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MonoHookController {
 
   private final MonobankStatementProcessor statementProcessor;
+  private final MonobankService monobankService;
 
   @POST
   @Path("/hook")
@@ -27,6 +28,18 @@ public class MonoHookController {
       statementProcessor.processStatement(statement);
     } catch (final Exception ex) {
       log.warn("Unable to processes statement: {}", ex.getMessage(), ex);
+    }
+    return Response.ok().build();
+  }
+
+  @POST
+  @Path("/event")
+  public Response hook() {
+    try {
+      log.info("Monobank sync EVENT");
+      monobankService.syncData();
+    } catch (final Exception ex) {
+      log.warn("Unable to process mono event: {}", ex.getMessage(), ex);
     }
     return Response.ok().build();
   }

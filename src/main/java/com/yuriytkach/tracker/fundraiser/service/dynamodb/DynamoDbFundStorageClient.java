@@ -46,6 +46,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
   public static final String COL_BANK = "bank";
   public static final String COL_CREATED_AT = "createdAt";
   public static final String COL_UPDATED_AT = "updatedAt";
+  public static final String COL_MONO_ONLY = "monoOnly";
 
   public static final String[] ALL_ATTRIBUTES = new String[] {
     COL_ID,
@@ -60,6 +61,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
     COL_BANK,
     COL_CREATED_AT,
     COL_UPDATED_AT,
+    COL_MONO_ONLY
   };
 
   private final DynamoDbClient dynamoDB;
@@ -83,6 +85,7 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
         .bankAccounts(item.get(COL_BANK) == null ? Set.of() : Set.copyOf(item.get(COL_BANK).ss()))
         .createdAt(Instant.parse(item.get(COL_CREATED_AT).s()))
         .updatedAt(Instant.parse(item.get(COL_UPDATED_AT).s()))
+        .monoOnly(item.get(COL_MONO_ONLY) != null && item.get(COL_MONO_ONLY).bool())
         .build());
     }
   }
@@ -112,7 +115,8 @@ public class DynamoDbFundStorageClient implements FundStorageClient {
         COL_UPDATED_AT, AttributeValue.builder().s(item.getUpdatedAt().toString()).build()
       )
       .append(
-        COL_BANK, item.getBankAccounts().isEmpty() ? null : AttributeValue.builder().ss(item.getBankAccounts()).build()
+        COL_BANK, item.getBankAccounts().isEmpty() ? null : AttributeValue.builder().ss(item.getBankAccounts()).build(),
+        COL_MONO_ONLY, AttributeValue.builder().bool(item.isMonoOnly()).build()
       )
       .filterValues(Objects::nonNull)
       .toImmutableMap();
