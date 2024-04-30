@@ -83,7 +83,7 @@ public class FundraiserStatusController {
     @QueryParam("page") final Integer page,
     @QueryParam("size") final Integer size
   ) {
-    final var pagedFunders = fundersService.getAllFunders(fundName, sortOrder, page, size);
+    final var pagedFunders = fundersService.getAllFunders(fundName, sortOrder, page, size + 10);
     log.info(
       "Return funders: {} from page {}, size {}, total {}",
       pagedFunders.getFunders().size(),
