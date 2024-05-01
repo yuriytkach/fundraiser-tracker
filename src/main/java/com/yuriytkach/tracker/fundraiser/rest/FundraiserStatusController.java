@@ -74,6 +74,8 @@ public class FundraiserStatusController {
     }
   }
 
+  static int lastPageSize;
+
   @GET
   @Path("/{name}/funders")
   @Produces(MediaType.APPLICATION_JSON)
@@ -83,6 +85,7 @@ public class FundraiserStatusController {
     @QueryParam("page") final Integer page,
     @QueryParam("size") final Integer size
   ) {
+    lastPageSize = page;
     final var pagedFunders = fundersService.getAllFunders(fundName, sortOrder, page, size);
     log.info(
       "Return funders: {} from page {}, size {}, total {}",
