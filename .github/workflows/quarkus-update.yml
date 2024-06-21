@@ -59,12 +59,24 @@ jobs:
 
     - name: Create Pull Request
       if: env.has_changes == 'true'
-      uses: peter-evans/create-pull-request@v4
+      uses: peter-evans/create-pull-request@v6
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         branch: ${{ env.branch_name }}
+        base: main
         title: "build(deps): update quarkus to ${{ env.initial_version }}"
         body: "This PR updates Quarkus to version ${{ env.initial_version }}."
         labels: dependencies, automerge_github
         reviewers: yuriytkach
-        auto-merge: true
+        draft: false
+
+    - name: Install GitHub CLI
+      if: env.has_changes == 'true'
+      run: sudo apt-get install -y gh
+
+    - name: Enable Auto-Merge
+      if: env.has_changes == 'true'
+      run: |
+        gh pr merge ${{ env.branch_name }} --auto
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
