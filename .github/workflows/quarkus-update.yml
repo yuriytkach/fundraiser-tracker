@@ -61,3 +61,6 @@ jobs:
       if: env.has_changes == 'true'
       run: |
         gh pr create -f -a @me -r @me -l dependencies -l automerge_github -t "build(deps): update quarkus to ${{ env.initial_version }}" && gh pr merge --auto -d -s
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
