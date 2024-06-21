@@ -70,10 +70,6 @@ jobs:
         reviewers: yuriytkach
         draft: false
 
-    - name: Install GitHub CLI
-      if: env.has_changes == 'true'
-      run: sudo apt-get install -y gh
-
     - name: Enable Auto-Merge
       if: env.has_changes == 'true'
       run: |
