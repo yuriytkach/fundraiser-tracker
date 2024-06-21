@@ -38,10 +38,6 @@ jobs:
 
     - name: Run quarkusUpdate command
       run: ./gradlew quarkusUpdate --stream=${{ env.remembered_version }}
-      env:
-        NEXUS_URL: ${{ env.NEXUS_URL }}
-        NEXUS_READ_USER: ${{ env.NEXUS_READ_USER }}
-        NEXUS_READ_PASSWORD: ${{ env.NEXUS_READ_PASSWORD }}
 
     - name: Check for changes
       id: git_diff
@@ -53,6 +49,7 @@ jobs:
       run: |
         new_version=$(grep -E '^quarkusPlatformVersion=' gradle.properties | cut -d'=' -f2)
         branch_name="update-quarkus-${new_version}"
+        echo "branch_name=$branch_name" >> $GITHUB_ENV
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git checkout -b $branch_name
@@ -65,7 +62,7 @@ jobs:
       uses: peter-evans/create-pull-request@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        branch: $branch_name
+        branch: ${{ env.branch_name }}
         title: "build(deps): update quarkus to ${{ env.initial_version }}"
         body: "This PR updates Quarkus to version ${{ env.initial_version }}."
         labels: dependencies, automerge_github
