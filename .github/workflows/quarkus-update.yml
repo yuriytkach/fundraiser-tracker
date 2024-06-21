@@ -50,6 +50,7 @@ jobs:
         new_version=$(grep -E '^quarkusPlatformVersion=' gradle.properties | cut -d'=' -f2)
         branch_name="update-quarkus-${new_version}"
         echo "branch_name=$branch_name" >> $GITHUB_ENV
+        echo "new_version=$new_version" >> $GITHUB_ENV
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git checkout -b $branch_name
@@ -60,7 +61,7 @@ jobs:
     - name: Create Pull Request
       if: env.has_changes == 'true'
       run: |
-        gh pr create -f -a yuriytkach -r yuriytkach -l dependencies -l automerge_github -t "build(deps): update quarkus to ${{ env.initial_version }}" && gh pr merge --auto -d -s
+        gh pr create -f -a yuriytkach -r yuriytkach -l dependencies -l automerge_github -t "build(deps): update quarkus to ${{ env.new_version }}" && gh pr merge --auto -d -s
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
