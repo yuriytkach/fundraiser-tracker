@@ -82,3 +82,7 @@ jacocoTestReport {
         xml.required = true
     }
 }
+
+[compileJava].forEach {
+    it -> it.dependsOn(compileQuarkusGeneratedSourcesJava)
+}
