@@ -27,7 +27,7 @@ dependencies {
     implementation 'software.amazon.awssdk:url-connection-client'
 
     implementation 'one.util:streamex:0.8.3'
-    implementation 'com.github.spotbugs:spotbugs-annotations:4.8.6'
+    implementation 'com.github.spotbugs:spotbugs-annotations:4.9.0'
 
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.quarkus:quarkus-junit5-mockito'
